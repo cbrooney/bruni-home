@@ -21,7 +21,9 @@ class LuckyController extends AbstractController
             'notice',
             'Your changes were saved!'
         );
-
+        
+        $dto = new \App\ValueObject\Dto();
+        
         return $this->render('lucky/number.html.twig', [
             'number' => $number,
         ]);
