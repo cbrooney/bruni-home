@@ -1,4 +1,7 @@
 {
+    "deployer/deployer": {
+        "version": "v7.0.0"
+    },
     "doctrine/annotations": {
         "version": "1.13",
         "recipe": {
