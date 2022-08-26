@@ -1,0 +1,60 @@
+<h1>Dateiname {{ number }}</h1>
+
+<body>
+<div class="rahmen" id="myPicture">
+    <img loading=lazy id="hochkantBg" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
+    <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
+</div>
+</body>
+
+<style>
+    body{
+        background-color: black;
+        color: green;
+    }
+
+    #quer{
+        width: auto;
+        height: 100vh;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+    }
+    #querVid{
+        width: auto;
+        height: 100vh;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+    }
+    #hochkantBg
+    {
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+        z-index:0;
+        filter: blur(20px);
+        -webkit-filter: blur(20px);
+        opacity: 0.8;
+        width: 100%;
+        height: 100vh;
+    }
+    #hochkant
+    {
+        position: relative;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -100vh;
+        z-index:1;
+        height: 100vh;
+    }
+
+</style>
