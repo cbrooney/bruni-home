@@ -11,8 +11,7 @@
 </body>
 
 <script type="text/javascript">
-    var myIndex = 0;
-    var currentVid=0;
+    let myIndex = 0;
     slideShow();
 
     function slideShow()
@@ -30,6 +29,7 @@
         }
 
         x[myIndex - 1].style.display = "block";
+        document.getElementById("filename").innerHTML = '<h1 id="filename">Dateiname: ' + x[myIndex-1].id + '' + '</h1>';
 
         setTimeout(slideShow, timeoutLength);
     }
