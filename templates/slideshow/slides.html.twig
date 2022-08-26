@@ -1,15 +1,17 @@
 <body>
-    <h1>Dateiname {{ number }}</h1>
-    <div class="rahmen" id="myPicture">
-        <img loading=lazy id="hochkantBg" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
-        <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
-    </div>
+    {% for directoryEntry in directoryEntries %}
+        <h1>Dateiname {{ directoryEntry }}</h1>
+        <div class="rahmen" id="myPicture">
+            <img loading=lazy id="hochkantBg" class="imagesHoch" src="bilder/{{ directoryEntry }}">
+            <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/{{ directoryEntry }}">
+        </div>
+    {% endfor %}
 </body>
 
 <script language='javascript'>
     var myIndex = 0;
     var currentVid =0;
-    slideShow();
+    // slideShow();
     function slideShow() {
         var i;
         var x = document.getElementsByClassName("rahmen");
