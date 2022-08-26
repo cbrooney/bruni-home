@@ -10,12 +10,29 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SlideShowController extends AbstractController
 {
+    private $bilderDir;
+
+    public function __construct(
+        string $bilderDir
+    ) {
+        $this->bilderDir = $bilderDir;
+    }
+
     /**
      * @Route("/slideshow", name="slide_show", methods={"GET"})
      */
     public function slides(): Response
     {
         $number = random_int(100, 1000);
+
+        $fileTypes = ["JPG","jpg", "jpeg","webm"];
+        $fileNameList = [];
+
+        $directoryEntries = scandir($this->bilderDir);
+        $directoryEntries = array_diff(
+            $directoryEntries,
+            ['..', '.', '.gitkeep']
+        );
 
 //        echo '<html>
 //<body>
@@ -39,6 +56,7 @@ class SlideShowController extends AbstractController
 
         return $this->render('slideshow/slides.html.twig', [
             'number' => $number,
+            'directoryEntries' => $directoryEntries,
         ]);
     }
 }

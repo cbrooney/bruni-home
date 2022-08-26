@@ -1,11 +1,68 @@
-<h1>Dateiname {{ number }}</h1>
-
 <body>
-<div class="rahmen" id="myPicture">
-    <img loading=lazy id="hochkantBg" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
-    <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
-</div>
+    <h1>Dateiname {{ number }}</h1>
+    <div class="rahmen" id="myPicture">
+        <img loading=lazy id="hochkantBg" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
+        <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
+    </div>
 </body>
+
+<script language='javascript'>
+    var myIndex = 0;
+    var currentVid =0;
+    slideShow();
+    function slideShow() {
+        var i;
+        var x = document.getElementsByClassName("rahmen");
+        var vids = document.getElementsByClassName("videoFile");
+        var vidsId = document.getElementById("querVid");
+        var numberOfVids = vids.length;
+        var timeoutLength = 10000;
+        var curDuration = 0;
+
+
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+
+
+        // if (currentVid == 0) {
+        //   vids[numberOfVids-1].pause();
+        //   vids[numberOfVids-1].currentTime = 0;
+        // }else {
+        //   vids[currentVid-1].pause();
+        //   vids[currentVid-1].currentTime = 0;
+        // }
+
+
+
+        myIndex++;
+        if (myIndex > x.length) {myIndex = 1}
+
+        //console.log(x[myIndex-1].id);
+        //console.log(vids);
+
+        if (x[myIndex-1].id == "myVideo")
+        {
+            x[myIndex-1].style.display = "block";
+            vids[currentVid].play();
+            curDuration = vids[currentVid].duration;
+            if (!isNaN(curDuration)) {
+                timeoutLength = 1000 + curDuration * 1000;
+            }
+
+            currentVid++;
+            if(currentVid >= numberOfVids){currentVid = 0}
+
+        }else if(x[myIndex-1].id == "myPicture")
+        {
+            x[myIndex-1].style.display = "block";
+        }
+
+//    picId[myIndex].scrolltoView();
+
+        setTimeout(slideShow, timeoutLength);
+    }
+</script>
 
 <style>
     body{
@@ -56,5 +113,4 @@
         z-index:1;
         height: 100vh;
     }
-
 </style>
