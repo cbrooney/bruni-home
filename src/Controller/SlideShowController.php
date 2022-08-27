@@ -101,7 +101,7 @@ class SlideShowController extends AbstractController
         );
 
         shuffle($directoryEntries);
-        $randomKeys = array_rand($directoryEntries, 30);
+        $randomKeys = array_rand($directoryEntries, 50);
 
         return array_intersect_key($directoryEntries, $randomKeys);
     }
