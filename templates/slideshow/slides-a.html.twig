@@ -10,29 +10,40 @@
     {% endfor %}
 </body>
 
+<script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous">
+</script>
+
 <script type="text/javascript">
-    let myIndex = 0;
-    slideShow();
-
-    function slideShow()
-    {
+    $(document).ready(function() {
         let x = document.getElementsByClassName("rahmen");
-        let timeoutLength = 2000;
 
-        for (let i = 0; i < x.length; i++) {
-            x[i].style.display = "none";
+        let myIndex = 0;
+        slideShow();
+
+        function slideShow()
+        {
+            for (let i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+
+            let timeoutLength = 2000;
+
+            myIndex++;
+            if (myIndex > x.length) {
+                myIndex = 1
+            }
+
+            x[myIndex - 1].style.display = "block";
+            document.getElementById("filename").innerHTML = '<h1 id="filename">Dateiname: ' + x[myIndex-1].id + '' + '</h1>';
+
+            setTimeout(slideShow, timeoutLength);
         }
+    });
 
-        myIndex++;
-        if (myIndex > x.length) {
-            myIndex = 1
-        }
 
-        x[myIndex - 1].style.display = "block";
-        document.getElementById("filename").innerHTML = '<h1 id="filename">Dateiname: ' + x[myIndex-1].id + '' + '</h1>';
-
-        setTimeout(slideShow, timeoutLength);
-    }
 </script>
 
 <style>

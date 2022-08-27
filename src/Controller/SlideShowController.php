@@ -62,23 +62,17 @@ class SlideShowController extends AbstractController
     }
 
     /**
-     * @Route("/slideshow/get-figure", name="slide_show_figure", methods={"GET"})
+     * @Route("/slideshow/get-figures", name="slide_show_get_figures", methods={"GET"})
      */
     public function slidesFigure(): Response
     {
         $fileTypes = ["JPG","jpg", "jpeg","webm"];
         $fileNameList = [];
 
-        $directoryEntries = scandir($this->bilderDir);
-        $directoryEntries = array_diff(
-            $directoryEntries,
-            ['..', '.', '.gitkeep']
-        );
-
-        shuffle($directoryEntries);
+        $randomPictures = $this->getRandomPictures();
 
         return new JsonResponse(
-            ['filename' => $directoryEntries[0]]
+            ['filenames' => $randomPictures]
         );
     }
 
@@ -90,17 +84,25 @@ class SlideShowController extends AbstractController
         $fileTypes = ["JPG","jpg", "jpeg","webm"];
         $fileNameList = [];
 
+        $randomPictures = $this->getRandomPictures();
+
+        return $this->render('slideshow/slides-a.html.twig', [
+            'directoryEntries' => $randomPictures,
+        ]);
+    }
+
+    /** @return array<string> */
+    private function getRandomPictures(): array
+    {
         $directoryEntries = scandir($this->bilderDir);
         $directoryEntries = array_diff(
             $directoryEntries,
             ['..', '.', '.gitkeep']
         );
 
-        $entries = [];
-        $entries[] = $directoryEntries[4];
+        shuffle($directoryEntries);
+        $randomKeys = array_rand($directoryEntries, 30);
 
-        return $this->render('slideshow/slides-a.html.twig', [
-            'directoryEntries' => $directoryEntries,
-        ]);
+        return array_intersect_key($directoryEntries, $randomKeys);
     }
 }
