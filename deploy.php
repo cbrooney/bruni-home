@@ -20,7 +20,7 @@ add('writable_dirs', []);
 host('raspberrypi')
     ->set('remote_user', 'pi')
     ->set('deploy_path', '/home/pi/Public/bruni-home')
-    ->set('branch', 'deployer');
+    ->set('branch', 'slideshow');
 
 // Hooks
 after('deploy:failed', 'deploy:unlock');
@@ -31,5 +31,5 @@ task('deploy:vendors', function () {
         warning('To speed up composer installation setup "unzip" command with PHP zip extension.');
     }
 
-    run('cd {{release_or_current_path}} && {{bin/php}} composer.phar install --verbose --no-interaction --optimize-autoloader 2>&1');
+    run('cd {{release_or_current_path}} && {{bin/php}} composer.phar install --no-dev --verbose --no-interaction --optimize-autoloader 2>&1');
 });
