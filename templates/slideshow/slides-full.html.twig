@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% for directoryEntry in directoryEntries %}
+        <input class="filenames" type="hidden" name="filenames-{{ directoryEntry }}" value="{{ directoryEntry }}">
+    {% endfor %}
+
+    <div id="filename">Dateiname: </div>
+    <div class="rahmen" id="appin">
+        <img id="hochkantBg-DSCF0002.JPG" src="bilder/DSCF0002.JPG" onclick="openFullscreen();">
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous">
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // setInterval(myTimer, 1000);
+            //
+            // function myTimer() {
+            //     const date = new Date();
+            //     document.getElementById("demo").innerHTML = date.toLocaleTimeString();
+            // }
+
+            // let allFilenames = document.getElementsByClassName('filenames');
+            //
+            // let header = document.getElementById("filename");
+            //
+            // let interval = 2000;
+            // let timer = 0;
+            //
+            // for (let i = 0; i < allFilenames.length; i++) {
+            //     timer += interval;
+            //     let filename = allFilenames[i].value;
+            //
+            //     // const myTimeout = setInterval(setFigure, 10000, filename);
+            //
+            //     setTimeout(function () {
+            //         header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
+            //     }, timer);
+            // }
+        });
+
+        function setFigure(filename)
+        {
+            document.getElementById("filename").innerHTML = '<h1 id="filename">Dateiname: ' + filename + '' + '</h1>';
+            document.getElementById("hochkant").src = 'bilder/' + filename;
+            document.getElementById("hochkantBg").src = 'bilder/' + filename;
+        }
+
+        function openFullscreen() {
+            var elem = document.getElementById("hochkantBg-DSCF0002.JPG");
+
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+
+            let allFilenames = document.getElementsByClassName('filenames');
+
+            let header = document.getElementById("filename");
+            let picture = document.getElementById("hochkantBg-DSCF0002.JPG")
+
+            let interval = 2000;
+            let timer = 0;
+
+            for (let i = 0; i < allFilenames.length; i++) {
+                timer += interval;
+                let filename = allFilenames[i].value;
+
+                // const myTimeout = setInterval(setFigure, 10000, filename);
+
+                setTimeout(function () {
+                    // header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
+                    picture.src = 'bilder/' + filename;
+                }, timer);
+            }
+
+            // document.getElementById("hochkantBg-DSCF0002.JPG").src = "bilder/DSCF0023.JPG";
+        }
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        *:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {
+            background-color: rgba(255,255,255,0)!important;
+            padding: 20px;
+        }
+
+        ::backdrop
+        {
+            background-color: white;
+
+        }
+
+        body{
+            background-color: black;
+            color: green;
+        }
+
+        #quer{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        #querVid{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        #hochkantBg
+        {
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            z-index:0;
+            filter: blur(20px);
+            -webkit-filter: blur(20px);
+            opacity: 0.8;
+            width: 100%;
+            height: 100vh;
+        }
+        #hochkant
+        {
+            position: relative;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: -100vh;
+            z-index:1;
+            height: 100vh;
+        }
+    </style>
+{% endblock %}

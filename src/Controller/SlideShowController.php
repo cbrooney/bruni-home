@@ -24,8 +24,6 @@ class SlideShowController extends AbstractController
      */
     public function slides(): Response
     {
-        $number = random_int(100, 1000);
-
         $fileTypes = ["JPG","jpg", "jpeg","webm"];
         $fileNameList = [];
 
@@ -35,28 +33,7 @@ class SlideShowController extends AbstractController
             ['..', '.', '.gitkeep']
         );
 
-//        echo '<html>
-//<body>
-//<div class="rahmen" id="myPicture"> <img loading=lazy id="hochkantBg" class="imagesHoch" src="20161231_122254.jpg"><img loading=lazy id="hochkant" class="imagesHoch" src="20161231_122254.jpg"></div>
-//<img loading=lazy id="hochkant" class="imagesHoch" src="20161231_122254.jpg"></div>
-//</body>
-//</html>';
-
-//        echo '<div class="rahmen" id="myPicture"> <img loading=lazy id="hochkantBg" class="imagesHoch" src="//home//cbruni//GIT//bruni-home//bruni_home//templates//slideshow//20161231_122254.jpg">'."\n";
-//        echo '<img loading=lazy id="hochkant" class="imagesHoch" src="//home//cbruni//GIT//bruni-home//bruni_home//templates//slideshow//20161231_122254.jpg">'."\n".'</div>'."\n";
-
-//        return new Response(
-//            '<html>
-//<body>
-//<div
-//class="rahmen" id="myPicture"> <img loading=lazy id="hochkantBg" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
-//</div>
-//</body>
-//</html>'
-//        );
-
         return $this->render('slideshow/slides.html.twig', [
-            'number' => $number,
             'directoryEntries' => $directoryEntries,
         ]);
     }
@@ -91,6 +68,30 @@ class SlideShowController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/slideshow-ordered", name="slide_show_ordered", methods={"GET"})
+     */
+    public function slidesOrdered(): Response
+    {
+        $randomPictures = $this->getRandomPictures();
+
+        return $this->render('slideshow/slides-ordered.html.twig', [
+            'directoryEntries' => $randomPictures,
+        ]);
+    }
+
+    /**
+     * @Route("/slideshow-full", name="slide_show_fullscreen", methods={"GET"})
+     */
+    public function slidesFullscreen(): Response
+    {
+        $randomPictures = $this->getRandomPictures();
+
+        return $this->render('slideshow/slides-full.html.twig', [
+            'directoryEntries' => $randomPictures,
+        ]);
+    }
+
     /** @return array<string> */
     private function getRandomPictures(): array
     {
@@ -101,7 +102,7 @@ class SlideShowController extends AbstractController
         );
 
         shuffle($directoryEntries);
-        $randomKeys = array_rand($directoryEntries, 50);
+        $randomKeys = array_rand($directoryEntries, 10);
 
         return array_intersect_key($directoryEntries, $randomKeys);
     }
