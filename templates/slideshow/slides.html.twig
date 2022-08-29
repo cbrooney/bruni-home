@@ -1,36 +1,82 @@
-<body>
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div id="filename">Dateiname: </div>
+    {% set divCounter = 0 %}
+
     {% for directoryEntry in directoryEntries %}
         <input class="filenames" type="hidden" name="filenames-{{ directoryEntry }}" value="{{ directoryEntry }}">
-    {% endfor %}
 
-    <div id="filename">Dateiname: </div>
-    <div class="rahmen" id="myPicture">
-        <img loading=lazy id="hochkantBg" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
-        <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/PXL_20210622_045016400.jpg">
-    </div>
-</body>
+        {% if divCounter < 10 %}
+            <div class="rahmen" id="appin-"{{ divCounter }} onclick="openFullscreen({{ divCounter }})">
+                <img id="bild-id-{{ divCounter }}" class="einzelnesBild" src="bilder/{{ directoryEntry }}">
+            </div>
+        {% endif %}
+
+        {% set divCounter = divCounter + 1 %}
+    {% endfor %}
+{% endblock %}
 
 {% block javascripts %}
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous">
+    </script>
 
     <script type="text/javascript">
         $(document).ready(function() {
-            let filenames = document.getElementsByClassName('filenames');
+            let interval = 2000;
+            let timer = 0;
+            let divCounter = 0;
+            let divBatch = 10;
+            let allFilenames = document.getElementsByClassName('filenames');
 
-            for (let i in filenames) {
-                let figure = filenames[i].value;
-                if (figure === undefined) {
-                    continue;
-                }
-
-                if (i === 2) {
+            for (let i = 0; i < allFilenames.length; i++) {
+                if (i > 5) {
                     break;
                 }
-                delay(function(){
-                    setFigure(figure);
-                }, 1000 ); // end delay
+                timer += interval;
+
+                // setTimeout(blockFigureByDivCounter, timer, divCounter, allFilenames);
+                divCounter++;
             }
+
+            // setInterval(myTimer, 1000);
+            //
+            // function myTimer() {
+            //     const date = new Date();
+            //     document.getElementById("demo").innerHTML = date.toLocaleTimeString();
+            // }
+
+            // let allFilenames = document.getElementsByClassName('filenames');
+            //
+            // let header = document.getElementById("filename");
+            //
+            // let interval = 2000;
+            // let timer = 0;
+            //
+            // for (let i = 0; i < allFilenames.length; i++) {
+            //     timer += interval;
+            //     let filename = allFilenames[i].value;
+            //
+            //     // const myTimeout = setInterval(setFigure, 10000, filename);
+            //
+            //     setTimeout(function () {
+            //         header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
+            //     }, timer);
+            // }
         });
+
+        function blockFigureByDivCounter(divCounter, allFilenames)
+        {
+            let bildId = 'bild-id-' + divCounter;
+            let bild = document.getElementById(bildId);
+            bild.src = 'bilder/' + allFilenames[divCounter + 10].value;
+
+            // bild.style.display = 'none';
+
+        }
 
         function setFigure(filename)
         {
@@ -39,120 +85,157 @@
             document.getElementById("hochkantBg").src = 'bilder/' + filename;
         }
 
-        var delay = (function () {
-            var timer = 0;
-            return function (callback, ms) {
-                clearTimeout(timer);
-                timer = setTimeout(callback, ms);
-            };
-        })();
+        function setSourceOfNextDiv(divCounter, allFilenames)
+        {
+            let bildId = 'bild-id-' + 0;
+            let bild = document.getElementById(bildId);
+            bild.src = 'bilder/' + allFilenames[divCounter + 1].value;
 
-        //     var myIndex = 0;
-        //     var currentVid =0;
-        //     // slideShow();
-        //     function slideShow() {
-        //         var i;
-        //         var x = document.getElementsByClassName("rahmen");
-        //         var vids = document.getElementsByClassName("videoFile");
-        //         var vidsId = document.getElementById("querVid");
-        //         var numberOfVids = vids.length;
-        //         var timeoutLength = 10000;
-        //         var curDuration = 0;
-        //
-        //
-        //         for (i = 0; i < x.length; i++) {
-        //             x[i].style.display = "none";
-        //         }
-        //
-        //
-        //         // if (currentVid == 0) {
-        //         //   vids[numberOfVids-1].pause();
-        //         //   vids[numberOfVids-1].currentTime = 0;
-        //         // }else {
-        //         //   vids[currentVid-1].pause();
-        //         //   vids[currentVid-1].currentTime = 0;
-        //         // }
-        //
-        //
-        //
-        //         myIndex++;
-        //         if (myIndex > x.length) {myIndex = 1}
-        //
-        //         //console.log(x[myIndex-1].id);
-        //         //console.log(vids);
-        //
-        //         if (x[myIndex-1].id == "myVideo")
-        //         {
-        //             x[myIndex-1].style.display = "block";
-        //             vids[currentVid].play();
-        //             curDuration = vids[currentVid].duration;
-        //             if (!isNaN(curDuration)) {
-        //                 timeoutLength = 1000 + curDuration * 1000;
-        //             }
-        //
-        //             currentVid++;
-        //             if(currentVid >= numberOfVids){currentVid = 0}
-        //
-        //         }else if(x[myIndex-1].id == "myPicture")
-        //         {
-        //             x[myIndex-1].style.display = "block";
-        //         }
-        //
-        // //    picId[myIndex].scrolltoView();
-        //
-        //         setTimeout(slideShow, timeoutLength);
-        //     }
+            // let nextBildId = 'bild-id-' + (divCounter+1);
+            // let nextBild = document.getElementById(nextBildId);
+            //
+            // if (nextBild.requestFullscreen) {
+            //     nextBild.requestFullscreen();
+            // } else if (nextBild.webkitRequestFullscreen) { /* Safari */
+            //     bild.webkitRequestFullscreen();
+            // } else if (nextBild.msRequestFullscreen) { /* IE11 */
+            //     nextBild.msRequestFullscreen();
+            // }
+        }
+
+        function openFullscreen(divCounter) {
+            let bildId = 'bild-id-' + divCounter;
+            let bild = document.getElementById(bildId);
+
+            if (bild.requestFullscreen) {
+                bild.requestFullscreen();
+            } else if (bild.webkitRequestFullscreen) { /* Safari */
+                bild.webkitRequestFullscreen();
+            } else if (bild.msRequestFullscreen) { /* IE11 */
+                bild.msRequestFullscreen();
+            }
+
+            let allFilenames = document.getElementsByClassName('filenames');
+
+            let interval = 2000;
+            let timer = 0;
+
+            for (let i = divCounter; i < 10; i++) {
+                timer += interval;
+                setTimeout(setSourceOfNextDiv, timer, i, allFilenames);
+            }
+
+            // let nextBildId = 'bild-id-' + (divCounter+1);
+            // let nextBild = document.getElementById(nextBildId);
+            //
+            // if (nextBild.requestFullscreen) {
+            //     nextBild.requestFullscreen();
+            // } else if (nextBild.webkitRequestFullscreen) { /* Safari */
+            //     bild.webkitRequestFullscreen();
+            // } else if (nextBild.msRequestFullscreen) { /* IE11 */
+            //     nextBild.msRequestFullscreen();
+            // }
+
+            // let allFilenames = document.getElementsByClassName('filenames');
+            //
+            // let header = document.getElementById("filename");
+            // let picture = document.getElementById("hochkantBg-DSCF0002.JPG")
+            //
+            // let interval = 2000;
+            // let timer = 0;
+            //
+            // for (let i = 0; i < allFilenames.length; i++) {
+            //     timer += interval;
+            //     let filename = allFilenames[i].value;
+            //
+            //     // const myTimeout = setInterval(setFigure, 10000, filename);
+            //
+            //     setTimeout(function () {
+            //         picture.src = 'bilder/' + filename;
+            //     }, timer);
+            // }
+
+            // document.getElementById("hochkantBg-DSCF0002.JPG").src = "bilder/DSCF0023.JPG";
+        }
     </script>
 {% endblock %}
 
+{% block stylesheets %}
+    <style>
+        *:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {
+            background-color: rgba(255,255,255,0)!important;
+            padding: 20px;
+        }
 
-<style>
-    body{
-        background-color: black;
-        color: green;
-    }
+        ::backdrop
+        {
+            background-color: white;
 
-    #quer{
-        width: auto;
-        height: 100vh;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: auto;
-    }
-    #querVid{
-        width: auto;
-        height: 100vh;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: auto;
-    }
-    #hochkantBg
-    {
-        display:flex;
-        justify-content: center;
-        align-items: center;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: auto;
-        z-index:0;
-        filter: blur(20px);
-        -webkit-filter: blur(20px);
-        opacity: 0.8;
-        width: 100%;
-        height: 100vh;
-    }
-    #hochkant
-    {
-        position: relative;
-        display:flex;
-        justify-content: center;
-        align-items: center;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: -100vh;
-        z-index:1;
-        height: 100vh;
-    }
-</style>
+        }
+
+        body{
+            background-color: black;
+            color: green;
+        }
+
+        #quer{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        #querVid{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        #hochkantBg
+        {
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            z-index:0;
+            filter: blur(20px);
+            -webkit-filter: blur(20px);
+            opacity: 0.8;
+            width: 100%;
+            height: 100vh;
+        }
+        .hochkant
+        {
+            position: relative;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: -100vh;
+            z-index:1;
+            height: 100vh;
+        }
+        .einzelnesBild
+        {
+            /*display:flex;*/
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            /*margin-top: auto;*/
+            /*z-index:0;*/
+            /*width: 100%;*/
+            /*height: 100vh;*/
+            max-width: 100%;
+            max-height: 100%;
+            height: inherit !important;
+            /*display: none;*/
+        }
+    </style>
+{% endblock %}

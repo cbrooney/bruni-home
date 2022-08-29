@@ -61,10 +61,15 @@ class SlideShowController extends AbstractController
         $fileTypes = ["JPG","jpg", "jpeg","webm"];
         $fileNameList = [];
 
-        $randomPictures = $this->getRandomPictures();
+        $directoryEntries = scandir($this->bilderDir);
+        $directoryEntries = array_diff(
+            $directoryEntries,
+            ['..', '.', '.gitkeep']
+        );
+
 
         return $this->render('slideshow/slides-a.html.twig', [
-            'directoryEntries' => $randomPictures,
+            'directoryEntries' => $directoryEntries,
         ]);
     }
 
@@ -85,10 +90,14 @@ class SlideShowController extends AbstractController
      */
     public function slidesFullscreen(): Response
     {
-        $randomPictures = $this->getRandomPictures();
+        $directoryEntries = scandir($this->bilderDir);
+        $directoryEntries = array_diff(
+            $directoryEntries,
+            ['..', '.', '.gitkeep']
+        );
 
         return $this->render('slideshow/slides-full.html.twig', [
-            'directoryEntries' => $randomPictures,
+            'directoryEntries' => $directoryEntries,
         ]);
     }
 
