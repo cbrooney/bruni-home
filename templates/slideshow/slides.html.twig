@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div id="filename">Dateiname: </div>
     {% set divCounter = 0 %}
 
     {% for directoryEntry in directoryEntries %}
@@ -9,6 +8,7 @@
 
         {% if divCounter < 10 %}
             <div class="rahmen" id="appin-"{{ divCounter }} onclick="openFullscreen({{ divCounter }})">
+                <div id="filename">Dateiname: </div>
                 <img id="bild-id-{{ divCounter }}" class="einzelnesBild" src="bilder/{{ directoryEntry }}">
             </div>
         {% endif %}
@@ -85,9 +85,9 @@
             document.getElementById("hochkantBg").src = 'bilder/' + filename;
         }
 
-        function setSourceOfNextDiv(divCounter, allFilenames)
+        function setSourceOfNextDiv(startingDivNumber, divCounter, allFilenames)
         {
-            let bildId = 'bild-id-' + 0;
+            let bildId = 'bild-id-' + startingDivNumber;
             let bild = document.getElementById(bildId);
             bild.src = 'bilder/' + allFilenames[divCounter + 1].value;
 
@@ -103,8 +103,8 @@
             // }
         }
 
-        function openFullscreen(divCounter) {
-            let bildId = 'bild-id-' + divCounter;
+        function openFullscreen(startingDivNumber) {
+            let bildId = 'bild-id-' + startingDivNumber;
             let bild = document.getElementById(bildId);
 
             if (bild.requestFullscreen) {
@@ -120,9 +120,10 @@
             let interval = 2000;
             let timer = 0;
 
-            for (let i = divCounter; i < 10; i++) {
+            for (let i = startingDivNumber; i < 10; i++) {
                 timer += interval;
-                setTimeout(setSourceOfNextDiv, timer, i, allFilenames);
+                // ToDo: set also recent counter in function
+                setTimeout(setSourceOfNextDiv, timer, startingDivNumber, i, allFilenames);
             }
 
             // let nextBildId = 'bild-id-' + (divCounter+1);
