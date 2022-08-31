@@ -212,12 +212,12 @@
             let nextDivNumber = 0;
             let nextFigureToLoadCounter = 11;
 
-            while (timer < 60000) {
+            while (timer < 120000) {
                 if (nextDivNumber === 10) {
                     nextDivNumber = 0;
                 }
 
-                if (nextFigureToLoadCounter > allFilenames.length) {
+                if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
                     nextFigureToLoadCounter = 0;
                 }
 
