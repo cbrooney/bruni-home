@@ -2,18 +2,29 @@
 
 {% block body %}
     {% set divCounter = 0 %}
+    {% set figureCounter = 0 %}
 
     {% for directoryEntry in directoryEntries %}
         <input class="filenames" type="hidden" name="filenames-{{ directoryEntry }}" value="{{ directoryEntry }}">
 
-        {% if divCounter < 10 %}
-            <div class="rahmen" id="appin-"{{ divCounter }} onclick="openFullscreen({{ divCounter }})">
+        {% if figureCounter == 0 %}
+            <div class="rahmen" id="app-rahmen" onclick="openFullscreenRahmen()">
                 <div id="filename">Dateiname: </div>
-                <img id="bild-id-{{ divCounter }}" class="einzelnesBild" src="bilder/{{ directoryEntry }}">
+                <img id="app-bild-id" class="einzelnesBild" src="bilder/{{ directoryEntry }}">
             </div>
         {% endif %}
 
-        {% set divCounter = divCounter + 1 %}
+        {% if figureCounter > 0 %}
+            {% if divCounter < 10 %}
+                <div class="rahmen" id="appin-"{{ divCounter }}>
+                    <img id="bild-id-{{ divCounter }}" class="einzelnesBild-hidden" src="bilder/{{ directoryEntry }}">
+                </div>
+            {% endif %}
+
+            {% set divCounter = divCounter + 1 %}
+        {% endif %}
+
+        {% set figureCounter = figureCounter + 1 %}
     {% endfor %}
 {% endblock %}
 
@@ -32,15 +43,15 @@
             let divBatch = 10;
             let allFilenames = document.getElementsByClassName('filenames');
 
-            for (let i = 0; i < allFilenames.length; i++) {
-                if (i > 5) {
-                    break;
-                }
-                timer += interval;
-
-                // setTimeout(blockFigureByDivCounter, timer, divCounter, allFilenames);
-                divCounter++;
-            }
+            // for (let i = 0; i < allFilenames.length; i++) {
+            //     if (i > 5) {
+            //         break;
+            //     }
+            //     timer += interval;
+            //
+            //     // setTimeout(blockFigureByDivCounter, timer, divCounter, allFilenames);
+            //     divCounter++;
+            // }
 
             // setInterval(myTimer, 1000);
             //
@@ -85,16 +96,11 @@
             document.getElementById("hochkantBg").src = 'bilder/' + filename;
         }
 
-        function setSourceOfNextDiv(startingDivNumber, divCounter, allFilenames)
+        function setSourceOfNextDiv(startingDivNumber, nextDivNumber, allFilenames)
         {
             // starting div number should be constant, since this is the place where all figures are placed
             let bildId = 'bild-id-' + startingDivNumber;
             let bild = document.getElementById(bildId);
-
-            let nextDivNumber = divCounter + 1;
-            if (nextDivNumber > 9) {
-                nextDivNumber = 0;
-            }
 
             let nextBildId = 'bild-id-' + nextDivNumber;
             let nextBild = document.getElementById(nextBildId);
@@ -110,6 +116,13 @@
             // } else if (nextBild.msRequestFullscreen) { /* IE11 */
             //     nextBild.msRequestFullscreen();
             // }
+        }
+
+        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild)
+        {
+            let nextBildId = 'bild-id-' + nextDivNumber;
+            let nextBild = document.getElementById(nextBildId);
+            rahmenBild.src = nextBild.src;
         }
 
         function openFullscreen(startingDivNumber) {
@@ -130,11 +143,17 @@
             let timer = 0;
 
             let divCounter = startingDivNumber;
+            let nextDivNumber = startingDivNumber;
 
-            for (divCounter; divCounter < 10; divCounter++) {
+            while (timer < 60000) {
+                nextDivNumber = nextDivNumber + 1;
+                if (nextDivNumber === 10) {
+                    nextDivNumber = 0;
+                }
+
                 timer += interval;
                 // ToDo: set also recent counter in function
-                setTimeout(setSourceOfNextDiv, timer, startingDivNumber, divCounter, allFilenames);
+                setTimeout(setSourceOfNextDiv, timer, startingDivNumber, nextDivNumber, allFilenames);
             }
 
             // let nextBildId = 'bild-id-' + (divCounter+1);
@@ -168,6 +187,38 @@
             // }
 
             // document.getElementById("hochkantBg-DSCF0002.JPG").src = "bilder/DSCF0023.JPG";
+        }
+
+        function openFullscreenRahmen() {
+            let bildId = 'app-bild-id';
+            let bild = document.getElementById(bildId);
+
+            if (bild.requestFullscreen) {
+                bild.requestFullscreen();
+            } else if (bild.webkitRequestFullscreen) { /* Safari */
+                bild.webkitRequestFullscreen();
+            } else if (bild.msRequestFullscreen) { /* IE11 */
+                bild.msRequestFullscreen();
+            }
+
+            let allFilenames = document.getElementsByClassName('filenames');
+
+            let interval = 500;
+            let timer = 0;
+
+            let divCounter = 0;
+            let nextDivNumber = 0;
+
+            while (timer < 60000) {
+                if (nextDivNumber === 10) {
+                    nextDivNumber = 0;
+                }
+
+                timer += interval;
+                // ToDo: set also recent counter in function
+                setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild);
+                nextDivNumber = nextDivNumber + 1;
+            }
         }
     </script>
 {% endblock %}
@@ -248,6 +299,22 @@
             max-height: 100%;
             height: inherit !important;
             /*display: none;*/
+        }
+        .einzelnesBild-hidden
+        {
+            /*display:flex;*/
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            /*margin-top: auto;*/
+            /*z-index:0;*/
+            /*width: 100%;*/
+            /*height: 100vh;*/
+            max-width: 100%;
+            max-height: 100%;
+            height: inherit !important;
+            display: none;
         }
     </style>
 {% endblock %}
