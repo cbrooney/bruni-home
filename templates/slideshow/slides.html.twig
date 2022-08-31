@@ -118,11 +118,13 @@
             // }
         }
 
-        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild)
+        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, nextFigureToLoad)
         {
+            debugger;
             let nextBildId = 'bild-id-' + nextDivNumber;
             let nextBild = document.getElementById(nextBildId);
             rahmenBild.src = nextBild.src;
+            nextBild.src = 'bilder/' + nextFigureToLoad;
         }
 
         function openFullscreen(startingDivNumber) {
@@ -145,7 +147,7 @@
             let divCounter = startingDivNumber;
             let nextDivNumber = startingDivNumber;
 
-            while (timer < 60000) {
+            while (true) {
                 nextDivNumber = nextDivNumber + 1;
                 if (nextDivNumber === 10) {
                     nextDivNumber = 0;
@@ -208,16 +210,24 @@
 
             let divCounter = 0;
             let nextDivNumber = 0;
+            let nextFigureToLoadCounter = 11;
 
             while (timer < 60000) {
                 if (nextDivNumber === 10) {
                     nextDivNumber = 0;
                 }
 
+                if (nextFigureToLoadCounter > allFilenames.length) {
+                    nextFigureToLoadCounter = 0;
+                }
+
+                let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+
                 timer += interval;
                 // ToDo: set also recent counter in function
-                setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild);
+                setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, nextFigureToLoad);
                 nextDivNumber = nextDivNumber + 1;
+                nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
             }
         }
     </script>
