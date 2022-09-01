@@ -205,14 +205,16 @@
 
             let allFilenames = document.getElementsByClassName('filenames');
 
-            let interval = 500;
+            let interval = 1000;
             let timer = 0;
 
             let divCounter = 0;
             let nextDivNumber = 0;
             let nextFigureToLoadCounter = 11;
 
-            while (timer < 120000) {
+            let duration = 10; // minuten
+
+            while (timer < duration * 60 * 1000) {
                 if (nextDivNumber === 10) {
                     nextDivNumber = 0;
                 }
