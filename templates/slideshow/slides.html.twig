@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}
+Slideshow-Fullscreen
+{% endblock %}
+
 {% block body %}
     {% set divCounter = 0 %}
     {% set figureCounter = 0 %}
@@ -61,12 +65,20 @@
             let timer = 0;
 
             let divCounter = 0;
+
+            let recentFileIndex = 0;
             let nextDivNumber = 0;
             let nextFigureToLoadCounter = 11;
 
             let duration = 10; // minuten
 
             while (timer < duration * 60 * 1000) {
+                recentFileIndex = recentFileIndex + 1;
+
+                if (recentFileIndex === (allFilenames.length - 1)) {
+                    recentFileIndex = 0;
+                }
+
                 if (nextDivNumber === 10) {
                     nextDivNumber = 0;
                 }
@@ -76,16 +88,17 @@
                 }
 
                 let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+                let recentFilename = allFilenames[recentFileIndex].value;
 
                 timer += interval;
                 // ToDo: set also recent counter in function
-                setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, nextFigureToLoad);
+                setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, nextFigureToLoad, recentFilename);
                 nextDivNumber = nextDivNumber + 1;
                 nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
             }
         }
 
-        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, nextFigureToLoad)
+        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, nextFigureToLoad, recentFilename)
         {
             let nextBildId = 'bild-id-' + nextDivNumber;
             let nextBild = document.getElementById(nextBildId);
@@ -93,7 +106,7 @@
             nextBild.src = 'bilder/' + nextFigureToLoad;
 
             let filenameHeader = document.getElementById('filename');
-            filenameHeader.innerHTML = '<h1>' + nextFigureToLoad + '</h1>';
+            filenameHeader.innerHTML = '<h1>' + recentFilename + '</h1>';
         }
     </script>
 {% endblock %}
