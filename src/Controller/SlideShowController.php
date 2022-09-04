@@ -101,6 +101,22 @@ class SlideShowController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/testing", name="testing", methods={"GET"})
+     */
+    public function testing(): Response
+    {
+        $directoryEntries = scandir($this->bilderDir);
+        $directoryEntries = array_diff(
+            $directoryEntries,
+            ['..', '.', '.gitkeep']
+        );
+
+        return $this->render('slideshow/testing.html.twig', [
+            'directoryEntries' => $directoryEntries,
+        ]);
+    }
+
     /** @return array<string> */
     private function getRandomPictures(): array
     {

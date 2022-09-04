@@ -9,7 +9,7 @@
 
         {% if figureCounter == 0 %}
             <div class="rahmen" id="app-rahmen" onclick="openFullscreenRahmen()">
-                <div id="filename">Dateiname: </div>
+                <div id="filename"><h1> {{ directoryEntry }} </h1> </div>
                 <img id="app-bild-id" class="einzelnesBild" src="bilder/{{ directoryEntry }}">
             </div>
         {% endif %}
@@ -37,170 +37,22 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            let interval = 2000;
-            let timer = 0;
-            let divCounter = 0;
-            let divBatch = 10;
-            let allFilenames = document.getElementsByClassName('filenames');
 
-            // for (let i = 0; i < allFilenames.length; i++) {
-            //     if (i > 5) {
-            //         break;
-            //     }
-            //     timer += interval;
-            //
-            //     // setTimeout(blockFigureByDivCounter, timer, divCounter, allFilenames);
-            //     divCounter++;
-            // }
-
-            // setInterval(myTimer, 1000);
-            //
-            // function myTimer() {
-            //     const date = new Date();
-            //     document.getElementById("demo").innerHTML = date.toLocaleTimeString();
-            // }
-
-            // let allFilenames = document.getElementsByClassName('filenames');
-            //
-            // let header = document.getElementById("filename");
-            //
-            // let interval = 2000;
-            // let timer = 0;
-            //
-            // for (let i = 0; i < allFilenames.length; i++) {
-            //     timer += interval;
-            //     let filename = allFilenames[i].value;
-            //
-            //     // const myTimeout = setInterval(setFigure, 10000, filename);
-            //
-            //     setTimeout(function () {
-            //         header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
-            //     }, timer);
-            // }
         });
 
-        function blockFigureByDivCounter(divCounter, allFilenames)
-        {
-            let bildId = 'bild-id-' + divCounter;
-            let bild = document.getElementById(bildId);
-            bild.src = 'bilder/' + allFilenames[divCounter + 10].value;
-
-            // bild.style.display = 'none';
-
-        }
-
-        function setFigure(filename)
-        {
-            document.getElementById("filename").innerHTML = '<h1 id="filename">Dateiname: ' + filename + '' + '</h1>';
-            document.getElementById("hochkant").src = 'bilder/' + filename;
-            document.getElementById("hochkantBg").src = 'bilder/' + filename;
-        }
-
-        function setSourceOfNextDiv(startingDivNumber, nextDivNumber, allFilenames)
-        {
-            // starting div number should be constant, since this is the place where all figures are placed
-            let bildId = 'bild-id-' + startingDivNumber;
-            let bild = document.getElementById(bildId);
-
-            let nextBildId = 'bild-id-' + nextDivNumber;
-            let nextBild = document.getElementById(nextBildId);
-            bild.src = nextBild.src;
-
-            // let nextBildId = 'bild-id-' + (divCounter+1);
-            // let nextBild = document.getElementById(nextBildId);
-            //
-            // if (nextBild.requestFullscreen) {
-            //     nextBild.requestFullscreen();
-            // } else if (nextBild.webkitRequestFullscreen) { /* Safari */
-            //     bild.webkitRequestFullscreen();
-            // } else if (nextBild.msRequestFullscreen) { /* IE11 */
-            //     nextBild.msRequestFullscreen();
-            // }
-        }
-
-        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, nextFigureToLoad)
-        {
-            debugger;
-            let nextBildId = 'bild-id-' + nextDivNumber;
-            let nextBild = document.getElementById(nextBildId);
-            rahmenBild.src = nextBild.src;
-            nextBild.src = 'bilder/' + nextFigureToLoad;
-        }
-
-        function openFullscreen(startingDivNumber) {
-            let bildId = 'bild-id-' + startingDivNumber;
-            let bild = document.getElementById(bildId);
-
-            if (bild.requestFullscreen) {
-                bild.requestFullscreen();
-            } else if (bild.webkitRequestFullscreen) { /* Safari */
-                bild.webkitRequestFullscreen();
-            } else if (bild.msRequestFullscreen) { /* IE11 */
-                bild.msRequestFullscreen();
-            }
-
-            let allFilenames = document.getElementsByClassName('filenames');
-
-            let interval = 2000;
-            let timer = 0;
-
-            let divCounter = startingDivNumber;
-            let nextDivNumber = startingDivNumber;
-
-            while (true) {
-                nextDivNumber = nextDivNumber + 1;
-                if (nextDivNumber === 10) {
-                    nextDivNumber = 0;
-                }
-
-                timer += interval;
-                // ToDo: set also recent counter in function
-                setTimeout(setSourceOfNextDiv, timer, startingDivNumber, nextDivNumber, allFilenames);
-            }
-
-            // let nextBildId = 'bild-id-' + (divCounter+1);
-            // let nextBild = document.getElementById(nextBildId);
-            //
-            // if (nextBild.requestFullscreen) {
-            //     nextBild.requestFullscreen();
-            // } else if (nextBild.webkitRequestFullscreen) { /* Safari */
-            //     bild.webkitRequestFullscreen();
-            // } else if (nextBild.msRequestFullscreen) { /* IE11 */
-            //     nextBild.msRequestFullscreen();
-            // }
-
-            // let allFilenames = document.getElementsByClassName('filenames');
-            //
-            // let header = document.getElementById("filename");
-            // let picture = document.getElementById("hochkantBg-DSCF0002.JPG")
-            //
-            // let interval = 2000;
-            // let timer = 0;
-            //
-            // for (let i = 0; i < allFilenames.length; i++) {
-            //     timer += interval;
-            //     let filename = allFilenames[i].value;
-            //
-            //     // const myTimeout = setInterval(setFigure, 10000, filename);
-            //
-            //     setTimeout(function () {
-            //         picture.src = 'bilder/' + filename;
-            //     }, timer);
-            // }
-
-            // document.getElementById("hochkantBg-DSCF0002.JPG").src = "bilder/DSCF0023.JPG";
-        }
-
         function openFullscreenRahmen() {
+            let rahmenId = 'app-rahmen';
+            let rahmen = document.getElementById(rahmenId);
+
             let bildId = 'app-bild-id';
             let bild = document.getElementById(bildId);
 
-            if (bild.requestFullscreen) {
-                bild.requestFullscreen();
-            } else if (bild.webkitRequestFullscreen) { /* Safari */
-                bild.webkitRequestFullscreen();
-            } else if (bild.msRequestFullscreen) { /* IE11 */
-                bild.msRequestFullscreen();
+            if (rahmen.requestFullscreen) {
+                rahmen.requestFullscreen();
+            } else if (rahmen.webkitRequestFullscreen) { /* Safari */
+                rahmen.webkitRequestFullscreen();
+            } else if (rahmen.msRequestFullscreen) { /* IE11 */
+                rahmen.msRequestFullscreen();
             }
 
             let allFilenames = document.getElementsByClassName('filenames');
@@ -232,25 +84,43 @@
                 nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
             }
         }
+
+        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, nextFigureToLoad)
+        {
+            let nextBildId = 'bild-id-' + nextDivNumber;
+            let nextBild = document.getElementById(nextBildId);
+            rahmenBild.src = nextBild.src;
+            nextBild.src = 'bilder/' + nextFigureToLoad;
+
+            let filenameHeader = document.getElementById('filename');
+            filenameHeader.innerHTML = '<h1>' + nextFigureToLoad + '</h1>';
+        }
     </script>
 {% endblock %}
 
 {% block stylesheets %}
     <style>
-        *:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {
-            background-color: rgba(255,255,255,0)!important;
-            padding: 20px;
-        }
+        /**:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {*/
+        /*    background-color: rgba(255,255,255,0)!important;*/
+        /*    padding: 20px;*/
+        /*}*/
 
-        ::backdrop
-        {
-            background-color: white;
+        /*::backdrop*/
+        /*{*/
+        /*    background-color: white;*/
 
-        }
+        /*}*/
 
-        body{
-            background-color: black;
-            color: green;
+        /*body{*/
+        /*    background-color: white;*/
+        /*    color: green;*/
+        /*}*/
+
+        .rahmen {
+            position: relative;
+            text-align: center;
+            /*color: white;*/
+            background-color: navajowhite;
         }
 
         #quer{
@@ -327,6 +197,12 @@
             max-height: 100%;
             height: inherit !important;
             display: none;
+        }
+        #filename {
+            position: absolute;
+            top: 8px;
+            left: 16px;
+            color: green;
         }
     </style>
 {% endblock %}
