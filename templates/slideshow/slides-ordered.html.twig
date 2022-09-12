@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{#<body   onload="openFullscreen();" onmouseover="openFullscreen();"#}
+{#      oncontextmenu="openFullscreen()" ondrag="select()">#}
+
+{% block body %}
+    <div id="filename">Dateiname: DSCF0002.JPG</div>
+
+    <div class="rahmen" id="appin">
+        <img id="hochkantBg-DSCF0002.JPG" src="bilder/DSCF0002.JPG" onclick="openFullscreen();">
+    </div>
+
+{#    <div class="rahmen" id="appin2">#}
+{#        <img id="hochkantBg-DSCF0023.JPG" src="bilder/DSCF0023.JPG" onclick="openFullscreen();" onload="openFullscreen();">#}
+{#    </div>#}
+{% endblock %}
+
+
+
+{% block javascripts %}
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous">
+    </script>
+
+    <script type="text/javascript">
+        function openFullscreen() {
+            var elem = document.getElementById("hochkantBg-DSCF0002.JPG");
+
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+
+            document.getElementById("hochkantBg-DSCF0002.JPG").src = "bilder/DSCF0023.JPG";
+        }
+
+        $(document).ready(function() {
+            document.getElementById("filename").innerHTML = '<h1 id="filename">Brooney war hier</h1>';
+            // openFullscreen();
+
+            // calcHeight();
+
+            // $(window).resize('100%', 200);
+
+            // bild.src="bilder/DSCF0023.JPG";
+            // getreqfullscreen();
+            // Var featuredimg = document.getElementById("rockyshot")
+            // if (bild.requestFullscreen) {
+            //     bild.requestFullscreen()
+            // }
+        });
+
+        function enterFullscreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.msRequestFullscreen) {      // for IE11 (remove June 15, 2022)
+                element.msRequestFullscreen();
+            } else if (element.webkitRequestFullscreen) {  // iOS Safari
+                element.webkitRequestFullscreen();
+            }
+        }
+
+        function getreqfullscreen(){
+            var root = document.documentElement
+            return root.requestFullscreen || root.webkitRequestFullscreen || root.mozRequestFullScreen || root.msRequestFullscreen
+        }
+
+        var globalreqfullscreen = getreqfullscreen() // get supported version of requestFullscreen()
+        document.addEventListener('click', function(e){
+            var target = e.target
+            if (target.tagName == "img" && target.classList.contains('canfullscreen')){
+                globalreqfullscreen.call(target)
+            }
+        }, false)
+
+        //function to fix height of iframe!
+        var calcHeight = function() {
+            //var headerDimensions = 0; //$('#header-bar').height();
+            $('#preview-frame').height($(window).height());
+        }
+
+        $(window).resize(function() {
+            calcHeight();
+        }).load(function() {
+            calcHeight();
+        });
+        //
+        // enterFullscreen(document.documentElement);
+        // enterFullscreen(document.getElementById("videoPlayer"));
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+
+    <style>
+        *:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {
+            background-color: rgba(255,255,255,0)!important;
+            padding: 20px;
+        }
+
+        ::backdrop
+        {
+            background-color: white;
+
+        }
+
+        body{
+            background-color: black;
+            color: green;
+        }
+
+        iframe {
+            display: block;       /* iframes are inline by default */
+            background: #000;
+            border: none;         /* Reset default border */
+            height: 100vh;        /* Viewport-relative units */
+            width: 100vw;
+        }
+
+        #quer{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        #querVid{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        .imagesHochBg {
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            z-index:0;
+            filter: blur(20px);
+            -webkit-filter: blur(20px);
+            opacity: 0.8;
+            width: 100%;
+            height: 100vh;
+        }
+        .imagesHoch
+        {
+            position: relative;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: -100vh;
+            z-index:1;
+            height: 100vh;
+        }
+    </style>
+{% endblock %}
+
+
+

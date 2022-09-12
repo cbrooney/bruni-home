@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="rahmen" id="app-rahmen">
-        <img src="bilder/DSCF0879.JPG" alt="Snow" class="einzelnesBild" onclick="openFullscreen()">
+        <img src="bilder/DSCF0879.JPG" alt="Snow" class="einzelnesBild">
 {#        <div class="top-left">Top Left</div>#}
         <div id="filename">
             Dateiname:
@@ -18,23 +18,78 @@
     </script>
 
     <script type="text/javascript">
-        $(document).ready(function() {
+        function toggleFullscreen() {
+            // let rahmenId = 'app-rahmen';
+            // let rahmen = document.getElementById(rahmenId);
 
+            let rahmenId = 'app-rahmen';
+            let rahmen = document.getElementById(rahmenId);
+
+            document.onclick = (event) => {
+                if (document.fullscreenElement) {
+                    rahmen.exitFullscreen()
+                        .then(() => console.log("Document Exited from Full screen mode"))
+                        .catch((err) => console.error(err))
+                } else {
+                    if (rahmen.requestFullscreen) {
+                        rahmen.requestFullscreen();
+                    } else if (rahmen.webkitRequestFullscreen) { /* Safari */
+                        rahmen.webkitRequestFullscreen();
+                    } else if (rahmen.msRequestFullscreen) { /* IE11 */
+                        rahmen.msRequestFullscreen();
+                    }
+                    // document.documentElement.requestFullscreen();
+                }
+            }
+
+
+
+            // if (rahmen.requestFullscreen) {
+            //     rahmen.requestFullscreen();
+            // } else if (rahmen.webkitRequestFullscreen) { /* Safari */
+            //     rahmen.webkitRequestFullscreen();
+            // } else if (rahmen.msRequestFullscreen) { /* IE11 */
+            //     rahmen.msRequestFullscreen();
+            // }
+            //
+            // document.getElementById("filename").innerHTML = '<h1 id="filename">Massimo' + '</h1>';
+        }
+
+
+        $(document).ready(function() {
+            document.onclick = (event) => {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen()
+                        .then(() => console.log("Document Exited from Full screen mode"))
+                        .catch((err) => console.error(err))
+                } else {
+                    let rahmenId = 'app-rahmen';
+                    let rahmen = document.getElementById(rahmenId);
+                    rahmen.requestFullscreen();
+                }
+            }
         });
 
         function openFullscreen() {
             let rahmenId = 'app-rahmen';
             let rahmen = document.getElementById(rahmenId);
 
-            if (rahmen.requestFullscreen) {
-                rahmen.requestFullscreen();
-            } else if (rahmen.webkitRequestFullscreen) { /* Safari */
-                rahmen.webkitRequestFullscreen();
-            } else if (rahmen.msRequestFullscreen) { /* IE11 */
-                rahmen.msRequestFullscreen();
-            }
+            if (rahmen.fullscreenElement) {
+                rahmen.exitFullscreen()
+                    .then(() => console.log("Document Exited from Full screen mode"))
+                    .catch((err) => console.error(err))
+            } else {
+                if (rahmen.requestFullscreen) {
+                    rahmen.requestFullscreen();
+                } else if (rahmen.webkitRequestFullscreen) { /* Safari */
+                    rahmen.webkitRequestFullscreen();
+                } else if (rahmen.msRequestFullscreen) { /* IE11 */
+                    rahmen.msRequestFullscreen();
+                }
 
-            document.getElementById("filename").innerHTML = '<h1 id="filename">Massimo' + '</h1>';
+                document.getElementById("filename").innerHTML = '<h1 id="filename">Massimo' + '</h1>';
+                // rahmen.documentElement.requestFullscreen();
+            }
         }
     </script>
 {% endblock %}
