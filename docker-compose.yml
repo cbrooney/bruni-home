@@ -1,21 +1,23 @@
-version: '3'
+version: '3.4'
 
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-13}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe}
-      POSTGRES_USER: ${POSTGRES_USER:-symfony}
-    volumes:
-      - db-data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
-
-volumes:
-###> doctrine/doctrine-bundle ###
-  db-data:
-###< doctrine/doctrine-bundle ###
+    web:
+        image: nginx:alpine
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/nginx/bruni-home.conf:/etc/nginx/conf.d/site.conf
+    php-fpm:
+        build:
+            context: .
+            dockerfile: docker/php-fpm/Dockerfile
+            args:
+                GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
+                UID: $CONTAINER_USER_UID
+                GID: $CONTAINER_USER_GID
+                SSH_PRIV_KEY: $SSH_PRIV_KEY
+        user: $CONTAINER_USER_UID
+        volumes:
+            - .:/var/www/html
+            - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history
