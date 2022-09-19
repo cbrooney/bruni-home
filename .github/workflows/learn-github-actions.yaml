@@ -44,7 +44,7 @@ jobs:
                   SSH_PRIV_KEY: ''
               run: |
                   docker build . -f docker/php-fpm/Dockerfile --tag ghcr.io/cbrooney/bruni-home:latest
-                  docker run ghcr.io/cbrooney/bruni-home:latest
+#                  docker run ghcr.io/cbrooney/bruni-home:latest
                   docker push ghcr.io/cbrooney/bruni-home:latest
 
 #            - name: Build and push Docker image
