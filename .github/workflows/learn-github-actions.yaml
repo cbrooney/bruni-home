@@ -37,6 +37,11 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Build bruni home Docker image
+              with:
+                  GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  UID: 1000
+                  GID: 1000
+                  SSH_PRIV_KEY: ''
               run: |
                   docker build . -f docker/php-fpm/Dockerfile --tag ghcr.io/cbrooney/bruni-home:latest
                   docker run ghcr.io/cbrooney/bruni-home:latest
