@@ -43,17 +43,17 @@ USER root
 
 ARG UID
 ARG GID
-RUN echo $UID \
-    && usermod -u $UID www-data \
-    && groupmod -g $GID www-data \
-    && usermod -m -d /home/www-data www-data
-
-ARG GITHUB_OAUTH_TOKEN
-ARG SSH_PRIV_KEY
-RUN mkdir -p /home/www-data/.ssh /home/www-data/.composer \
-    && printf '{"github-oauth":{"github.com":"%s"}}' "$GITHUB_OAUTH_TOKEN" > /home/www-data/.composer/auth.json \
-    && echo -n $SSH_PRIV_KEY | base64 -d > /home/www-data/.ssh/id_rsa \
-    && chmod -R 600 /home/www-data/.ssh/* \
-    && chown -R www-data:www-data /home/www-data
+RUN echo $UID
+#    && usermod -u $UID www-data \
+#    && groupmod -g $GID www-data \
+#    && usermod -m -d /home/www-data www-data
+#
+#ARG GITHUB_OAUTH_TOKEN
+#ARG SSH_PRIV_KEY
+#RUN mkdir -p /home/www-data/.ssh /home/www-data/.composer \
+#    && printf '{"github-oauth":{"github.com":"%s"}}' "$GITHUB_OAUTH_TOKEN" > /home/www-data/.composer/auth.json \
+#    && echo -n $SSH_PRIV_KEY | base64 -d > /home/www-data/.ssh/id_rsa \
+#    && chmod -R 600 /home/www-data/.ssh/* \
+#    && chown -R www-data:www-data /home/www-data
 
 USER www-data
