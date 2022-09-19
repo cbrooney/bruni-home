@@ -37,7 +37,7 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Build bruni home Docker image
-              with:
+              env:
                   GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   UID: 1000
                   GID: 1000
