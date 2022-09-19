@@ -41,7 +41,7 @@ jobs:
                   GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   UID: 1000
                   GID: 1000
-                  SSH_PRIV_KEY: ''
+                  SSH_PRIV_KEY: 'sshkey'
               run: |
                   docker build . -f docker/php-fpm/Dockerfile --tag ghcr.io/cbrooney/bruni-home:latest
 #                  docker run ghcr.io/cbrooney/bruni-home:latest
