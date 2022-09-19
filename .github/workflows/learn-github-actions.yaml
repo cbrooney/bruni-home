@@ -38,7 +38,7 @@ jobs:
 
             - name: Build bruni home Docker image
               run: |
-                  docker build . --tag ghcr.io/cbrooney/bruni-home:latest
+                  docker build . -f docker/php-fpm/Dockerfile --tag ghcr.io/cbrooney/bruni-home:latest
                   docker run ghcr.io/cbrooney/bruni-home:latest
                   docker push ghcr.io/cbrooney/bruni-home:latest
 
