@@ -1,12 +1,51 @@
-name: learn-github-actions
+#name: learn-github-actions
+#on: [push]
+#jobs:
+#    check-bats-version:
+#        runs-on: ubuntu-latest
+#        steps:
+#            - uses: actions/checkout@v3
+#            - uses: actions/setup-node@v3
+#              with:
+#                  node-version: '14'
+#            - run: npm install -g bats
+#            - run: bats -v
+name: publish
 on: [push]
 jobs:
-    check-bats-version:
+    publish-bruni-image:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+
         steps:
             - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
+
+#            - name: Log in to the Container registry
+#              uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+#              with:
+#                  registry: ${{ env.REGISTRY }}
+#                  username: ${{ github.actor }}
+#                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
               with:
-                  node-version: '14'
-            - run: npm install -g bats
-            - run: bats -v
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build bruni home Docker image
+              run: |
+                  docker build . --tag ghcr.io/cbrooney/bruni-home:latest
+                  docker run ghcr.io/cbrooney/bruni-home:latest
+                  docker push ghcr.io/cbrooney/bruni-home:latest
+
+#            - name: Build and push Docker image
+#              uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+#              with:
+#                  context: .
+#                  push: true
+#                  tags: ${{ steps.meta.outputs.tags }}
+#                  labels: ${{ steps.meta.outputs.labels }}
