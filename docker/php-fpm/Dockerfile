@@ -43,7 +43,8 @@ USER root
 
 ARG UID
 ARG GID
-RUN usermod -u $UID www-data \
+RUN echo $UID \
+    && usermod -u $UID www-data \
     && groupmod -g $GID www-data \
     && usermod -m -d /home/www-data www-data
 
