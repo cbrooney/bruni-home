@@ -1,3 +1,6 @@
+ARG FPM_IMAGE
+FROM ${FPM_IMAGE} as php-fpm
+
 FROM nginx:alpine
 
 USER root
