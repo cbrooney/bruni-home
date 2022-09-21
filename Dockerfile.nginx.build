@@ -11,4 +11,6 @@ COPY --chown=nginx:nginx ./docker/nginx/bruni-home.conf /etc/nginx/conf.d/site.c
 #COPY --chown=nginx:nginx ../../../public /var/www/html/public
 #COPY --chown=nginx:nginx ../bruni-home.conf /etc/nginx/conf.d/site.conf
 
-USER 10000
+EXPOSE 8000
+
+USER root
