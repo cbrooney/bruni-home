@@ -40,7 +40,7 @@ jobs:
               run: |
                   docker build . -f docker/php-fpm/build/Dockerfile --tag ghcr.io/cbrooney/bruni-home-php-fpm:latest
                   docker push ghcr.io/cbrooney/bruni-home-php-fpm:latest
-                  docker build . -f docker/nginx/build/Dockerfile --build-arg FPM_IMAGE="ghcr.io/cbrooney/bruni-home-php-fpm:latest" --tag ghcr.io/cbrooney/bruni-home-nginx:latest
+                  docker build . -f Dockerfile.nginx.build --tag ghcr.io/cbrooney/bruni-home-nginx:latest
                   docker push ghcr.io/cbrooney/bruni-home-nginx:latest
 
 #            - name: Build and push Docker image
