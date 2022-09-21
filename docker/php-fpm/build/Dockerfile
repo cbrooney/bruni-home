@@ -15,15 +15,7 @@ RUN export XDEBUG_MODE=off && \
     docker-php-ext-install zip && \
     docker-php-ext-install intl && \
     docker-php-ext-enable intl && \
-    docker-php-ext-install opcache && \
-    addgroup --system runner && \
-    adduser \
-        --disabled-password \
-        --gecos "" \
-        --home /home/runner \
-        --ingroup runner \
-        --uid 10000 \
-        runner
+    docker-php-ext-install opcache
 
 COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
 
