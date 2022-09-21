@@ -11,7 +11,7 @@ services:
     php-fpm:
         build:
             context: .
-            dockerfile: docker/php-fpm/Dockerfile
+            dockerfile: docker/php-fpm/local/Dockerfile
             args:
                 GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
                 UID: $CONTAINER_USER_UID
