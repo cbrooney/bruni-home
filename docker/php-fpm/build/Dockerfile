@@ -36,7 +36,7 @@ RUN export XDEBUG_MODE=off && \
     rm -r /var/lib/apt/lists /var/cache/apt/archives
 
 #EXPOSE 8000
-EXPOSE 9000
+#EXPOSE 9000
 
 USER www-data
 
