@@ -1,7 +1,8 @@
-ARG FPM_IMAGE
-FROM ${FPM_IMAGE} as php-fpm
+#ARG FPM_IMAGE
+#FROM ${FPM_IMAGE} as php-fpm
 
-FROM nginx:alpine
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE} as nginx-base
 
 USER root
 
