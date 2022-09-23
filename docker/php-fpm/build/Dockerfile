@@ -35,6 +35,7 @@ RUN export XDEBUG_MODE=off && \
 
 USER root
 
-EXPOSE 9000
+EXPOSE 8000
+#EXPOSE 9000
 
 USER www-data
