@@ -5,9 +5,5 @@ services:
         image: ghcr.io/cbrooney/bruni-home-nginx:latest
         ports:
             - "8000:8000"
-#        links:
-#            - php-fpm
     php-fpm:
         image: ghcr.io/cbrooney/bruni-home-php-fpm:latest
-#        ports:
-#            - "9000:9000"
