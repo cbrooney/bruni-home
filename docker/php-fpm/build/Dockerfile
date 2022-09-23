@@ -1,4 +1,11 @@
-FROM php:7.4.30-fpm-bullseye as common
+ARG BASE_IMAGE_PHP
+FROM ${BASE_IMAGE_PHP} as php-fpm-base
+
+LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
+
+USER root
+
+COPY --chown=www-data:www-data . /var/www/html
 
 RUN export XDEBUG_MODE=off && \
     docker-php-ext-install pdo pdo_mysql && \
@@ -11,15 +18,7 @@ RUN export XDEBUG_MODE=off && \
     docker-php-ext-install zip && \
     docker-php-ext-install intl && \
     docker-php-ext-enable intl && \
-    docker-php-ext-install opcache && \
-    addgroup --system runner && \
-    adduser \
-        --disabled-password \
-        --gecos "" \
-        --home /home/runner \
-        --ingroup runner \
-        --uid 10000 \
-        runner
+    docker-php-ext-install opcache
 
 COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
 
@@ -37,20 +36,9 @@ RUN export XDEBUG_MODE=off && \
     chown www-data:www-data -R /var/www && \
     rm -r /var/lib/apt/lists /var/cache/apt/archives
 
-USER root
-
-ARG UID
-ARG GID
-RUN usermod -u $UID www-data \
-    && groupmod -g $GID www-data \
-    && usermod -m -d /home/www-data www-data
-
-ARG GITHUB_OAUTH_TOKEN
-ARG SSH_PRIV_KEY
-RUN mkdir -p /home/www-data/.ssh /home/www-data/.composer \
-    && printf '{"github-oauth":{"github.com":"%s"}}' "$GITHUB_OAUTH_TOKEN" > /home/www-data/.composer/auth.json \
-    && echo -n $SSH_PRIV_KEY | base64 -d > /home/www-data/.ssh/id_rsa \
-    && chmod -R 600 /home/www-data/.ssh/* \
-    && chown -R www-data:www-data /home/www-data
+#EXPOSE 8000
+#EXPOSE 9000
 
 USER www-data
+
+RUN composer install

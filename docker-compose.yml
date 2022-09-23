@@ -6,12 +6,12 @@ services:
         ports:
             - "8000:8000"
         volumes:
-            - ./:/var/www/html
+            - ./public:/var/www/html/public
             - ./docker/nginx/bruni-home.conf:/etc/nginx/conf.d/site.conf
     php-fpm:
         build:
             context: .
-            dockerfile: docker/php-fpm/Dockerfile
+            dockerfile: docker/php-fpm/local/Dockerfile
             args:
                 GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
                 UID: $CONTAINER_USER_UID
