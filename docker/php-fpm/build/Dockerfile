@@ -1,4 +1,5 @@
-FROM php:7.4.30-fpm-bullseye as common
+ARG BASE_IMAGE_PHP
+FROM ${BASE_IMAGE_PHP} as php-fpm-base
 
 LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
 

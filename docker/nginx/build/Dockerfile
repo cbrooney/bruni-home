@@ -1,8 +1,8 @@
 #ARG FPM_IMAGE
 #FROM ${FPM_IMAGE} as php-fpm
 
-ARG BASE_IMAGE
-FROM ${BASE_IMAGE} as nginx-base
+ARG BASE_IMAGE_NGINX
+FROM ${BASE_IMAGE_NGINX} as nginx-base
 
 USER root
 
