@@ -2,6 +2,8 @@ FROM php:7.4.30-fpm-bullseye as common
 
 LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
 
+USER root
+
 COPY --chown=www-data:www-data . /var/www/html
 
 RUN export XDEBUG_MODE=off && \
@@ -33,9 +35,9 @@ RUN export XDEBUG_MODE=off && \
     chown www-data:www-data -R /var/www && \
     rm -r /var/lib/apt/lists /var/cache/apt/archives
 
-USER root
-
 EXPOSE 8000
 #EXPOSE 9000
 
 USER www-data
+
+RUN composer install

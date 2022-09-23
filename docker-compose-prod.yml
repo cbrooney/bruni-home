@@ -2,12 +2,12 @@ version: '3.4'
 
 services:
     web:
-        image: ghcr.io/cbrooney/bruni-home-nginx:test
+        image: ghcr.io/cbrooney/bruni-home-nginx:latest
         ports:
             - "8001:8001"
 #        links:
 #            - php-fpm
     php-fpm:
-        image: ghcr.io/cbrooney/bruni-home-php-fpm:test
+        image: ghcr.io/cbrooney/bruni-home-php-fpm:latest
 #        ports:
 #            - "9000:9000"
