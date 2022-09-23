@@ -1,12 +1,41 @@
 name: publish
 on: [push]
 jobs:
-    publish-bruni-image:
+#    publish-bruni-image:
+#        runs-on: ubuntu-latest
+#        permissions:
+#            contents: read
+#            packages: write
+#
+#        steps:
+#            - uses: actions/checkout@v3
+#
+#            - name: Login to GitHub Container Registry
+#              uses: docker/login-action@v1
+#              with:
+#                  registry: ghcr.io
+#                  username: ${{ github.actor }}
+#                  password: ${{ secrets.GITHUB_TOKEN }}
+#
+#            - name: Build bruni home Docker images
+#              run: |
+#                  docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-bullseye" --tag ghcr.io/cbrooney/bruni-home-php-fpm:latest
+#                  docker push ghcr.io/cbrooney/bruni-home-php-fpm:latest
+#                  docker build . -f docker/nginx/build/Dockerfile --build-arg BASE_IMAGE_NGINX="nginx:alpine" --tag ghcr.io/cbrooney/bruni-home-nginx:latest
+#                  docker push ghcr.io/cbrooney/bruni-home-nginx:latest
+    publish-bruni-image-rasp:
         runs-on: ubuntu-latest
         permissions:
             contents: read
             packages: write
-
+        strategy:
+            matrix:
+                arch: [ armv7l ]
+                include:
+                    -   arch: armv7l
+                        cpu: cortex-a7
+                        base_image: raspios_lite:latest
+                        cpu_info: raspberrypi_4b
         steps:
             - uses: actions/checkout@v3
 
@@ -17,13 +46,9 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Build bruni home Docker images
+            - name: Build bruni home Docker images for rasp
               run: |
-                  docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-bullseye" --tag ghcr.io/cbrooney/bruni-home-php-fpm:latest
-                  docker push ghcr.io/cbrooney/bruni-home-php-fpm:latest
-                  docker build . -f docker/nginx/build/Dockerfile --build-arg BASE_IMAGE_NGINX="nginx:alpine" --tag ghcr.io/cbrooney/bruni-home-nginx:latest
-                  docker push ghcr.io/cbrooney/bruni-home-nginx:latest
-                  docker build . -f docker/php-fpm/build/Dockerfile --platform linux/arm/v7 --build-arg BASE_IMAGE_PHP="arm32v7/php:7.4.30-fpm-bullseye" --tag ghcr.io/cbrooney/bruni-home-php-fpm-rasp:latest
+                  docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="arm32v7/php:7.4.30-fpm-bullseye" --tag ghcr.io/cbrooney/bruni-home-php-fpm-rasp:latest
                   docker push ghcr.io/cbrooney/bruni-home-php-fpm-rasp:latest
-                  docker build . -f docker/nginx/build/Dockerfile --platform linux/arm/v7 --build-arg BASE_IMAGE_NGINX="arm32v7/nginx:stable-alpine" --tag ghcr.io/cbrooney/bruni-home-nginx-rasp:latest
+                  docker build . -f docker/nginx/build/Dockerfile --build-arg BASE_IMAGE_NGINX="arm32v7/nginx:stable-alpine" --tag ghcr.io/cbrooney/bruni-home-nginx-rasp:latest
                   docker push ghcr.io/cbrooney/bruni-home-nginx-rasp:latest
