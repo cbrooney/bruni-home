@@ -9,5 +9,5 @@ services:
 #            - php-fpm
     php-fpm:
         image: ghcr.io/cbrooney/bruni-home-php-fpm:latest
-#        ports:
-#            - "9000:9000"
+        ports:
+            - "9000:9000"
