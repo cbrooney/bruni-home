@@ -22,23 +22,23 @@ RUN apt-get update &&\
 
 COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
 
-#RUN export XDEBUG_MODE=off && \
-#    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-#    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
-#    chmod +x /usr/local/bin/composer && \
-#    rm -f composer-setup.php && \
-#    echo 'deb [trusted=yes] https://repo.symfony.com/apt/ /' > /etc/apt/sources.list.d/symfony-cli.list && \
-#    apt-get update && \
-#    apt-get install -y symfony-cli nano vim less htop git autoconf build-essential wget openssh-client && \
-#    pecl install xdebug && \
-#    docker-php-ext-enable xdebug && \
-#    apt-get -y autoremove && \
-#    chown www-data:www-data -R /var/www && \
-#    rm -r /var/lib/apt/lists /var/cache/apt/archives
+RUN export XDEBUG_MODE=off && \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    chmod +x /usr/local/bin/composer && \
+    rm -f composer-setup.php && \
+    echo 'deb [trusted=yes] https://repo.symfony.com/apt/ /' > /etc/apt/sources.list.d/symfony-cli.list && \
+    apt-get update && \
+    apt-get install -y symfony-cli nano vim less htop git autoconf build-essential wget openssh-client && \
+    pecl install xdebug && \
+    docker-php-ext-enable xdebug && \
+    apt-get -y autoremove && \
+    chown www-data:www-data -R /var/www && \
+    rm -r /var/lib/apt/lists /var/cache/apt/archives
 
 #EXPOSE 8000
 #EXPOSE 9000
 
 USER www-data
 
-#RUN composer install
+RUN composer install
