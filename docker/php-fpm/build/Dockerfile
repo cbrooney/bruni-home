@@ -7,18 +7,18 @@ USER root
 
 COPY --chown=www-data:www-data . /var/www/html
 
-RUN apt-get update
-    #export XDEBUG_MODE=off && \
-    #docker-php-ext-install pdo pdo_mysql && \
-    #apt-get install -y librabbitmq-dev libssh-dev unzip libzip-dev libicu-dev libfcgi-bin && \
-    #echo "\n" | pecl install amqp && \
-    #echo "\n" | pecl install apcu && \
-    #docker-php-ext-enable amqp && \
-    #docker-php-ext-enable apcu && \
-    #docker-php-ext-install zip && \
-    #docker-php-ext-install intl && \
-    #docker-php-ext-enable intl && \
-    #docker-php-ext-install opcache
+RUN apt-get update &&\
+    export XDEBUG_MODE=off && \
+    docker-php-ext-install pdo pdo_mysql && \
+    apt-get install -y librabbitmq-dev libssh-dev unzip libzip-dev libicu-dev libfcgi-bin && \
+    echo "\n" | pecl install amqp && \
+    echo "\n" | pecl install apcu && \
+    docker-php-ext-enable amqp && \
+    docker-php-ext-enable apcu && \
+    docker-php-ext-install zip && \
+    docker-php-ext-install intl && \
+    docker-php-ext-enable intl && \
+    docker-php-ext-install opcache
 
 COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
 
