@@ -29,7 +29,8 @@ RUN export XDEBUG_MODE=off && \
     rm -f composer-setup.php && \
     echo 'deb [trusted=yes] https://repo.symfony.com/apt/ /' > /etc/apt/sources.list.d/symfony-cli.list && \
     apt-get update && \
-    apt-get install -y symfony-cli nano vim less htop git autoconf build-essential wget openssh-client && \
+    apt-get install -y nano vim less htop git autoconf build-essential wget openssh-client && \
+    # apt-get install -y symfony-cli && \
     pecl install xdebug && \
     docker-php-ext-enable xdebug && \
     apt-get -y autoremove && \
