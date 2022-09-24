@@ -1,0 +1,45 @@
+ARG BASE_IMAGE_PHP
+FROM ${BASE_IMAGE_PHP} as php-fpm-base
+
+#LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
+
+USER root
+
+COPY --chown=www-data:www-data . /var/www/html
+
+RUN apt-get update &&\
+    export XDEBUG_MODE=off && \
+    docker-php-ext-install pdo pdo_mysql && \
+    apt-get install -y librabbitmq-dev libssh-dev unzip libzip-dev libicu-dev libfcgi-bin && \
+    echo "\n" | pecl install amqp && \
+    echo "\n" | pecl install apcu && \
+    docker-php-ext-enable amqp && \
+    docker-php-ext-enable apcu && \
+    docker-php-ext-install zip && \
+    docker-php-ext-install intl && \
+    docker-php-ext-enable intl && \
+    docker-php-ext-install opcache
+
+COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
+
+RUN export XDEBUG_MODE=off && \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    chmod +x /usr/local/bin/composer && \
+    rm -f composer-setup.php && \
+    echo 'deb [trusted=yes] https://repo.symfony.com/apt/ /' > /etc/apt/sources.list.d/symfony-cli.list && \
+    apt-get update && \
+    apt-get install -y nano vim less htop git autoconf build-essential wget openssh-client && \
+    # apt-get install -y symfony-cli && \
+    pecl install xdebug && \
+    docker-php-ext-enable xdebug && \
+    apt-get -y autoremove && \
+    chown www-data:www-data -R /var/www && \
+    rm -r /var/lib/apt/lists /var/cache/apt/archives
+
+#EXPOSE 8000
+#EXPOSE 9000
+
+USER www-data
+
+RUN composer install

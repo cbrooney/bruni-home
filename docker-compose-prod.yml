@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+    web:
+        image: ghcr.io/cbrooney/bruni-home-nginx:latest
+        ports:
+            - "8000:8000"
+    php-fpm:
+        image: ghcr.io/cbrooney/bruni-home-php-fpm:latest
