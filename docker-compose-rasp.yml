@@ -7,3 +7,5 @@ services:
             - "8000:8000"
     php-fpm:
         image: ghcr.io/cbrooney/bruni-home-php-fpm-rasp:test
+        volumes:
+            - /media/usb/netzwerk/share/raspi/:/var/www/html/public/bilder/
