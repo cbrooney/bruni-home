@@ -1,0 +1,276 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Slideshow-Fullscreen
+{% endblock %}
+
+{% block body %}
+    {% set divCounter = 0 %}
+    {% set figureCounter = 0 %}
+
+    {% for directoryEntry in directoryEntries %}
+        <input class="filenames" type="hidden" name="filenames-{{ directoryEntry }}" value="{{ directoryEntry }}">
+
+        {% if figureCounter == 0 %}
+            <div class="rahmen" id="app-rahmen">
+                <div id="filename"><h1> {{ directoryEntry }} </h1> </div>
+                <img id="app-bild-id" class="einzelnesBild" src="bilder/{{ directoryEntry }}">
+            </div>
+        {% endif %}
+
+        {% if figureCounter > 0 %}
+            {% if divCounter < 10 %}
+                <div class="rahmen" id="appin-"{{ divCounter }}>
+                    <img id="bild-id-{{ divCounter }}" class="einzelnesBild-hidden" src="bilder/{{ directoryEntry }}">
+                </div>
+            {% endif %}
+
+            {% set divCounter = divCounter + 1 %}
+        {% endif %}
+
+        {% set figureCounter = figureCounter + 1 %}
+    {% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous">
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            let bildId = 'app-bild-id';
+            let bild = document.getElementById(bildId);
+
+            let rahmenId = 'app-rahmen';
+            let rahmen = document.getElementById(rahmenId);
+
+            document.onclick = (event) => {
+                console.log(document.fullscreenElement);
+
+                if (document.fullscreenElement !== null) {
+                    document.exitFullscreen()
+                        .then(() => console.log("Document Exited from Full screen mode"))
+                        .catch((err) => console.error(err));
+                } else {
+                    rahmen.requestFullscreen();
+                    let allFilenames = document.getElementsByClassName('filenames');
+
+                    let interval = 8000;
+                    let timer = 0;
+
+                    let divCounter = 0;
+
+                    let recentFileIndex = 0;
+                    let nextDivNumber = 0;
+                    let nextFigureToLoadCounter = 11;
+
+                    let duration = 60; // minuten
+
+                    while (timer < duration * 60 * 1000) {
+                        recentFileIndex = recentFileIndex + 1;
+
+                        if (recentFileIndex === (allFilenames.length - 1)) {
+                            recentFileIndex = 0;
+                        }
+
+                        if (nextDivNumber === 10) {
+                            nextDivNumber = 0;
+                        }
+
+                        if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
+                            nextFigureToLoadCounter = 0;
+                        }
+
+                        let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+                        let recentFilename = allFilenames[recentFileIndex].value;
+
+                        timer += interval;
+                        setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, nextFigureToLoad, recentFilename);
+                        // if (document.fullscreenElement !== null) {
+                        //     break;
+                        // }
+                        nextDivNumber = nextDivNumber + 1;
+                        nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
+                    }
+                }
+            }
+        });
+
+        function openFullscreenRahmen() {
+            let rahmenId = 'app-rahmen';
+            let rahmen = document.getElementById(rahmenId);
+
+            let bildId = 'app-bild-id';
+            let bild = document.getElementById(bildId);
+
+            if (rahmen.requestFullscreen) {
+                rahmen.requestFullscreen();
+            } else if (rahmen.webkitRequestFullscreen) { /* Safari */
+                rahmen.webkitRequestFullscreen();
+            } else if (rahmen.msRequestFullscreen) { /* IE11 */
+                rahmen.msRequestFullscreen();
+            }
+
+            let allFilenames = document.getElementsByClassName('filenames');
+
+            let interval = 1000;
+            let timer = 0;
+
+            let divCounter = 0;
+
+            let recentFileIndex = 0;
+            let nextDivNumber = 0;
+            let nextFigureToLoadCounter = 11;
+
+            let duration = 10; // minuten
+
+            while (timer < duration * 60 * 1000) {
+                recentFileIndex = recentFileIndex + 1;
+
+                if (recentFileIndex === (allFilenames.length - 1)) {
+                    recentFileIndex = 0;
+                }
+
+                if (nextDivNumber === 10) {
+                    nextDivNumber = 0;
+                }
+
+                if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
+                    nextFigureToLoadCounter = 0;
+                }
+
+                let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+                let recentFilename = allFilenames[recentFileIndex].value;
+
+                timer += interval;
+                // ToDo: set also recent counter in function
+                setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, nextFigureToLoad, recentFilename);
+                nextDivNumber = nextDivNumber + 1;
+                nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
+            }
+        }
+
+        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, nextFigureToLoad, recentFilename)
+        {
+            let nextBildId = 'bild-id-' + nextDivNumber;
+            let nextBild = document.getElementById(nextBildId);
+            rahmenBild.src = nextBild.src;
+            nextBild.src = 'bilder/' + nextFigureToLoad;
+
+            let filenameHeader = document.getElementById('filename');
+            filenameHeader.innerHTML = '<h1>' + recentFilename + '</h1>';
+        }
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /**:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {*/
+        /*    background-color: rgba(255,255,255,0)!important;*/
+        /*    padding: 20px;*/
+        /*}*/
+
+        /*::backdrop*/
+        /*{*/
+        /*    background-color: white;*/
+
+        /*}*/
+
+        /*body{*/
+        /*    background-color: white;*/
+        /*    color: green;*/
+        /*}*/
+
+        .rahmen {
+            position: relative;
+            text-align: center;
+            /*color: white;*/
+            background-color: navajowhite;
+        }
+
+        #quer{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        #querVid{
+            width: auto;
+            height: 100vh;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+        #hochkantBg
+        {
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            z-index:0;
+            filter: blur(20px);
+            -webkit-filter: blur(20px);
+            opacity: 0.8;
+            width: 100%;
+            height: 100vh;
+        }
+        .hochkant
+        {
+            position: relative;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: -100vh;
+            z-index:1;
+            height: 100vh;
+        }
+        .einzelnesBild
+        {
+            /*display:flex;*/
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            /*margin-top: auto;*/
+            /*z-index:0;*/
+            /*width: 100%;*/
+            /*height: 100vh;*/
+            max-width: 100%;
+            max-height: 100%;
+            height: inherit !important;
+            /*display: none;*/
+        }
+        .einzelnesBild-hidden
+        {
+            /*display:flex;*/
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            /*margin-top: auto;*/
+            /*z-index:0;*/
+            /*width: 100%;*/
+            /*height: 100vh;*/
+            max-width: 100%;
+            max-height: 100%;
+            height: inherit !important;
+            display: none;
+        }
+        #filename {
+            position: absolute;
+            top: 8px;
+            left: 16px;
+            color: green;
+        }
+    </style>
+{% endblock %}

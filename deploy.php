@@ -20,7 +20,7 @@ add('writable_dirs', []);
 host('raspberrypi')
     ->set('remote_user', 'pi')
     ->set('deploy_path', '/home/pi/Public/bruni-home')
-    ->set('branch', 'deployer');
+    ->set('branch', 'slideshow');
 
 // Hooks
 after('deploy:failed', 'deploy:unlock');

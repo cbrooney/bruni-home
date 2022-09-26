@@ -1,0 +1,97 @@
+<body>
+    <div id="filename">Dateiname: </div>
+    {% for directoryEntry in directoryEntries %}
+        <input class="filenames" type="hidden" name="filenames-{{ directoryEntry }}" value="{{ directoryEntry }}">
+
+        <div class="rahmen" id="{{ directoryEntry }}">
+            <img loading=lazy id="hochkantBg-{{ directoryEntry }}" class="imagesHochBg" src="bilder/{{ directoryEntry }}">
+            <img loading=lazy id="hochkant-{{ directoryEntry }}" class="imagesHoch" src="bilder/{{ directoryEntry }}">
+        </div>
+    {% endfor %}
+</body>
+
+<script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous">
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        let x = document.getElementsByClassName("rahmen");
+
+        let myIndex = 0;
+        slideShow();
+
+        function slideShow()
+        {
+            for (let i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+
+            let timeoutLength = 2000;
+
+            myIndex++;
+            if (myIndex > x.length) {
+                location.reload(true);
+            }
+
+            x[myIndex - 1].style.display = "block";
+            document.getElementById("filename").innerHTML = '<h1 id="filename">Dateiname: ' + x[myIndex-1].id + '' + '</h1>';
+
+            setTimeout(slideShow, timeoutLength);
+        }
+    });
+
+
+</script>
+
+<style>
+    body{
+        background-color: black;
+        color: green;
+    }
+
+    #quer{
+        width: auto;
+        height: 100vh;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+    }
+    #querVid{
+        width: auto;
+        height: 100vh;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+    }
+    .imagesHochBg {
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: auto;
+        z-index:0;
+        filter: blur(20px);
+        -webkit-filter: blur(20px);
+        opacity: 0.8;
+        width: 100%;
+        height: 100vh;
+    }
+    .imagesHoch
+    {
+        position: relative;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -100vh;
+        z-index:1;
+        height: 100vh;
+    }
+</style>

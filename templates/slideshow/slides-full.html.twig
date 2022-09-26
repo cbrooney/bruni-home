@@ -1,0 +1,256 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% for directoryEntry in directoryEntries %}
+        <input class="filenames" type="hidden" name="filenames-{{ directoryEntry }}" value="{{ directoryEntry }}">
+    {% endfor %}
+
+{#    <div id="filename">Dateiname: </div>#}
+
+{#    <div class="rahmen" id="aktives-bild">#}
+{#        <img loading=lazy id="hochkantBg" class="imagesHochBg" src="bilder/DSCF0002.JPG" onclick="openFullscreen();">#}
+{#        <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/DSCF0002.JPG" onclick="openFullscreen();">#}
+{#    </div>#}
+
+{#    <div class="rahmen" id="aktives-bild">#}
+{#        <img loading=lazy id="hochkantBg" class="imagesHochBg" src="bilder/DSCF0002.JPG" onclick="openFullscreen();">#}
+{#        <img loading=lazy id="hochkant" class="imagesHoch" src="bilder/DSCF0002.JPG" onclick="openFullscreen();">#}
+{#    </div>#}
+
+    {% for i in 0..9 %}
+        <div class="rahmen" id="appin" onclick="openFullscreen();">
+            <img id="aktives-bild-{{ i }}" src="" class="einzelnesBild">
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous">
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            let allFilenames = document.getElementsByClassName('filenames');
+
+            for (let i = 0; i < 10; i++) {
+                let aktivesBildId = "aktives-bild-" + i;
+                let picture = document.getElementById(aktivesBildId);
+                picture.src = 'bilder/' + allFilenames[i].value;
+                picture.style.display = "none";
+            }
+
+            let divCounter = 0;
+            let numberOfPictures = allFilenames.length;
+
+            let interval = 2000;
+            let timer = 0;
+
+            let aktivesBildId = "aktives-bild-" + 0;
+            let picture = document.getElementById(aktivesBildId);
+            picture.style.display = "block";
+
+            for (let i = 1; i < 5; i++) {
+                timer += interval;
+
+                setTimeout(activateNextFigureByIndex, timer, i);
+            }
+
+
+
+            // setTimeout(function () {
+            //     // header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
+            //     picture.style.display = "block";
+            // }, timer);
+
+
+
+            // for (let i = 0; i < numberOfPictures; i++) {
+            //     let aktivesBildId = "aktives-bild-" + i;
+            //     let picture = document.getElementById(aktivesBildId);
+            //     let filename = allFilenames[i].value;
+            //
+            //     timer += interval;
+            //
+            //     setTimeout(function () {
+            //         // header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
+            //         picture.style.display = "block";
+            //         picture.src = 'bilder/' + filename;
+            //     }, timer);
+            //
+            //     divCounter++;
+            //
+            //     if (divCounter > 9) {
+            //         divCounter = 0;
+            //     }
+            // }
+
+            // let header = document.getElementById("filename");
+            //
+            // let interval = 2000;
+            // let timer = 0;
+            //
+            // for (let i = 0; i < allFilenames.length; i++) {
+            //     let aktivesBildId = "aktives-bild-" + i;
+            //     let picture = document.getElementById(aktivesBildId);
+            //     timer += interval;
+            //     let filename = allFilenames[i].value;
+            //
+            //     // const myTimeout = setInterval(setFigure, 10000, filename);
+            //
+            //     setTimeout(function () {
+            //         // header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
+            //         picture.src = 'bilder/' + filename;
+            //     }, timer);
+            // }
+        });
+
+        function activateNextFigureByIndex(index)
+        {
+            let voherigesBildId = "aktives-bild-" + (index - 1);
+            let voherigesBild = document.getElementById(voherigesBildId);
+
+            let aktivesBildId = "aktives-bild-" + index;
+            let picture = document.getElementById(aktivesBildId);
+
+            voherigesBild.style.display = "none";
+            picture.style.display = "block";
+        }
+
+        function setFigure(filename)
+        {
+            document.getElementById("filename").innerHTML = '<h1 id="filename">Dateiname: ' + filename + '' + '</h1>';
+            document.getElementById("hochkant").src = 'bilder/' + filename;
+            document.getElementById("hochkantBg").src = 'bilder/' + filename;
+        }
+
+        function openFullscreen() {
+            let picture = document.getElementById("appin");
+
+            if (picture.requestFullscreen) {
+                picture.requestFullscreen();
+            } else if (picture.webkitRequestFullscreen) { /* Safari */
+                picture.webkitRequestFullscreen();
+            } else if (picture.msRequestFullscreen) { /* IE11 */
+                picture.msRequestFullscreen();
+            }
+
+            // let allFilenames = document.getElementsByClassName('filenames');
+            //
+            // let header = document.getElementById("filename");
+            //
+            // let interval = 2000;
+            // let timer = 0;
+            //
+            // for (let i = 0; i < allFilenames.length; i++) {
+            //     timer += interval;
+            //     let filename = allFilenames[i].value;
+            //
+            //     // const myTimeout = setInterval(setFigure, 10000, filename);
+            //
+            //     setTimeout(function () {
+            //         // header.innerHTML = '<h1>Dateiname: ' + filename + '</h1>';
+            //         picture.src = 'bilder/' + filename;
+            //     }, timer);
+            // }
+
+            // document.getElementById("hochkantBg-DSCF0002.JPG").src = "bilder/DSCF0023.JPG";
+        }
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        *:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {
+            background-color: rgba(255,255,255,0)!important;
+            padding: 20px;
+        }
+
+        ::backdrop
+        {
+            background-color: white;
+
+        }
+
+        body{
+            background-color: black;
+            color: green;
+        }
+
+        /*#quer{*/
+        /*    width: auto;*/
+        /*    height: 100vh;*/
+        /*    display: block;*/
+        /*    margin-left: auto;*/
+        /*    margin-right: auto;*/
+        /*    margin-top: auto;*/
+        /*}*/
+        /*#querVid{*/
+        /*    width: auto;*/
+        /*    height: 100vh;*/
+        /*    display: block;*/
+        /*    margin-left: auto;*/
+        /*    margin-right: auto;*/
+        /*    margin-top: auto;*/
+        /*}*/
+        /*#hochkantBg*/
+        /*{*/
+        /*    display:flex;*/
+        /*    justify-content: center;*/
+        /*    align-items: center;*/
+        /*    margin-left: auto;*/
+        /*    margin-right: auto;*/
+        /*    margin-top: auto;*/
+        /*    z-index:0;*/
+        /*    filter: blur(20px);*/
+        /*    -webkit-filter: blur(20px);*/
+        /*    opacity: 0.8;*/
+        /*    width: 100%;*/
+        /*    height: 100vh;*/
+        /*}*/
+        .imagesHochBg {
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            z-index:0;
+            filter: blur(20px);
+            -webkit-filter: blur(20px);
+            opacity: 0.8;
+            width: 100%;
+            height: 100vh;
+        }
+        .imagesHoch
+        {
+            position: relative;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: -100vh;
+            z-index:1;
+            height: 100vh;
+        }
+        .einzelnesBild
+        {
+            /*display:flex;*/
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            /*margin-top: auto;*/
+            /*z-index:0;*/
+            /*width: 100%;*/
+            /*height: 100vh;*/
+            max-width: 100%;
+            max-height: 100%;
+            height: inherit !important;
+            /*display: none;*/
+        }
+    </style>
+{% endblock %}

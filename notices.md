@@ -38,13 +38,17 @@ sudo mount /dev/sda1 /media/usb/netzwerk -o uid=pi,gid=pi
 ## fstab:
 sudo nano /etc/fstab
 
-## Zeile einfügen => klappt noch nicht.
+## Zeile einfügen
+UUID=B066D04966D01248 /media/usb/netzwerk ntfs defaults,auto,users,rw,nofail,noatime,uid=pi,gid=pi 0 0
+
+### alte Versionen, nicht geklappt
 UUID=B066D04966D01248 /media/usb/netzwerk vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0
 
-UUID=[UUID] /mnt/usb1 [TYPE] defaults,auto,users,rw,nofail,noatime 0 0
-
 ## Domainnamen finden, um sich einloggen zu können 
+?? 
 
+## Finde type des laufwerks
+sudo blkid /dev/sda1
 
 
 # nginx einrichten:
