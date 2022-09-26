@@ -79,6 +79,10 @@
                 let nextFigureToLoadCounter = 11;
 
                 for (let recentFileIndex = 0; recentFileIndex < allFilenames.length + 1; recentFileIndex++) {
+                    if (!document.fullscreenElement) {
+                        break;
+                    }
+
                     // add endless loop, restart when reaching end
                     if (recentFileIndex === allFilenames.length) {
                         recentFileIndex = 0;
@@ -95,11 +99,7 @@
                     let recentFilename = allFilenames[recentFileIndex].value;
                     console.log('Aktuell: ' + recentFilename);
 
-                    if (!document.fullscreenElement) {
-                        break;
-                    }
-
-                    await delay(1000);
+                    await delay(5000);
 
                     // counter for already loaded images, this one is going to be shown next
                     if (nextDivNumber > 10) {
@@ -107,7 +107,7 @@
                     }
 
                     // figure is loaded in the back
-                    if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
+                    if (nextFigureToLoadCounter === allFilenames.length) {
                         nextFigureToLoadCounter = 0;
                     }
 
@@ -117,11 +117,11 @@
                     let nextBild = document.getElementById(nextBildId);
                     let nextFilenameSrc = nextBild.src;
 
-                    console.log('Setze in Rahmen: ' + nextFilename);
-                    rahmenBild.src = nextFilenameSrc;
-
                     let filenameHeader = document.getElementById('filename');
                     filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
+
+                    console.log('Setze in Rahmen: ' + nextFilename);
+                    rahmenBild.src = nextFilenameSrc;
 
                     // lade neues Bild in gerade verschobenem div
                     let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
