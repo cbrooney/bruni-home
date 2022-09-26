@@ -3,6 +3,8 @@ version: '3.4'
 services:
     web:
         image: ghcr.io/cbrooney/bruni-home-nginx-rasp:test
+        volumes:
+            - /media/usb/netzwerk/share/raspi/:/var/www/html/public/bilder/
         ports:
             - "8000:8000"
     php-fpm:
