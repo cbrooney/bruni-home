@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-Slideshow-Fullscreen
+    Slideshow-Fullscreen
 {% endblock %}
 
 {% block body %}
-    {% set divCounter = 0 %}
+    {% set divCounter = 1 %}
     {% set figureCounter = 0 %}
 
     {% for directoryEntry in directoryEntries %}
@@ -19,7 +19,7 @@ Slideshow-Fullscreen
         {% endif %}
 
         {% if figureCounter > 0 %}
-            {% if divCounter < 10 %}
+            {% if divCounter < 11 %}
                 <div class="rahmen" id="appin-"{{ divCounter }}>
                     <img id="bild-id-{{ divCounter }}" class="einzelnesBild-hidden" src="bilder/{{ directoryEntry }}">
                 </div>
@@ -42,62 +42,210 @@ Slideshow-Fullscreen
     <script type="text/javascript">
         $(document).ready(function() {
             let bildId = 'app-bild-id';
-            let bild = document.getElementById(bildId);
+            let rahmenBild = document.getElementById(bildId);
 
             let rahmenId = 'app-rahmen';
             let rahmen = document.getElementById(rahmenId);
 
+            rahmen.addEventListener('fullscreenchange', fullscreenchanged);
+
             document.onclick = (event) => {
-                console.log(document.fullscreenElement);
+                let promise = rahmen.requestFullscreen();
 
-                if (document.fullscreenElement !== null) {
-                    document.exitFullscreen()
-                        .then(() => console.log("Document Exited from Full screen mode"))
-                        .catch((err) => console.error(err));
-                } else {
-                    rahmen.requestFullscreen();
-                    let allFilenames = document.getElementsByClassName('filenames');
+                let allFilenames = document.getElementsByClassName('filenames');
 
-                    let interval = 8000;
-                    let timer = 0;
+                let interval = 1000;
+                let timer = 0;
 
-                    let divCounter = 0;
+                let divCounter = 0;
 
-                    let recentFileIndex = 0;
-                    let nextDivNumber = 0;
-                    let nextFigureToLoadCounter = 11;
+                let recentFileIndex = 0;
+                let nextDivNumber = 0;
+                let nextFigureToLoadCounter = 11;
 
-                    let duration = 60; // minuten
+                let duration = 60; // minuten
 
-                    while (timer < duration * 60 * 1000) {
-                        recentFileIndex = recentFileIndex + 1;
+                // const delay = t => new Promise(resolve => setTimeout(resolve, t));
 
-                        if (recentFileIndex === (allFilenames.length - 1)) {
-                            recentFileIndex = 0;
-                        }
+                // processFigure(allFilenames, rahmenBild);
 
-                        if (nextDivNumber === 10) {
-                            nextDivNumber = 0;
-                        }
-
-                        if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
-                            nextFigureToLoadCounter = 0;
-                        }
-
-                        let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
-                        let recentFilename = allFilenames[recentFileIndex].value;
-
-                        timer += interval;
-                        setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, nextFigureToLoad, recentFilename);
-                        // if (document.fullscreenElement !== null) {
-                        //     break;
-                        // }
-                        nextDivNumber = nextDivNumber + 1;
-                        nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
-                    }
-                }
+                // while (timer < duration * 60 * 1000) {
+                //     recentFileIndex = recentFileIndex + 1;
+                //
+                //     if (recentFileIndex === (allFilenames.length - 1)) {
+                //         recentFileIndex = 0;
+                //     }
+                //
+                //     if (nextDivNumber === 10) {
+                //         nextDivNumber = 0;
+                //     }
+                //
+                //     if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
+                //         nextFigureToLoadCounter = 0;
+                //     }
+                //
+                //     let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+                //     let recentFilename = allFilenames[recentFileIndex].value;
+                //
+                //     timer += interval;
+                //     const delay = t => new Promise(resolve => setTimeout(resolve, t));
+                //     delay(3000).then(() => setSourceOfNextDivToRahmen(nextDivNumber, bild, nextFigureToLoad, recentFilename));
+                //     //let myTimeout = setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, nextFigureToLoad, recentFilename);
+                //     if (document.fullscreenElement !== null) {
+                //
+                //     }
+                //     nextDivNumber = nextDivNumber + 1;
+                //     nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
+                // }
             }
         });
+
+        async function test(filename) {
+            await delay(1000);
+            console.log(filename);
+        }
+
+        function delay(milliseconds){
+            return new Promise(resolve => {
+                setTimeout(resolve, milliseconds);
+            });
+        }
+
+        async function processFigure(allFilenames, rahmenBild){
+            let recentDivNumber = 0;
+            let nextFigureToLoadCounter = 0;
+
+            for (let recentFileIndex = 0; recentFileIndex < allFilenames.length + 1; recentFileIndex++) {
+                await delay(300);
+
+                // add endless loop, restart when reaching end
+                if (recentFileIndex === allFilenames.length) {
+                    recentFileIndex = 0;
+                }
+
+                let nextDivNumber = recentDivNumber + 1;
+                let recentFilename = allFilenames[recentFileIndex].value;
+
+                let nextFilename = allFilenames[nextDivNumber].value;
+                console.log(recentFilename);
+
+                // counter for already loaded images, this one is going to be shown now
+                if (nextDivNumber === 10) {
+                    nextDivNumber = 0;
+                }
+
+                // counter for already loaded images, this one is going to be shown now
+                if (recentDivNumber === 10) {
+                    recentDivNumber = 0;
+                }
+
+                // figure is loaded in the back
+                if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
+                    nextFigureToLoadCounter = 0;
+                }
+
+                //
+                let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+
+                recentDivNumber = recentDivNumber + 1;
+
+                // set next bild to div
+                // let nextBildId = 'bild-id-' + nextDivNumber;
+                // let nextBild = document.getElementById(nextBildId);
+                // rahmenBild.src = nextBild.src;
+                //
+                // let filenameHeader = document.getElementById('filename');
+                // filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
+
+                // load next figure in the background
+                // nextBild.src = 'bilder/' + nextFigureToLoad;
+
+                // setSourceOfNextDivToRahmen(nextDivNumber, bild, recentFilename);
+
+                // timer += interval;
+
+                // delay(timer).then(() => setSourceOfNextDivToRahmen(nextDivNumber, bild, recentFilename));
+                //let myTimeout = setTimeout(setSourceOfNextDivToRahmen, timer, nextDivNumber, bild, recentFilename);
+
+            }
+        }
+
+        async function fullscreenchanged(event) {
+            if (!document.fullscreenElement) {
+                console.log('Leaving fullscreen mode.');
+            }
+
+            // document.fullscreenElement will point to the element that
+            // is in fullscreen mode if there is one. If not, the value
+            // of the property is null.
+            if (document.fullscreenElement) {
+                // console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
+                let bildId = 'app-bild-id';
+                let rahmenBild = document.getElementById(bildId);
+
+                let rahmenId = 'app-rahmen';
+                let rahmen = document.getElementById(rahmenId);
+
+                let allFilenames = document.getElementsByClassName('filenames');
+
+                let nextDivNumber = 1;
+                let nextFigureToLoadCounter = 11;
+
+                for (let recentFileIndex = 0; recentFileIndex < allFilenames.length + 1; recentFileIndex++) {
+                    // add endless loop, restart when reaching end
+                    if (recentFileIndex === allFilenames.length) {
+                        recentFileIndex = 0;
+                    }
+
+                    let recentFilename = allFilenames[recentFileIndex].value;
+                    console.log('Aktuell: ' + recentFilename);
+
+                    if (!document.fullscreenElement) {
+                        break;
+                    }
+
+                    await delay(1000);
+
+                    // counter for already loaded images, this one is going to be shown next
+                    if (nextDivNumber > 10) {
+                        nextDivNumber = 1;
+                    }
+
+                    // counter for already loaded images, this one is going to be shown now
+                    // if (recentDivNumber === 10) {
+                    //     recentDivNumber = 0;
+                    // }
+
+                    // figure is loaded in the back
+                    if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
+                        nextFigureToLoadCounter = 0;
+                    }
+
+                    console.log('Hole bild von div: ' + nextDivNumber);
+
+                    let nextBildId = 'bild-id-' + nextDivNumber;
+                    let nextBild = document.getElementById(nextBildId);
+                    let nextFilenameSrc = nextBild.src;
+                    let nextFilename = allFilenames[nextDivNumber].value;
+
+                    console.log('Setze in Rahmen: ' + nextFilename);
+                    rahmenBild.src = nextFilenameSrc;
+
+                    let filenameHeader = document.getElementById('filename');
+                    filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
+
+                    // lade neues Bild in gerade verschobenem div
+                    let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+                    console.log('Lade: ' + nextFigureToLoad + ' in div: ' + nextDivNumber);
+
+                    nextBild.src = 'bilder/' + nextFigureToLoad;
+
+                    nextDivNumber = nextDivNumber + 1;
+                    nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
+                    console.log('');
+                }
+            }
+        }
 
         function openFullscreenRahmen() {
             let rahmenId = 'app-rahmen';
@@ -153,12 +301,12 @@ Slideshow-Fullscreen
             }
         }
 
-        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, nextFigureToLoad, recentFilename)
+        function setSourceOfNextDivToRahmen(nextDivNumber, rahmenBild, recentFilename)
         {
             let nextBildId = 'bild-id-' + nextDivNumber;
             let nextBild = document.getElementById(nextBildId);
             rahmenBild.src = nextBild.src;
-            nextBild.src = 'bilder/' + nextFigureToLoad;
+            // nextBild.src = 'bilder/' + nextFigureToLoad;
 
             let filenameHeader = document.getElementById('filename');
             filenameHeader.innerHTML = '<h1>' + recentFilename + '</h1>';
