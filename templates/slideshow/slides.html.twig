@@ -197,6 +197,14 @@
                         recentFileIndex = 0;
                     }
 
+                    let nextFileIndex = recentFileIndex + 1;
+
+                    if (nextFileIndex === allFilenames.length) {
+                        nextFileIndex = 0;
+                    }
+
+                    let nextFilename = allFilenames[nextFileIndex].value;
+
                     let recentFilename = allFilenames[recentFileIndex].value;
                     console.log('Aktuell: ' + recentFilename);
 
@@ -226,7 +234,6 @@
                     let nextBildId = 'bild-id-' + nextDivNumber;
                     let nextBild = document.getElementById(nextBildId);
                     let nextFilenameSrc = nextBild.src;
-                    let nextFilename = allFilenames[nextDivNumber].value;
 
                     console.log('Setze in Rahmen: ' + nextFilename);
                     rahmenBild.src = nextFilenameSrc;
