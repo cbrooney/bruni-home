@@ -15,6 +15,7 @@
             <div class="rahmen" id="app-rahmen">
                 <div id="filename"><h1> {{ directoryEntry }} </h1> </div>
                 <img id="app-bild-id" class="einzelnesBild" src="bilder/{{ directoryEntry }}">
+                <button class="btn btn-primary top-right" onclick="exitFullscreen()">Fullscreen verlassen</button>
             </div>
         {% endif %}
 
@@ -51,10 +52,15 @@
             }
         });
 
-        function delay(milliseconds){
+        function delay(milliseconds) {
             return new Promise(resolve => {
                 setTimeout(resolve, milliseconds);
             });
+        }
+
+        function exitFullscreen() {
+            document.exitFullscreen()
+                .then(() => console.log("Document Exited from Full screen mode"))
         }
 
         async function fullscreenchanged(event) {
@@ -224,6 +230,12 @@
             top: 8px;
             left: 16px;
             color: green;
+        }
+        .top-right {
+            position: absolute;
+            top: 8px;
+            right: 16px;
+            font-size: 18px;
         }
     </style>
 {% endblock %}

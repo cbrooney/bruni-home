@@ -3,7 +3,12 @@ version: '3.4'
 services:
     web:
         image: ghcr.io/cbrooney/bruni-home-nginx-rasp:test
+        volumes:
+            - ./public/bilder/:/var/www/html/public/bilder/
         ports:
             - "8000:8000"
     php-fpm:
         image: ghcr.io/cbrooney/bruni-home-php-fpm-rasp:test
+        volumes:
+            - ./public/bilder/:/var/www/html/public/bilder/
+            - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history

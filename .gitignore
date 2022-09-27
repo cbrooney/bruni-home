@@ -16,10 +16,12 @@ npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
-public/bilder/
+.idea
 
 .env.local.docker-compose
 
 /docker/php-fpm/.bash_history
 
-/public/bilder/
+!public/bilder/.gitkeep
+
+public/bilder/*
