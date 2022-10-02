@@ -15,7 +15,7 @@ services:
             - ./public/bilder/:/var/www/html/public/bilder/
             - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history
     mysql:
-        image: lscr.io/linuxserver/mariadb:latest
+        image: lscr.io/linuxserver/mariadb:10.5.17-alpine
         container_name: mariadb
         environment:
             PUID: 1000
