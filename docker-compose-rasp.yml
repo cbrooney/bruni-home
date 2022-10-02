@@ -15,14 +15,19 @@ services:
             - ./public/bilder/:/var/www/html/public/bilder/
             - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history
     mysql:
-        container_name: database
-        image: mysql:5.7
-        volumes:
-            - ../mysql:/var/lib/mysql
-        ports:
-            - "3306:3306"
+        image: lscr.io/linuxserver/mariadb:latest
+        container_name: mariadb
         environment:
+            PUID: 1000
+            PGID: 1000
+            TZ: Europe/London
             MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
             MYSQL_DATABASE: $MYSQL_DATABASE
             MYSQL_USER: $MYSQL_USER
             MYSQL_PASSWORD: $MYSQL_PASSWORD
+            # REMOTE_SQL=http://URL1/your.sql,https://URL2/your.sql #optional
+        volumes:
+            - ../mariadb:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        restart: unless-stopped
