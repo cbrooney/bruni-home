@@ -27,6 +27,15 @@ final class Version20220927092808 extends AbstractMigration
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         '
         );
+
+//        $this->addSql(
+//            '
+//            CREATE TABLE IF NOT EXISTS test_table (
+//                id serial PRIMARY KEY,
+//                created_at TIMESTAMP NOT NULL
+//            );
+//        '
+//        );
     }
 
     public function down(Schema $schema): void
