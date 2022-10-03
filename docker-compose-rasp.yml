@@ -30,4 +30,4 @@ services:
             - ../mariadb:/var/lib/mysql
         ports:
             - "3306:3306"
-        restart: unless-stopped
+        # restart: unless-stopped

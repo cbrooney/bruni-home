@@ -49,4 +49,13 @@ class LuckyController extends AbstractController
 
         return $this->render('lucky/database-entry.html.twig', []);
     }
+
+    /**
+     * @Route("/php-info", name="php_info", methods={"GET"})
+     */
+    public function phpInfoAction(): Response
+    {
+        echo phpInfo();
+        die();
+    }
 }
