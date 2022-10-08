@@ -52,6 +52,28 @@
             }
         });
 
+        const canWakeLock = () => 'wakeLock' in navigator;
+        console.log(canWakeLock());
+        let wakelock;
+
+        async function lockWakeState() {
+            if(!canWakeLock()) return;
+            try {
+                wakelock = await navigator.wakeLock.request('screen');
+                wakelock.addEventListener('release', () => {
+                    console.log('Screen Wake State Locked:', !wakelock.released);
+                });
+                console.log('Screen Wake State Locked:', !wakelock.released);
+            } catch(e) {
+                console.error('Failed to lock wake state with reason:', e.message);
+            }
+        }
+
+        function releaseWakeState() {
+            if(wakelock) wakelock.release();
+            wakelock = null;
+        }
+
         function delay(milliseconds) {
             return new Promise(resolve => {
                 setTimeout(resolve, milliseconds);
@@ -66,12 +88,14 @@
         async function fullscreenchanged(event) {
             if (!document.fullscreenElement) {
                 console.log('Leaving fullscreen mode.');
+                releaseWakeState();
             }
 
             // document.fullscreenElement will point to the element that
             // is in fullscreen mode if there is one. If not, the value
             // of the property is null.
             if (document.fullscreenElement) {
+                await lockWakeState();
                 // console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
                 let bildId = 'app-bild-id';
                 let rahmenBild = document.getElementById(bildId);

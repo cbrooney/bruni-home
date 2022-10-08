@@ -1,4 +1,5 @@
 touch ./docker/php-fpm/.bash_history
+chown 0777 ./docker/php-fpm/.bash_history
 touch .env.local
 
 cp .env.local.docker-compose.dist .env.local.docker-compose

@@ -35,7 +35,7 @@ services:
 #            MYSQL_USER: $MYSQL_USER
 #            MYSQL_PASSWORD: $MYSQL_PASSWORD
     mysql:
-        image: lscr.io/linuxserver/mariadb:10.5.17-alpine
+        image: lscr.io/linuxserver/mariadb:10.5.17
         container_name: mariadb
         environment:
             PUID: 1000
@@ -47,7 +47,7 @@ services:
             MYSQL_PASSWORD: test
             # REMOTE_SQL=http://URL1/your.sql,https://URL2/your.sql #optional
         volumes:
-            - ../mariadb:/var/lib/mysql
+            - ../mariadb:/config
         ports:
             - "3306:3306"
-        restart: unless-stopped
+        # restart: unless-stopped
