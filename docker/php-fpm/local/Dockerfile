@@ -1,6 +1,10 @@
-FROM php:7.4.30-fpm-bullseye as common
+FROM php:7.4.30-fpm-buster as common
 
-LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
+# LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
+
+USER root
+
+COPY --chown=www-data:www-data . /var/www/html
 
 RUN export XDEBUG_MODE=off && \
     docker-php-ext-install pdo pdo_mysql && \
@@ -13,15 +17,7 @@ RUN export XDEBUG_MODE=off && \
     docker-php-ext-install zip && \
     docker-php-ext-install intl && \
     docker-php-ext-enable intl && \
-    docker-php-ext-install opcache && \
-    addgroup --system runner && \
-    adduser \
-        --disabled-password \
-        --gecos "" \
-        --home /home/runner \
-        --ingroup runner \
-        --uid 10000 \
-        runner
+    docker-php-ext-install opcache
 
 COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
 
@@ -43,7 +39,6 @@ USER root
 
 ARG UID
 ARG GID
-RUN echo $UID
 #    && usermod -u $UID www-data \
 #    && groupmod -g $GID www-data \
 #    && usermod -m -d /home/www-data www-data
@@ -57,3 +52,5 @@ RUN echo $UID
 #    && chown -R www-data:www-data /home/www-data
 
 USER www-data
+
+RUN composer install

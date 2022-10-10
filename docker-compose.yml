@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
     web:
+        container_name: nginx
         image: nginx:alpine
         ports:
             - "8000:8000"
@@ -9,6 +10,7 @@ services:
             - ./public:/var/www/html/public
             - ./docker/nginx/bruni-home.conf:/etc/nginx/conf.d/site.conf
     php-fpm:
+        container_name: php-fpm
         build:
             context: .
             dockerfile: docker/php-fpm/local/Dockerfile
@@ -17,7 +19,35 @@ services:
                 UID: $CONTAINER_USER_UID
                 GID: $CONTAINER_USER_GID
                 SSH_PRIV_KEY: $SSH_PRIV_KEY
-        user: $CONTAINER_USER_UID
         volumes:
             - .:/var/www/html
-            - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history
+            - ./docker/php-fpm/.bash_history:/var/www/.bash_history
+#    mysql:
+#        container_name: database
+#        image: mysql:5.7
+#        volumes:
+#            - ../mysql:/var/lib/mysql
+#        ports:
+#            - "3306:3306"
+#        environment:
+#            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+#            MYSQL_DATABASE: $MYSQL_DATABASE
+#            MYSQL_USER: $MYSQL_USER
+#            MYSQL_PASSWORD: $MYSQL_PASSWORD
+    mysql:
+        image: lscr.io/linuxserver/mariadb:10.5.17
+        container_name: mariadb
+        environment:
+            PUID: 1000
+            PGID: 1000
+            MYSQL_ROOT_PASSWORD: root
+            TZ: Europe/London
+            MYSQL_DATABASE: home
+            MYSQL_USER: test
+            MYSQL_PASSWORD: test
+            # REMOTE_SQL=http://URL1/your.sql,https://URL2/your.sql #optional
+        volumes:
+            - ../mariadb:/config
+        ports:
+            - "3306:3306"
+        # restart: unless-stopped
