@@ -29,6 +29,7 @@ RUN export XDEBUG_MODE=off && \
     docker-php-ext-install opcache
 
 COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
+COPY docker/config/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN export XDEBUG_MODE=off && \
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
