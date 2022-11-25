@@ -83,7 +83,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "tests": {
+            "phpunit": "vendor/bin/phpunit"
+        }
     },
     "conflict": {
         "symfony/symfony": "*"
