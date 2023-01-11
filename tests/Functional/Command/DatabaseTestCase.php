@@ -46,6 +46,8 @@ class DatabaseTestCase extends WebTestCase
 
         $this->connection = $entityManager->getConnection();
 
+        var_dump($this->connection->getParams());
+
         $this->fixturesFile = null;
         $this->fixturesDir = __DIR__ . '/Fixtures/';
 
@@ -75,12 +77,12 @@ class DatabaseTestCase extends WebTestCase
         $database = $this->getTestDatabaseName();
         var_dump($database);
 
-//        $process = new Process(['/var/www/html/bin/console', 'doctrine:database:create']);
-//        $process->run();
-//
-//        if (!$process->isSuccessful()) {
-//            throw new ProcessFailedException($process);
-//        }
+        $process = new Process(['/var/www/html/bin/console', 'doctrine:database:create']);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
         $this->validateDatabaseSuffix($database);
 
