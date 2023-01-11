@@ -31,7 +31,7 @@ jobs:
                     docker push ghcr.io/cbrooney/bruni-home-php-fpm:test-env
     run-tests:
         runs-on: ubuntu-latest
-        # needs: build-test-env
+        needs: build-test-env
         permissions:
             contents: read
             packages: write
