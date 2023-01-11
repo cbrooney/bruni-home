@@ -75,12 +75,12 @@ class DatabaseTestCase extends WebTestCase
         $database = $this->getTestDatabaseName();
         var_dump($database);
 
-//        $process = new Process(['bin/console', 'doctrine:database:create']);
-//        $process->run();
-//
-//        if (!$process->isSuccessful()) {
-//            throw new ProcessFailedException($process);
-//        }
+        $process = new Process(['bin/console', 'doctrine:database:create']);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
         $this->validateDatabaseSuffix($database);
 
