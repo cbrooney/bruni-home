@@ -28,7 +28,7 @@ class EntityServiceTest extends TestCase
 
     public function testSuccesful(): void
     {
-        echo 'Run unit test' . PHP_EOL;
+        var_dump('Run unit test');
         $entity = new TestEntity();
 
         $this->testEntityRepository

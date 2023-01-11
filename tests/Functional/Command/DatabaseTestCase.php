@@ -80,6 +80,7 @@ class DatabaseTestCase extends WebTestCase
         }
 
         $database = $this->getTestDatabaseName();
+        var_dump($database);
         $this->validateDatabaseSuffix($database);
 
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
