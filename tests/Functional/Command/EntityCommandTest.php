@@ -21,6 +21,8 @@ class EntityCommandTest extends DatabaseTestCase
 
     public function testSomething(): void
     {
+        echo 'Run functional test' . PHP_EOL;
+
         $commandName = 'entity:save';
         $arguments = [
             '--env' => self::$kernel->getEnvironment(),

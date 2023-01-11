@@ -23,6 +23,6 @@ class EntityService
 
         $this->testEntityRepository->add($entity);
 
-        var_dump($entity);
+//        var_dump($entity);
     }
 }
