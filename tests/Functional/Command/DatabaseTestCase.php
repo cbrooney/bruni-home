@@ -75,7 +75,7 @@ class DatabaseTestCase extends WebTestCase
         $database = $this->getTestDatabaseName();
         var_dump($database);
 
-        $process = new Process(['bin/console', 'doctrine:database:create']);
+        $process = new Process(['/var/www/html/bin/console', 'doctrine:database:create']);
         $process->run();
 
         if (!$process->isSuccessful()) {
