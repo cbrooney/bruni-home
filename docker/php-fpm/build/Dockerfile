@@ -3,17 +3,7 @@ FROM ${BASE_IMAGE_PHP} as php-fpm-base
 
 #LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
 
-WORKDIR /var/www/html
-
 USER root
-
-ARG UID
-ARG GID
-
-RUN usermod -u "$UID" www-data \
-    && groupmod -g "$GID" www-data
-#    && usermod -m -d /home/www-data www-data
-
 COPY --chown=www-data:www-data . /var/www/html
 
 RUN apt-get update &&\
