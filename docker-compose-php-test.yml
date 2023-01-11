@@ -1,0 +1,7 @@
+version: '3.4'
+
+services:
+    php-fpm:
+        image: ghcr.io/cbrooney/bruni-home-php-fpm:test-env
+        environment:
+            APP_ENV: test
