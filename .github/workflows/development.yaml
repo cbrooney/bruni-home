@@ -25,29 +25,32 @@ jobs:
                     username: ${{ github.actor }}
                     password: ${{ secrets.GITHUB_TOKEN }}
 
-            -   name: run shell script running all tests
+            -   name: build and push env for tests
                 run: |
                     docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-buster" --tag ghcr.io/cbrooney/bruni-home-php-fpm:test-env
                     docker push ghcr.io/cbrooney/bruni-home-php-fpm:test-env
     run-tests:
         runs-on: ubuntu-latest
-        needs: build-test-env
+        # needs: build-test-env
         permissions:
             contents: read
             packages: write
         steps:
-            - uses: actions/checkout@v3
+            -   uses: actions/checkout@v3
 
-            - name: Login to GitHub Container Registry
-              uses: docker/login-action@v1
-              with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+            -   name: Login to GitHub Container Registry
+                uses: docker/login-action@v1
+                with:
+                    registry: ghcr.io
+                    username: ${{ github.actor }}
+                    password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: run shell script running all tests
-              run: |
-                  bash run-tests.sh
+            -   name: run shell script running all tests
+                run: |
+                    docker-compose -f docker-compose-db.yml -f docker-compose.yml -f docker-compose-php-test.yml --env-file .env.test up -d
+                    docker-compose -f docker-compose-php-test.yml --env-file .env.test run php-fpm utils/wait-for-it.sh mysql:3306 -t 60
+                    docker-compose -f docker-compose-php-test.yml --env-file .env.test run php-fpm composer tests
+                    docker-compose -f docker-compose-db.yml -f docker-compose.yml -f docker-compose-php-test.yml --env-file .env.test down
 #    run-tests:
 #        runs-on: ubuntu-latest
 #        needs: build
