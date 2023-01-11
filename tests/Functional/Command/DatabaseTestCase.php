@@ -72,15 +72,16 @@ class DatabaseTestCase extends WebTestCase
      */
     private function recreateDatabase(): void
     {
-        $process = new Process(['bin/console', 'doctrine:database:create']);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
         $database = $this->getTestDatabaseName();
         var_dump($database);
+
+//        $process = new Process(['bin/console', 'doctrine:database:create']);
+//        $process->run();
+//
+//        if (!$process->isSuccessful()) {
+//            throw new ProcessFailedException($process);
+//        }
+
         $this->validateDatabaseSuffix($database);
 
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
