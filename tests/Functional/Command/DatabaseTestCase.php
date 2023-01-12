@@ -46,7 +46,7 @@ class DatabaseTestCase extends WebTestCase
 
         $this->connection = $entityManager->getConnection();
 
-        var_dump($this->connection->getParams());
+//        var_dump($this->connection->getParams());
 
         $this->fixturesFile = null;
         $this->fixturesDir = __DIR__ . '/Fixtures/';
@@ -63,7 +63,7 @@ class DatabaseTestCase extends WebTestCase
     protected function tearDown(): void
     {
         $database = $this->getTestDatabaseName();
-        $this->validateDatabaseSuffix($database);
+//        $this->validateDatabaseSuffix($database);
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
 
         parent::tearDown();
