@@ -46,7 +46,7 @@ class DatabaseTestCase extends WebTestCase
 
         $this->connection = $entityManager->getConnection();
 
-//        var_dump($this->connection->getParams());
+        var_dump($this->connection->getParams());
 
         $this->fixturesFile = null;
         $this->fixturesDir = __DIR__ . '/Fixtures/';
