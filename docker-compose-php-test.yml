@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
     php-fpm:
-        image: ghcr.io/cbrooney/bruni-home-php-fpm:test-env
+        image: ghcr.io/cbrooney/bruni-home-app-test:${GITHUB_HEAD_REF}
         environment:
             APP_ENV: test
     mysql:
