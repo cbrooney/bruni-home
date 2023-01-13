@@ -17,6 +17,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class DatabaseTestCase extends WebTestCase
 {
@@ -46,12 +47,12 @@ class DatabaseTestCase extends WebTestCase
 
         $this->connection = $entityManager->getConnection();
 
-        var_dump($this->connection->getParams());
+//        var_dump($this->connection->getParams());
 
         $this->fixturesFile = null;
         $this->fixturesDir = __DIR__ . '/Fixtures/';
 
-//        $this->recreateDatabase();
+        $this->recreateDatabase();
 //        $this->recreateSchema();
         $this->createTables();
         $this->loadSqlFixtures();
@@ -63,7 +64,7 @@ class DatabaseTestCase extends WebTestCase
     protected function tearDown(): void
     {
         $database = $this->getTestDatabaseName();
-//        $this->validateDatabaseSuffix($database);
+        $this->validateDatabaseSuffix($database);
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
 
         parent::tearDown();
@@ -77,12 +78,24 @@ class DatabaseTestCase extends WebTestCase
         $database = $this->getTestDatabaseName();
         var_dump($database);
 
-        $process = new Process(['/var/www/html/bin/console', 'doctrine:database:create']);
-        $process->run();
+        // special process for maria_db, needed locally
+        try {
+            $process = new Process(['/var/www/html/bin/console', 'doctrine:database:create']);
+            $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+            if (!$process->isSuccessful()) {
+//                throw new ProcessFailedException($process);
+            }
+        } catch (Throwable $exception) {
+            var_dump($exception->getMessage());
         }
+
+//        try {
+//            $result = $this->connection->executeQuery("SHOW DATABASES;")->fetchAllAssociative();
+//            var_dump($result);
+//        } catch (Throwable $exception) {
+//            var_dump($exception->getMessage());
+//        }
 
         $this->validateDatabaseSuffix($database);
 
