@@ -5,23 +5,8 @@ services:
         image: ghcr.io/cbrooney/bruni-home-php-fpm:test-env
         environment:
             APP_ENV: test
-#    mysql:
-#        image: lscr.io/linuxserver/mariadb:10.5.17
-#        container_name: mariadb
-#        environment:
-#            PUID: 1000
-#            PGID: 1000
-#            TZ: Europe/London
-#            MYSQL_ROOT_PASSWORD: root
-#            MYSQL_DATABASE: $MYSQL_DATABASE
-#            MYSQL_USER: $MYSQL_USER
-#            MYSQL_PASSWORD: $MYSQL_PASSWORD
-#        volumes:
-#            - ../mariadb:/config
-#        ports:
-#            - "3306:3306"
     mysql:
-        image: 'mysql:8.0.29-debian'
+        image: lscr.io/linuxserver/mariadb:10.5.17
         container_name: mariadb
         environment:
             PUID: 1000
@@ -31,5 +16,20 @@ services:
             MYSQL_DATABASE: $MYSQL_DATABASE
             MYSQL_USER: $MYSQL_USER
             MYSQL_PASSWORD: $MYSQL_PASSWORD
+        volumes:
+            - ../mariadb:/config
         ports:
-            - '3306:3306'
+            - "3306:3306"
+#    mysql:
+#        image: 'mysql:8.0.29-debian'
+#        container_name: mariadb
+#        environment:
+#            PUID: 1000
+#            PGID: 1000
+#            TZ: Europe/London
+#            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+#            MYSQL_DATABASE: $MYSQL_DATABASE
+#            MYSQL_USER: $MYSQL_USER
+#            MYSQL_PASSWORD: $MYSQL_PASSWORD
+#        ports:
+#            - '3306:3306'
