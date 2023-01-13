@@ -63,6 +63,7 @@ class DatabaseTestCase extends WebTestCase
      */
     protected function tearDown(): void
     {
+        var_dump('TEAR DOWN');
         $database = $this->getTestDatabaseName();
         $this->validateDatabaseSuffix($database);
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
@@ -78,6 +79,7 @@ class DatabaseTestCase extends WebTestCase
         $database = $this->getTestDatabaseName();
         var_dump($database);
 
+        var_dump('Create database');
         // special process for maria_db, needed locally
         try {
             $process = new Process(['/var/www/html/bin/console', 'doctrine:database:create']);
@@ -99,10 +101,11 @@ class DatabaseTestCase extends WebTestCase
 
         $this->validateDatabaseSuffix($database);
 
+        var_dump('DROP database');
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
-        var_dump('database dropped');
+
+        var_dump('CREATE database');
         $this->connection->executeStatement("CREATE DATABASE IF NOT EXISTS`" . $database . "`");
-        var_dump('database created');
     }
 
     private function recreateSchema(): void
