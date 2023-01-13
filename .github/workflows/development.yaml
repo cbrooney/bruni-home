@@ -50,9 +50,10 @@ jobs:
                     docker-compose -f docker-compose-php-test.yml --env-file .env.test up -d
                     docker-compose -f docker-compose-php-test.yml --env-file .env.test run php-fpm utils/wait-for-it.sh mysql:3306 -t 60
                     docker-compose -f docker-compose-php-test.yml --env-file .env.test run php-fpm composer tests
-            -   name: shut down docker containers
-                run: |
-                    docker-compose -f docker-compose-php-test.yml --env-file .env.test down
+                    docker-compose -f docker-compose-php-test.yml --env-file .env.test down --remove-orphans
+#            -   name: shut down docker containers
+#                run: |
+#                    docker-compose -f docker-compose-php-test.yml --env-file .env.test down
 #    run-tests:
 #        runs-on: ubuntu-latest
 #        needs: build
