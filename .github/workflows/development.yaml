@@ -27,6 +27,8 @@ jobs:
 
             -   name: build and push env for tests
                 run: |
+                    echo ${{ github.actor }}
+                    echo ${{ GITHUB_REF##*/ }}
                     docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-buster" --tag ghcr.io/cbrooney/bruni-home-php-fpm:test-env
                     docker push ghcr.io/cbrooney/bruni-home-php-fpm:test-env
     run-tests:
@@ -45,7 +47,7 @@ jobs:
                     username: ${{ github.actor }}
                     password: ${{ secrets.GITHUB_TOKEN }}
 
-            -   name: run shell script running all tests
+            -   name: Run all tests in specific container
                 run: |
                     docker-compose -f docker-compose-php-test.yml --env-file .env.test up -d
                     docker-compose -f docker-compose-php-test.yml --env-file .env.test run php-fpm utils/wait-for-it.sh mysql:3306 -t 60
