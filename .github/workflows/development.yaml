@@ -27,7 +27,7 @@ jobs:
 
             -   name: build and push env for tests
                 run: |
-                    echo 'Hello world'
+                    echo ${GITHUB_REF}
                     docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-buster" --tag ghcr.io/cbrooney/bruni-home-php-fpm:test-env
                     docker push ghcr.io/cbrooney/bruni-home-php-fpm:test-env
     run-tests:
