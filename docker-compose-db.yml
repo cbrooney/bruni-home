@@ -1,9 +1,9 @@
 version: '3.4'
 
 services:
-    mysql:
+    database:
         image: lscr.io/linuxserver/mariadb:10.5.17
-        container_name: mariadb
+        container_name: database
         environment:
             PUID: 1000
             PGID: 1000
