@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Throwable;
 
@@ -47,8 +46,6 @@ class DatabaseTestCase extends WebTestCase
 
         $this->connection = $entityManager->getConnection();
 
-//        var_dump($this->connection->getParams());
-
         $this->fixturesFile = null;
         $this->fixturesDir = __DIR__ . '/Fixtures/';
 
@@ -63,7 +60,6 @@ class DatabaseTestCase extends WebTestCase
      */
     protected function tearDown(): void
     {
-        var_dump('TEAR DOWN');
         $database = $this->getTestDatabaseName();
         $this->validateDatabaseSuffix($database);
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
@@ -77,19 +73,17 @@ class DatabaseTestCase extends WebTestCase
     private function recreateDatabase(): void
     {
         $database = $this->getTestDatabaseName();
-        var_dump($database);
-
-        var_dump('Create database');
-        // special process for maria_db, needed locally
+        // this is needed locally if the database container is already running
+        // maria db is somehow still problematic
         try {
             $process = new Process(['/var/www/html/bin/console', 'doctrine:database:create']);
             $process->run();
 
             if (!$process->isSuccessful()) {
-//                throw new ProcessFailedException($process);
+                echo 'Running "doctrine:database:create" was not successful' . PHP_EOL;
             }
         } catch (Throwable $exception) {
-            var_dump($exception->getMessage());
+            echo 'Problem while running "doctrine:database:create":' . $exception->getMessage() . PHP_EOL;
         }
 
 //        try {
@@ -101,10 +95,7 @@ class DatabaseTestCase extends WebTestCase
 
         $this->validateDatabaseSuffix($database);
 
-        var_dump('DROP database');
         $this->connection->executeStatement("DROP DATABASE IF EXISTS `" . $database . "`;");
-
-        var_dump('CREATE database');
         $this->connection->executeStatement("CREATE DATABASE IF NOT EXISTS`" . $database . "`");
     }
 
@@ -156,7 +147,6 @@ class DatabaseTestCase extends WebTestCase
     private function getTestDatabaseName(): string
     {
         return $this->connection->getParams()['dbname'];
-        return static::getContainer()->getParameter('test_database');
     }
 
     /**

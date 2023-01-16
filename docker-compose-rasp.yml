@@ -25,7 +25,6 @@ services:
             MYSQL_DATABASE: $MYSQL_DATABASE
             MYSQL_USER: $MYSQL_USER
             MYSQL_PASSWORD: $MYSQL_PASSWORD
-            # REMOTE_SQL=http://URL1/your.sql,https://URL2/your.sql #optional
         volumes:
             - ../mariadb:/config
         ports:
