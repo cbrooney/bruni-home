@@ -4,7 +4,6 @@ FROM ${BASE_IMAGE_PHP} as php-fpm-base
 #LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
 
 USER root
-
 COPY --chown=www-data:www-data . /var/www/html
 
 RUN apt-get update &&\
@@ -31,8 +30,8 @@ RUN export XDEBUG_MODE=off && \
     apt-get update && \
     apt-get install -y nano vim less htop git autoconf build-essential wget openssh-client && \
     # apt-get install -y symfony-cli && \
-    pecl install xdebug && \
-    docker-php-ext-enable xdebug && \
+#    pecl install xdebug && \
+#    docker-php-ext-enable xdebug && \
     apt-get -y autoremove && \
     chown www-data:www-data -R /var/www && \
     rm -r /var/lib/apt/lists /var/cache/apt/archives
@@ -42,4 +41,5 @@ RUN export XDEBUG_MODE=off && \
 
 USER www-data
 
-RUN composer install
+RUN cd /var/www/html \
+    && composer install

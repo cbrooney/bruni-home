@@ -2,7 +2,16 @@ FROM php:7.4.30-fpm-buster as common
 
 # LABEL org.opencontainers.image.source="https://github.com/cbrooney/bruni-home"
 
+WORKDIR /var/www/html
+
 USER root
+
+ARG UID
+ARG GID
+
+RUN usermod -u "$UID" www-data \
+    && groupmod -g "$GID" www-data
+#    && usermod -m -d /home/www-data www-data
 
 COPY --chown=www-data:www-data . /var/www/html
 
@@ -20,6 +29,7 @@ RUN export XDEBUG_MODE=off && \
     docker-php-ext-install opcache
 
 COPY docker/config/php-local.ini /usr/local/etc/php/conf.d/php-symfony.ini
+COPY docker/config/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN export XDEBUG_MODE=off && \
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
@@ -35,14 +45,6 @@ RUN export XDEBUG_MODE=off && \
     chown www-data:www-data -R /var/www && \
     rm -r /var/lib/apt/lists /var/cache/apt/archives
 
-USER root
-
-ARG UID
-ARG GID
-#    && usermod -u $UID www-data \
-#    && groupmod -g $GID www-data \
-#    && usermod -m -d /home/www-data www-data
-#
 #ARG GITHUB_OAUTH_TOKEN
 #ARG SSH_PRIV_KEY
 #RUN mkdir -p /home/www-data/.ssh /home/www-data/.composer \
@@ -51,6 +53,9 @@ ARG GID
 #    && chmod -R 600 /home/www-data/.ssh/* \
 #    && chown -R www-data:www-data /home/www-data
 
+#USER $UID
+
 USER www-data
 
-RUN composer install
+RUN cd /var/www/html \
+    && composer install
