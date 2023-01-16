@@ -25,10 +25,3 @@ jobs:
                   docker push ghcr.io/cbrooney/bruni-home-php-fpm:latest
                   docker build . -f docker/nginx/build/Dockerfile --build-arg BASE_IMAGE_NGINX="nginx:alpine" --tag ghcr.io/cbrooney/bruni-home-nginx:latest
                   docker push ghcr.io/cbrooney/bruni-home-nginx:latest
-#    run-tests:
-#        runs-on: ubuntu-latest
-#        needs: build
-#        strategy:
-#            matrix:
-#                os: [ubuntu-lastest, windows-2016]
-#                node-version: [12.x, 14.x]
