@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace App;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,8 +20,8 @@ use Throwable;
 
 class DatabaseTestCase extends WebTestCase
 {
-    protected ?string $fixturesDir;
-    protected ?string $fixturesFile;
+    protected ?string $fixturesDir = null;
+    protected ?string $fixturesFile = null;
 
     protected EntityManagerInterface $entityManager;
     protected Connection $connection;
@@ -45,9 +45,6 @@ class DatabaseTestCase extends WebTestCase
         $this->entityManager = $entityManager;
 
         $this->connection = $entityManager->getConnection();
-
-        $this->fixturesFile = null;
-        $this->fixturesDir = __DIR__ . '/Fixtures/';
 
         $this->recreateDatabase();
 //        $this->recreateSchema();
@@ -156,7 +153,7 @@ class DatabaseTestCase extends WebTestCase
     {
         $database = $this->getTestDatabaseName();
         $this->connection->executeStatement(sprintf('use %s;', $database));
-        $this->connection->executeStatement(file_get_contents(__DIR__ . '/../tables.sql'));
+        $this->connection->executeStatement(file_get_contents(__DIR__ . '/tables.sql'));
     }
 
     /**

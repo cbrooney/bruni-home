@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\DatabaseTestCase;
 use Exception;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -37,5 +38,10 @@ class EntityCommandTest extends DatabaseTestCase
             ->fetchAllAssociative();
 
         $this->assertCount(3, $tableEntries);
+    }
+
+    protected function tearDown(): void
+    {
+        return;
     }
 }
