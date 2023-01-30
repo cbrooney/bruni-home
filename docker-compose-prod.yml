@@ -7,6 +7,5 @@ services:
         ports:
             - "8000:8000"
     php-fpm:
-#        image: ghcr.io/cbrooney/bruni-home-php-fpm:latest
-        image: ghcr.io/cbrooney/base-php-fpm-prod:php-fpm
+        image: ghcr.io/cbrooney/bruni-home-app-prod:multi-stage
         container_name: php-fpm
