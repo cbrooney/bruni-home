@@ -3,6 +3,7 @@
 #docker push ghcr.io/cbrooney/bruni-home-app-prod:test-local
 
 # run prod env
+docker-compose -f docker-compose-prod.yml -f docker-compose-db.yml --env-file .env.local.docker-compose pull
 docker-compose -f docker-compose-prod.yml -f docker-compose-db.yml --env-file .env.local.docker-compose up -d
 
 # down
