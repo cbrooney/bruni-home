@@ -1,9 +1,9 @@
 ARG BASE_IMAGE_PHP
 # get correct base dev image - with correct tag
 #FROM ghcr.io/cbrooney/base-php-fpm-dev:latest as dev-base
-FROM ghcr.io/cbrooney/base-php-fpm-dev:php-fpm as dev-base
+#FROM ghcr.io/cbrooney/base-php-fpm-dev:php-fpm as dev-base
 
-FROM dev-base as dev-env
+FROM ghcr.io/cbrooney/base-php-fpm-prod:php-fpm as dev-env
 
 USER root
 COPY --chown=www-data:www-data . /var/www/html
