@@ -13,6 +13,8 @@ ENV APP_ENV=$APP_ENV
 COPY --chown=www-data:www-data . /var/www/html
 WORKDIR /var/www/html
 
+USER www-data
+
 RUN cd /var/www/html \
     && composer install --no-dev \
     && composer dump-env prod \
