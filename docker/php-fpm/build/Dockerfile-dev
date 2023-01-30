@@ -1,0 +1,14 @@
+ARG BASE_IMAGE_PHP
+# get correct base dev image - with correct tag
+#FROM ghcr.io/cbrooney/base-php-fpm-dev:latest as dev-base
+FROM ghcr.io/cbrooney/base-php-fpm-dev:php-fpm as dev-base
+
+FROM dev-base as dev-env
+
+USER root
+COPY --chown=www-data:www-data . /var/www/html
+
+USER www-data
+
+RUN cd /var/www/html \
+    && composer install

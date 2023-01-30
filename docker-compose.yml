@@ -11,9 +11,11 @@ services:
             - ./docker/nginx/bruni-home.conf:/etc/nginx/conf.d/site.conf
     php-fpm:
         container_name: php-fpm
+#        image: ghcr.io/cbrooney/base-php-fpm-dev:php-fpm
         build:
             context: .
-            dockerfile: docker/php-fpm/build/Dockerfile
+            dockerfile: docker/php-fpm/build/Dockerfile-dev
+            target: dev-env
             args:
                 GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
                 UID: $CONTAINER_USER_UID

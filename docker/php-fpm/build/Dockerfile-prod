@@ -1,0 +1,34 @@
+ARG BASE_IMAGE_PHP
+#FROM ${BASE_IMAGE_PHP} as prod-base
+FROM ghcr.io/cbrooney/base-php-fpm-prod:php-fpm as prod-base
+
+FROM prod-base as prod-env
+
+USER root
+
+ARG APP_ENV
+ARG CONTAINER_USER_UID
+ENV APP_ENV=$APP_ENV
+
+COPY --chown=www-data:www-data . /var/www/html
+WORKDIR /var/www/html
+
+RUN cd /var/www/html \
+    && composer install --no-dev \
+    && composer dump-env prod \
+    && composer dump-autoload --optimize \
+    && rm -Rf /var/www/html/tests
+#    && rm -Rf /var/www/html/docker \
+#    && rm -Rf /var/www/html/.gitlab-ci.yml \
+#    && rm -Rf /var/www/html/phpunit.xml.dist \
+#    && rm -Rf /var/www/html/phpcs.xml.dist \
+#    && rm -Rf /var/www/html/README.md \
+#    && rm -Rf /var/www/html/.env.test \
+#    && rm -Rf /var/www/html/var \
+#    && rm -Rf /var/www/html/helm \
+#    && rm -Rf /var/www/html/manifest
+
+USER $CONTAINER_USER_UID
+
+RUN cd /var/www/html \
+    && bin/console cache:warmup -e prod

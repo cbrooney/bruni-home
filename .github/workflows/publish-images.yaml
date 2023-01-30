@@ -21,7 +21,7 @@ jobs:
 
             - name: Build bruni home Docker images
               run: |
-                  docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-buster" --tag ghcr.io/cbrooney/bruni-home-php-fpm:latest
-                  docker push ghcr.io/cbrooney/bruni-home-php-fpm:latest
+#                  docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-buster" --tag ghcr.io/cbrooney/bruni-home-php-fpm:latest
+#                  docker push ghcr.io/cbrooney/bruni-home-php-fpm:latest
                   docker build . -f docker/nginx/build/Dockerfile --build-arg BASE_IMAGE_NGINX="nginx:alpine" --tag ghcr.io/cbrooney/bruni-home-nginx:latest
                   docker push ghcr.io/cbrooney/bruni-home-nginx:latest
