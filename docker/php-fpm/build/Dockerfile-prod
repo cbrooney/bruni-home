@@ -1,4 +1,4 @@
-ARG BASE_IMAGE_PHP
+#ARG BASE_IMAGE_PHP
 #FROM ${BASE_IMAGE_PHP} as prod-base
 FROM ghcr.io/cbrooney/base-php-fpm-prod:php-fpm as prod-base
 
