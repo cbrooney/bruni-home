@@ -28,7 +28,8 @@ RUN cd /var/www/html \
 #    && rm -Rf /var/www/html/helm \
 #    && rm -Rf /var/www/html/manifest
 
-USER $CONTAINER_USER_UID
+USER www-data
+#USER $CONTAINER_USER_UID
 
 RUN cd /var/www/html \
     && bin/console cache:warmup -e prod
