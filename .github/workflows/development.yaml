@@ -71,6 +71,3 @@ jobs:
                     echo ${GITHUB_HEAD_REF}
                     docker build . -f docker/php-fpm/build/Dockerfile-prod --build-arg APP_ENV="prod" --build-arg CONTAINER_USER_UID="1000" --tag ghcr.io/cbrooney/bruni-home-app-prod:${GITHUB_HEAD_REF}
                     docker push ghcr.io/cbrooney/bruni-home-app-prod:${GITHUB_HEAD_REF}
-#            -   name: shut down docker containers
-#                run: |
-#                    docker-compose -f docker-compose-php-test.yml --env-file .env.test down
