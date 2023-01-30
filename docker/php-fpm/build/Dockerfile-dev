@@ -8,6 +8,23 @@ FROM ghcr.io/cbrooney/base-php-fpm-dev:php-fpm as dev-env
 USER root
 COPY --chown=www-data:www-data . /var/www/html
 
+ARG UID
+ARG GID
+
+#RUN usermod -u "$UID" www-data \
+#    && groupmod -g "$GID" www-data
+#    && usermod -m -d /home/www-data www-data
+
+#ARG GITHUB_OAUTH_TOKEN
+#ARG SSH_PRIV_KEY
+#RUN mkdir -p /home/www-data/.ssh /home/www-data/.composer \
+#    && printf '{"github-oauth":{"github.com":"%s"}}' "$GITHUB_OAUTH_TOKEN" > /home/www-data/.composer/auth.json \
+#    && echo -n $SSH_PRIV_KEY | base64 -d > /home/www-data/.ssh/id_rsa \
+#    && chmod -R 600 /home/www-data/.ssh/* \
+#    && chown -R www-data:www-data /home/www-data
+
+#USER $UID
+
 USER www-data
 
 RUN cd /var/www/html \
