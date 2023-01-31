@@ -1,4 +1,4 @@
-docker build . -f docker/php-fpm/build/Dockerfile --tag ghcr.io/cbrooney/bruni-home-php-fpm:test
+docker build . -f docker/php-fpm/build/Dockerfile-dev --tag ghcr.io/cbrooney/bruni-home-php-fpm:test
 
 docker build . -f Dockerfile.nginx.build --build-arg FPM_IMAGE="ghcr.io/cbrooney/bruni-home-php-fpm:test" --tag ghcr.io/cbrooney/bruni-home-nginx:test
 
