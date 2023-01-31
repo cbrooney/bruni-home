@@ -10,18 +10,16 @@ jobs:
             contents: read
             packages: write
         steps:
-            - uses: actions/checkout@v3
-
-            - name: Login to GitHub Container Registry
-              uses: docker/login-action@v1
-              with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Build bruni home Docker images
-              run: |
-                  docker build . -f docker/php-fpm/build/Dockerfile --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-buster" --tag ghcr.io/cbrooney/bruni-home-php-fpm:latest
-                  docker push ghcr.io/cbrooney/bruni-home-php-fpm:latest
-                  docker build . -f docker/nginx/build/Dockerfile --build-arg BASE_IMAGE_NGINX="nginx:alpine" --tag ghcr.io/cbrooney/bruni-home-nginx:latest
-                  docker push ghcr.io/cbrooney/bruni-home-nginx:latest
+            -   uses: actions/checkout@v3
+            -   name: Login to GitHub Container Registry
+                uses: docker/login-action@v1
+                with:
+                    registry: ghcr.io
+                    username: ${{ github.actor }}
+                    password: ${{ secrets.GITHUB_TOKEN }}
+            -   name: Create images
+                run: |
+                    docker build . -f docker/nginx/build/Dockerfile --build-arg BASE_IMAGE_NGINX="nginx:alpine" --tag ghcr.io/cbrooney/bruni-home-nginx:latest
+                    docker push ghcr.io/cbrooney/bruni-home-nginx:latest
+                    docker build . -f docker/php-fpm/build/Dockerfile-prod --build-arg APP_ENV="prod" --build-arg CONTAINER_USER_UID="1000" --tag ghcr.io/cbrooney/bruni-home-app-prod:latest
+                    docker push ghcr.io/cbrooney/bruni-home-app-prod:latest
