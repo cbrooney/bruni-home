@@ -3,30 +3,30 @@ version: '3.4'
 services:
     web:
         container_name: nginx
-        image: ghcr.io/cbrooney/bruni-home-nginx-rasp:test
+        image: ghcr.io/cbrooney/bruni-home-nginx-rasp:latest
         volumes:
             - ./public/bilder/:/var/www/html/public/bilder/
         ports:
             - "8000:8000"
     php-fpm:
         container_name: php-fpm
-        image: ghcr.io/cbrooney/bruni-home-php-fpm-rasp:test
+        image: ghcr.io/cbrooney/bruni-home-app-rasp:latest
         volumes:
             - ./public/bilder/:/var/www/html/public/bilder/
             - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history
-    database:
-        image: lscr.io/linuxserver/mariadb:10.5.17
-        container_name: database
-        environment:
-            PUID: 1000
-            PGID: 1000
-            TZ: Europe/London
-            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-            MYSQL_DATABASE: $MYSQL_DATABASE
-            MYSQL_USER: $MYSQL_USER
-            MYSQL_PASSWORD: $MYSQL_PASSWORD
-        volumes:
-            - ../mariadb:/config
-        ports:
-            - "3306:3306"
+#    database:
+#        image: lscr.io/linuxserver/mariadb:10.5.17
+#        container_name: database
+#        environment:
+#            PUID: 1000
+#            PGID: 1000
+#            TZ: Europe/London
+#            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+#            MYSQL_DATABASE: $MYSQL_DATABASE
+#            MYSQL_USER: $MYSQL_USER
+#            MYSQL_PASSWORD: $MYSQL_PASSWORD
+#        volumes:
+#            - ../mariadb:/config
+#        ports:
+#            - "3306:3306"
         # restart: unless-stopped
