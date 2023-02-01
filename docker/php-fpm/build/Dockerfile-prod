@@ -1,6 +1,6 @@
-#ARG BASE_IMAGE_PHP
-#FROM ${BASE_IMAGE_PHP} as prod-base
-FROM ghcr.io/cbrooney/base-php-fpm-rasp:latest as prod-base
+ARG BASE_IMAGE_PHP
+# base image will be built in github or locally on rasp
+FROM ghcr.io/cbrooney/${BASE_IMAGE_PHP} as prod-base
 
 FROM prod-base as prod-env
 
