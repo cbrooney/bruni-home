@@ -27,7 +27,7 @@ jobs:
                 run: |
                     echo ${GITHUB_HEAD_REF}
                     docker build . -f docker/php-fpm/build/Dockerfile-dev --build-arg PHP_BASE_IMAGE_TAG="latest" --tag ghcr.io/cbrooney/bruni-home-app-test:${GITHUB_HEAD_REF}
-                    docker push ghcr.io/cbrooney/bruni-home-app-test:${GITHUB_HEAD_REF}
+#                    docker push ghcr.io/cbrooney/bruni-home-app-test:${GITHUB_HEAD_REF}
     run-tests:
         runs-on: ubuntu-latest
         needs: build-test-env
