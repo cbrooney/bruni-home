@@ -3,3 +3,6 @@
 
 # run dev env, and build
 docker-compose -f docker-compose-dev.yml -f docker-compose-db.yml --env-file .env.local.docker-compose up -d --build
+
+# down
+# docker-compose -f docker-compose-dev.yml -f docker-compose-db.yml --env-file .env.local.docker-compose down
