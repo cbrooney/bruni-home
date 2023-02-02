@@ -1,6 +1,7 @@
+ARG PHP_BASE_IMAGE
 ARG PHP_BASE_IMAGE_TAG
 # base image will be built in github or locally on rasp
-FROM ghcr.io/cbrooney/base-php-fpm-rasp:8.0.27 as prod-base
+FROM ghcr.io/cbrooney/${PHP_BASE_IMAGE}:${PHP_BASE_IMAGE_TAG} as prod-base
 
 FROM prod-base as prod-env
 

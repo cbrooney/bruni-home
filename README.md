@@ -49,6 +49,6 @@
 - go to rasp
 - git checkout `branch` (base-images)
 - git pull
-- bash build-rasp.sh
+- bash build-rasp-env.sh
 - bash run-rasp.sh
     - docker compose -f docker-compose-rasp.yml -f docker-compose-db.yml --env-file .env.local.docker-compose up -d --remove-orphans
