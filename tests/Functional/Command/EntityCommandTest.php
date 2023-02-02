@@ -39,9 +39,4 @@ class EntityCommandTest extends DatabaseTestCase
 
         $this->assertCount(3, $tableEntries);
     }
-
-    protected function tearDown(): void
-    {
-        return;
-    }
 }

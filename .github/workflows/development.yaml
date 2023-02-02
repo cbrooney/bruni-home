@@ -26,7 +26,7 @@ jobs:
             -   name: Build and push env for tests for this branch
                 run: |
                     echo ${GITHUB_HEAD_REF}
-                    docker build . -f docker/php-fpm/build/Dockerfile-dev --build-arg BASE_IMAGE_PHP="php:7.4.30-fpm-buster" --tag ghcr.io/cbrooney/bruni-home-app-test:${GITHUB_HEAD_REF}
+                    docker build . -f docker/php-fpm/build/Dockerfile-dev --build-arg PHP_BASE_IMAGE_TAG="8.0.27" --tag ghcr.io/cbrooney/bruni-home-app-test:${GITHUB_HEAD_REF}
                     docker push ghcr.io/cbrooney/bruni-home-app-test:${GITHUB_HEAD_REF}
     run-tests:
         runs-on: ubuntu-latest
@@ -69,5 +69,5 @@ jobs:
             -   name: Build and push prod env for this branch
                 run: |
                     echo ${GITHUB_HEAD_REF}
-                    docker build . -f docker/php-fpm/build/Dockerfile-prod --build-arg APP_ENV="prod" --build-arg CONTAINER_USER_UID="1000" --build-arg BASE_IMAGE_PHP="base-php-fpm-prod:latest" --tag ghcr.io/cbrooney/bruni-home-app-prod:${GITHUB_HEAD_REF}
+                    docker build . -f docker/php-fpm/build/Dockerfile-prod --build-arg PHP_BASE_IMAGE_TAG="8.0.27" --build-arg APP_ENV="prod" --build-arg CONTAINER_USER_UID="1000" --tag ghcr.io/cbrooney/bruni-home-app-prod:${GITHUB_HEAD_REF}
                     docker push ghcr.io/cbrooney/bruni-home-app-prod:${GITHUB_HEAD_REF}

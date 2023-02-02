@@ -10,7 +10,7 @@ services:
             - "8000:8000"
     php-fpm:
         container_name: php-fpm
-        image: ghcr.io/cbrooney/bruni-home-app-rasp:latest
+        image: ghcr.io/cbrooney/bruni-home-app-rasp:8.0.27
         volumes:
             - ./public/bilder/:/var/www/html/public/bilder/
             - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history
