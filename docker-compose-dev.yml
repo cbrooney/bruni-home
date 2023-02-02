@@ -21,6 +21,7 @@ services:
                 UID: $CONTAINER_USER_UID
                 GID: $CONTAINER_USER_GID
                 SSH_PRIV_KEY: $SSH_PRIV_KEY
+                PHP_BASE_IMAGE_TAG: latest
         volumes:
             - .:/var/www/html
             - ./docker/php-fpm/.bash_history:/var/www/.bash_history
