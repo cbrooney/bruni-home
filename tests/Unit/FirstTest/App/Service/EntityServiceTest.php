@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\FirstTest\App\Service;
 
 use App\FirstTest\App\Entity\TestEntity;
 use App\FirstTest\App\Repository\TestEntityRepository;
-use App\FirstTest\App\Service\EntityService;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
