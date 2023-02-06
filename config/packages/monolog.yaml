@@ -2,6 +2,13 @@ monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
 
+    handlers:
+        console:
+            type: console
+            process_psr_3_messages: false
+            formatter: console_formatter
+            channels: ['!event', '!doctrine', '!console']
+
 when@dev:
     monolog:
         handlers:
@@ -18,10 +25,6 @@ when@dev:
             #chromephp:
             #    type: chromephp
             #    level: info
-            console:
-                type: console
-                process_psr_3_messages: false
-                channels: ["!event", "!doctrine", "!console"]
 
 when@test:
     monolog:
@@ -51,10 +54,6 @@ when@prod:
                 path: php://stderr
                 level: debug
                 formatter: monolog.formatter.json
-            console:
-                type: console
-                process_psr_3_messages: false
-                channels: ["!event", "!doctrine"]
             deprecation:
                 type: stream
                 channels: [deprecation]

@@ -1,0 +1,30 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $kernelDir: '%kernel.project_dir%'
+#            $transactionService: "@ksys.service.transaction"
+#            $creditQueueRepository: "@ksys.repository.creditqueue"
+#            $entityManager: "@doctrine.orm.accountsystem_entity_manager"
+#            $interTransferRepository: '@Auxmoney\Bundle\PaymentSystemBundle\Repository\InterTransferRepository'
+#            $filesystem: '@gaufrette.chargebackPayout_filesystem'
+#            $preCheckCriteria: !tagged chargeback_payout.pre_check
+#            $importFilesRepository: '@Auxmoney\Bundle\AccountSystemBundle\Repository\ImportFilesRepository'
+#            $blockedTransactionRepository: '@ksys.repository.blockedtransaction'
+
+#    _instanceof:
+#        Auxmoney\AccountSystem\ChargebackPayout\App\Criteria\PreCheckCriterionInterface:
+#            tags: ['chargeback_payout.pre_check']
+
+    App\Darts\App\Command\:
+        resource: '../../Command'
+        autoconfigure: true
+
+#    App\Darts\App\:
+#        resource: '../../*'
+#        exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'
+
+#    Auxmoney\AccountSystem\ChargebackPayout\PublicInterface\:
+#        resource: '../../../PublicInterface'

@@ -1,5 +1,5 @@
 controllers:
-    resource: ../../src/Controller/
+    resource: ../../src/FirstTest/App/Controller/
     type: annotation
 
 kernel:

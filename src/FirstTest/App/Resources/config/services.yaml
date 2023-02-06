@@ -1,0 +1,30 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+#            $publicDir: '%kernel.project_dir%/public'
+            $bilderDir: '%kernel.project_dir%/public/bilder'
+
+#    _instanceof:
+#        Auxmoney\AccountSystem\ChargebackPayout\App\Criteria\PreCheckCriterionInterface:
+#            tags: ['chargeback_payout.pre_check']
+
+    App\FirstTest\App\Command\:
+        resource: '../../Command'
+#        autoconfigure: true
+
+    #    App\:
+    #        resource: '../src/'
+    #        exclude:
+    #            - '../src/DependencyInjection/'
+    #            - '../src/Entity/'
+    #            - '../src/Kernel.php'
+
+    App\FirstTest\App\:
+        resource: '../../*'
+        exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'
+
+#    Auxmoney\AccountSystem\ChargebackPayout\PublicInterface\:
+#        resource: '../../../PublicInterface'

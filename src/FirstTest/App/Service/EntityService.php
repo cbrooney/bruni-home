@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\FirstTest\App\Service;
 
-use App\Entity\TestEntity;
-use App\Repository\TestEntityRepository;
+use App\FirstTest\App\Entity\TestEntity;
+use App\FirstTest\App\Repository\TestEntityRepository;
 
 class EntityService
 {
