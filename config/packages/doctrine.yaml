@@ -18,11 +18,16 @@ doctrine:
 #        naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
         mappings:
-            App:
+            FirstTest:
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/FirstTest/App/Entity'
                 prefix: 'App\FirstTest\App\Entity'
                 alias: App\FirstTest\App\Entity
+            Darts:
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Darts/App/Entity'
+                prefix: 'App\Darts\App\Entity'
+                alias: App\Darts\App\Entity
 
 when@test:
     doctrine:

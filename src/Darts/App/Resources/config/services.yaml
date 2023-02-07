@@ -5,6 +5,7 @@ services:
         public: false
         bind:
             $kernelDir: '%kernel.project_dir%'
+            $dartMatchesTypes: !tagged darts_matches.types
 #            $transactionService: "@ksys.service.transaction"
 #            $creditQueueRepository: "@ksys.repository.creditqueue"
 #            $entityManager: "@doctrine.orm.accountsystem_entity_manager"
@@ -15,16 +16,20 @@ services:
 #            $blockedTransactionRepository: '@ksys.repository.blockedtransaction'
 
 #    _instanceof:
-#        Auxmoney\AccountSystem\ChargebackPayout\App\Criteria\PreCheckCriterionInterface:
+#        Auxmoney\AccountSystem\ChargebackPayout\App\Criteria\DartMatchesInterface:
 #            tags: ['chargeback_payout.pre_check']
+
+    _instanceof:
+        App\Darts\App\Service\DartMatchesInterface:
+            tags: ['darts_matches.types']
 
     App\Darts\App\Command\:
         resource: '../../Command'
         autoconfigure: true
 
-#    App\Darts\App\:
-#        resource: '../../*'
-#        exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'
+    App\Darts\App\:
+        resource: '../../*'
+        exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'
 
 #    Auxmoney\AccountSystem\ChargebackPayout\PublicInterface\:
 #        resource: '../../../PublicInterface'

@@ -9,6 +9,8 @@ namespace App\Darts\App\Command;
 //use App\Darts\App\Service\OneSeventyMatchService;
 //use App\Darts\App\Service\SinglesRoundMatchService;
 //use App\Darts\App\Service\Tripple60MatchService;
+use App\Darts\App\Service\MatchSelectionService;
+use App\Darts\App\Service\MatchSelector;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -16,6 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Throwable;
 
 class DartsMatchCommand extends Command
 {
@@ -25,18 +28,18 @@ class DartsMatchCommand extends Command
     private const MATCH_ONE_SEVENTY = '170';
     private const MATCH_FIVE_HUNDRED_ONE = '501';
     private const MATCH_ROUND_THE_CLOCK_BRUNI = 'Bruni Round the Clock';
-    private const MATCH_TRIPPLE_60 = 't-60';
+
 
     private const MATCH_CHOICES = [
-        self::MATCH_SINGLE_ROUND,
-        self::MATCH_ONE_SEVENTY,
-        self::MATCH_FIVE_HUNDRED_ONE,
-        self::MATCH_ROUND_THE_CLOCK_BRUNI,
-        self::MATCH_TRIPPLE_60,
+//        self::MATCH_SINGLE_ROUND,
+//        self::MATCH_ONE_SEVENTY,
+//        self::MATCH_FIVE_HUNDRED_ONE,
+//        self::MATCH_ROUND_THE_CLOCK_BRUNI,
+        MatchSelectionService::MATCH_TRIPPLE_60,
     ];
 
     private const ALLOWED_OPTIONS = [
-        self::MATCH_TRIPPLE_60,
+        MatchSelectionService::MATCH_TRIPPLE_60,
     ];
 
 //    private $singlesRoundMatchService;
@@ -44,6 +47,7 @@ class DartsMatchCommand extends Command
 //    private $fiveHundredOneMatchService;
 //    private $brunisRoundTheClockMatchService;
 //    private $tripple60MatchService;
+    private MatchSelector $matchSelector;
     private LoggerInterface $logger;
     private string $kernelDir;
 
@@ -53,6 +57,7 @@ class DartsMatchCommand extends Command
 //        FiveHundredOneMatchService $fiveHundredOneMatchService,
 //        BrunisRoundTheClockMatchService $brunisRoundTheClockMatchService,
 //        Tripple60MatchService $tripple60MatchService
+        MatchSelector $matchSelector,
         LoggerInterface $logger,
         string $kernelDir
     ) {
@@ -63,6 +68,7 @@ class DartsMatchCommand extends Command
 //        $this->fiveHundredOneMatchService = $fiveHundredOneMatchService;
 //        $this->brunisRoundTheClockMatchService = $brunisRoundTheClockMatchService;
 //        $this->tripple60MatchService = $tripple60MatchService;
+        $this->matchSelector = $matchSelector;
         $this->logger = $logger;
         $this->kernelDir = $kernelDir;
     }
@@ -83,9 +89,20 @@ class DartsMatchCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->logger->info('start');
+        $this->logger->info('Start');
 
-        var_dump($this->kernelDir);
+        try {
+            $matchType = $input->getArgument('match-type');
+            $this->matchSelector->startNewMatch($matchType);
+        } catch (Throwable $exception) {
+            $this->logger->error(sprintf('Error while running Command. Error was: %s', $exception->getMessage()));
+
+            return self::FAILURE;
+        }
+
+        $this->logger->info('End');
+
+        return self::SUCCESS;
 
         // echo $this->singlesRoundMatchService->getStatisticsForMatch(1)->toString();
 
@@ -123,9 +140,5 @@ class DartsMatchCommand extends Command
 //                }
 //                break;
 //        }
-
-        $this->logger->info('end');
-
-        return self::SUCCESS;
     }
 }
