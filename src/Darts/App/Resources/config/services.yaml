@@ -1,0 +1,22 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $dartMatchesTypes: !tagged darts_matches.types
+
+    _instanceof:
+        App\Darts\App\Service\DartMatchesInterface:
+            tags: ['darts_matches.types']
+
+    App\Darts\App\Command\:
+        resource: '../../Command'
+        autoconfigure: true
+
+    App\Darts\App\:
+        resource: '../../*'
+        exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'
+
+#    Auxmoney\AccountSystem\ChargebackPayout\PublicInterface\:
+#        resource: '../../../PublicInterface'

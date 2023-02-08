@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $bilderDir: '%kernel.project_dir%/public/bilder'
+
+    App\FirstTest\App\Command\:
+        resource: '../../Command'
+
+    #    App\:
+    #        resource: '../src/'
+    #        exclude:
+    #            - '../src/DependencyInjection/'
+    #            - '../src/Entity/'
+    #            - '../src/Kernel.php'
+
+    App\FirstTest\App\:
+        resource: '../../*'
+        exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'
+
+#    App\FirstTest\App\PublicInterface\:
+#        resource: '../../../PublicInterface'

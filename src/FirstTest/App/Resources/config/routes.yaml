@@ -1,0 +1,9 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+#app_lucky_number:
+#    path: /lucky/number
+#    controller: App\Controller\LuckyController::number
+first_test:
+    resource: ../../src/FirstTest/App/Controller/
+    type: annotation

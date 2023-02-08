@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\FirstTest\App\Entity;
 
-use App\Repository\TestEntityRepository;
+use App\FirstTest\App\Repository\TestEntityRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;

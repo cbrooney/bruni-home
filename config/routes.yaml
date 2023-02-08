@@ -4,3 +4,10 @@
 #app_lucky_number:
 #    path: /lucky/number
 #    controller: App\Controller\LuckyController::number
+#auxmoney_personal_data:
+#    resource: "@AuxmoneyPersonalDataBundle/Resources/config/routing.yml"
+#    prefix:   /
+#first_test:
+#    resource: ../src/FirstTest/App/Controller/
+#    type: annotation
+

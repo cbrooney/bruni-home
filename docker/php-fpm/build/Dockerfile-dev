@@ -6,14 +6,17 @@ FROM ghcr.io/cbrooney/base-php-fpm-dev:${PHP_BASE_IMAGE_TAG} as dev-base
 FROM dev-base as dev-env
 
 USER root
+
+ARG CONTAINER_USER_UID
+ARG CONTAINER_USER_GID
+
+RUN echo "$CONTAINER_USER_UID" \
+    && echo ${CONTAINER_USER_UID} \
+    && usermod -u "$CONTAINER_USER_UID" www-data \
+    && groupmod -g "$CONTAINER_USER_GID" www-data \
+    && usermod -m -d /home/www-data www-data
+
 COPY --chown=www-data:www-data . /var/www/html
-
-ARG UID
-ARG GID
-
-#RUN usermod -u "$UID" www-data \
-#    && groupmod -g "$GID" www-data
-#    && usermod -m -d /home/www-data www-data
 
 #ARG GITHUB_OAUTH_TOKEN
 #ARG SSH_PRIV_KEY

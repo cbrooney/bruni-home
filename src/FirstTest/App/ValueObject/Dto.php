@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ValueObject;
+namespace App\FirstTest\App\ValueObject;
 
 class Dto
 {

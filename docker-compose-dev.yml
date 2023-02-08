@@ -18,8 +18,8 @@ services:
             target: dev-env
             args:
                 GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
-                UID: $CONTAINER_USER_UID
-                GID: $CONTAINER_USER_GID
+                CONTAINER_USER_UID: $CONTAINER_USER_UID
+                CONTAINER_USER_GID: $CONTAINER_USER_GID
                 SSH_PRIV_KEY: $SSH_PRIV_KEY
                 PHP_BASE_IMAGE_TAG: latest
         volumes:

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\FirstTest\App\Controller;
 
-use App\Entity\TestEntity;
-use App\Repository\TestEntityRepository;
+use App\FirstTest\App\Entity\TestEntity;
+use App\FirstTest\App\Repository\TestEntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

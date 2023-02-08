@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace App\FirstTest\App\Service;
 
-use App\Entity\TestEntity;
-use App\Repository\TestEntityRepository;
+use App\FirstTest\App\Entity\TestEntity;
+use App\FirstTest\App\Repository\TestEntityRepository;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\Prophecy\ObjectProphecy;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
 
 class EntityServiceTest extends TestCase
 {
