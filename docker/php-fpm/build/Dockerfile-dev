@@ -7,15 +7,13 @@ FROM dev-base as dev-env
 
 USER root
 
-ARG UID
-ARG GID
+ARG CONTAINER_USER_UID
+ARG CONTAINER_USER_GID
 
-
-
-RUN echo "$UID" \
-    && echo ${UID} \
-    && usermod -u "$UID" www-data \
-    && groupmod -g "$GID" www-data \
+RUN echo "$CONTAINER_USER_UID" \
+    && echo ${CONTAINER_USER_UID} \
+    && usermod -u "$CONTAINER_USER_UID" www-data \
+    && groupmod -g "$CONTAINER_USER_GID" www-data \
     && usermod -m -d /home/www-data www-data
 
 COPY --chown=www-data:www-data . /var/www/html
