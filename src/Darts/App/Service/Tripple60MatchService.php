@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Darts\App\Service;
 
-use App\Darts\App\Entity\SinglesRoundMatch;
 use App\Darts\App\Entity\T60Match;
-use App\Darts\App\Repository\SinglesRoundMatchRepository;
 use App\Darts\App\Repository\T60MatchRepository;
-use App\Darts\App\ValueObject\SingleRoundMatchStatistics;
 use Exception;
 use RuntimeException;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -18,10 +15,7 @@ use Symfony\Component\Console\Question\Question;
 
 class Tripple60MatchService implements DartMatchesInterface
 {
-    public function supports(string $type): bool
-    {
-        return $type === MatchSelectionService::MATCH_TRIPPLE_60;
-    }
+    private const MAX_AUFNAHMEN = 5;
 
     private const POINTS_MAPPING = [
         0 => 0,
@@ -35,12 +29,16 @@ class Tripple60MatchService implements DartMatchesInterface
         8 => 20,
         9 => 1,
     ];
-
     private T60MatchRepository $t60MatchRepository;
 
     public function __construct(T60MatchRepository $t60MatchRepository)
     {
         $this->t60MatchRepository = $t60MatchRepository;
+    }
+
+    public function supports(string $type): bool
+    {
+        return $type === MatchSelectionService::MATCH_TRIPPLE_60;
     }
 
     public function recordNewMatch(QuestionHelper $questionHelper, InputInterface $input, OutputInterface $output): int
@@ -49,7 +47,7 @@ class Tripple60MatchService implements DartMatchesInterface
 
         $output->writeln(sprintf('Spiel Nummer %d', $nextMatchNumber));
 
-        for ($roundsCounter = 1; $roundsCounter < 51; $roundsCounter++) {
+        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN +1; $roundsCounter++) {
             $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output);
 
             foreach ($aufnahme as $pfeil) {
@@ -57,6 +55,8 @@ class Tripple60MatchService implements DartMatchesInterface
                 $this->t60MatchRepository->store($t60Match);
             }
         }
+
+        $this->getStatisticsForMatch($nextMatchNumber);
 
         return $nextMatchNumber;
     }
@@ -82,7 +82,7 @@ class Tripple60MatchService implements DartMatchesInterface
         }
 
         $points = 0;
-        $t60 = 0;
+        $tripple20 = 0;
         $gerade = 0;
         $links = 0;
         $rechts = 0;
@@ -98,7 +98,7 @@ class Tripple60MatchService implements DartMatchesInterface
             $field = $dart->getFieldHit();
 
             if ($field === 5) {
-                $t60++;
+                $tripple20++;
             }
 
             if (in_array($field, [2,5,8])) {
@@ -144,11 +144,13 @@ class Tripple60MatchService implements DartMatchesInterface
             }
         }
 
+        echo PHP_EOL;
         echo "Aufnahmen: " . $aufnahmen . PHP_EOL;
         echo "Start:\t" . $start->format('Y-m-d H:i:s') . PHP_EOL;
+        echo "Ende:\t" . $ende->format('Y-m-d H:i:s') . PHP_EOL;
         echo "Dauer:\t" . $dauer->i . ':' . $dauer->s . ' min' . PHP_EOL;
         echo '3D-Avg: ' . round($points * 3 / $numberOfDarts, 2) . PHP_EOL;
-        echo "T20:\t" . round($t60 * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
+        echo "T20:\t" . round($tripple20 * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
         echo "Gerade:\t" . round($gerade * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
         echo "Links:\t" . round($links * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
         echo "Rechts:\t" . round($rechts * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
@@ -191,8 +193,6 @@ class Tripple60MatchService implements DartMatchesInterface
             return $arrayAufnahme;
         });
 
-        $arrayAufnahme = $questionHelper->ask($input, $output, $question);
-
-        return $arrayAufnahme;
+        return $questionHelper->ask($input, $output, $question);
     }
 }

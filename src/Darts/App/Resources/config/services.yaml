@@ -4,20 +4,7 @@ services:
         autoconfigure: true
         public: false
         bind:
-            $kernelDir: '%kernel.project_dir%'
             $dartMatchesTypes: !tagged darts_matches.types
-#            $transactionService: "@ksys.service.transaction"
-#            $creditQueueRepository: "@ksys.repository.creditqueue"
-#            $entityManager: "@doctrine.orm.accountsystem_entity_manager"
-#            $interTransferRepository: '@Auxmoney\Bundle\PaymentSystemBundle\Repository\InterTransferRepository'
-#            $filesystem: '@gaufrette.chargebackPayout_filesystem'
-#            $preCheckCriteria: !tagged chargeback_payout.pre_check
-#            $importFilesRepository: '@Auxmoney\Bundle\AccountSystemBundle\Repository\ImportFilesRepository'
-#            $blockedTransactionRepository: '@ksys.repository.blockedtransaction'
-
-#    _instanceof:
-#        Auxmoney\AccountSystem\ChargebackPayout\App\Criteria\DartMatchesInterface:
-#            tags: ['chargeback_payout.pre_check']
 
     _instanceof:
         App\Darts\App\Service\DartMatchesInterface:
