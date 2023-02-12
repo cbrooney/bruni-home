@@ -46,13 +46,12 @@ class MatchSelectionService implements MatchSelector
         }
     }
 
-    public function createStatisticsFile(
-        InputInterface $input,
-        string $type
-    ): void {
+    public function createStatisticsFile(string $type): void
+    {
         foreach ($this->dartMatchesTypes as $dartMatchesType) {
             if ($dartMatchesType->supports($type)) {
                 $dartMatchesType->createStatisticsFile();
+                return;
             }
         }
     }

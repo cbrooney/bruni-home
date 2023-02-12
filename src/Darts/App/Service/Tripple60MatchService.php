@@ -9,6 +9,7 @@ use App\Darts\App\Repository\T60MatchRepository;
 use App\Darts\App\ValueObject\Tripple60MatchStatisticsDto;
 use DateTime;
 use Exception;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Question\Question;
 
 class Tripple60MatchService implements DartMatchesInterface
 {
-    private const MAX_AUFNAHMEN = 50;
+    private const MAX_AUFNAHMEN = 5;
 
     private const POINTS_MAPPING = [
         0 => 0,
@@ -31,13 +32,19 @@ class Tripple60MatchService implements DartMatchesInterface
         8 => 20,
         9 => 1,
     ];
+
     private T60MatchRepository $t60MatchRepository;
+    private LoggerInterface $logger;
     private string $statisticsDir;
 
-    public function __construct(T60MatchRepository $t60MatchRepository, string $statisticsDir)
-    {
+    public function __construct(
+        T60MatchRepository $t60MatchRepository,
+        LoggerInterface $logger,
+        string $statisticsDir
+    ) {
         $this->t60MatchRepository = $t60MatchRepository;
         $this->statisticsDir = $statisticsDir;
+        $this->logger = $logger;
     }
 
     public function supports(string $type): bool
@@ -73,8 +80,6 @@ class Tripple60MatchService implements DartMatchesInterface
 
         foreach ($allMatchIds as $matchId) {
             $statisticsDtos[] = $this->createStatisticsDto($matchId);
-
-//            $this->getStatisticsForMatch($matchId);
         }
 
         return $this->createFile($statisticsDtos);
@@ -93,11 +98,13 @@ class Tripple60MatchService implements DartMatchesInterface
             return $filename;
         }
 
-        $fileContent = $statisticsDtos[0]->getHeaderLine();
+        $fileContent = $statisticsDtos[0]->getHeaderLine() . PHP_EOL;
+
+        foreach ($statisticsDtos as $statisticsDto) {
+            $fileContent .= $statisticsDto->getLine() . PHP_EOL;
+        }
 
         file_put_contents($filename, $fileContent);
-
-        var_dump($filename);
 
         return $filename;
     }
@@ -190,20 +197,6 @@ class Tripple60MatchService implements DartMatchesInterface
             ->setPunkte140Plus($punkte140Plus)
             ->setPunkte180($punkte180);
 
-//        echo PHP_EOL;
-//        echo "Aufnahmen: " . $aufnahmen . PHP_EOL;
-//        echo "Start:\t" . $start->format('Y-m-d H:i:s') . PHP_EOL;
-//        echo "Ende:\t" . $ende->format('Y-m-d H:i:s') . PHP_EOL;
-//        echo "Dauer:\t" . $dauer->i . ':' . $dauer->s . ' min' . PHP_EOL;
-//        echo '3D-Avg: ' . round($points * 3 / $numberOfDarts, 2) . PHP_EOL;
-//        echo "T20:\t" . round($tripple20 * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-//        echo "Gerade:\t" . round($gerade * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-//        echo "Links:\t" . round($links * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-//        echo "Rechts:\t" . round($rechts * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-//        echo "100+:\t" . $punkte100Plus . PHP_EOL;
-//        echo "140+:\t" . $punkte140Plus . PHP_EOL;
-//        echo "180:\t" . $punkte180 . PHP_EOL;
-
         return $dto;
     }
 
@@ -219,90 +212,9 @@ class Tripple60MatchService implements DartMatchesInterface
 
     public function getStatisticsForMatch(int $matchId): void
     {
-        $dartsForMatch = $this->t60MatchRepository->getThrownDartsByMatch($matchId);
+        $dto = $this->createStatisticsDto($matchId);
 
-        $numberOfDarts = count($dartsForMatch);
-
-        if ($numberOfDarts === 0) {
-            return;
-        }
-
-        $points = 0;
-        $tripple20 = 0;
-        $gerade = 0;
-        $links = 0;
-        $rechts = 0;
-
-        $punkteProAufnahme = [];
-
-        $start = $dartsForMatch[0]->getCreatedAt();
-        $ende = $dartsForMatch[array_key_last($dartsForMatch)]->getCreatedAt();
-
-        $dauer = $start->diff($ende);
-
-        foreach ($dartsForMatch as $dart) {
-            $field = $dart->getFieldHit();
-
-            if ($field === 5) {
-                $tripple20++;
-            }
-
-            if (in_array($field, [2,5,8])) {
-                $gerade++;
-            }
-
-            if (in_array($field, [1,4,7])) {
-                $links++;
-            }
-
-            if (in_array($field, [3,6,9])) {
-                $rechts++;
-            }
-
-            $punkteProPfeil = self::POINTS_MAPPING[$field];
-
-            $points += $punkteProPfeil;
-
-            if (!isset($punkteProAufnahme[$dart->getAufnahme()])) {
-                $punkteProAufnahme[$dart->getAufnahme()] = 0;
-            }
-
-            $punkteProAufnahme[$dart->getAufnahme()] += $punkteProPfeil;
-        }
-
-        $aufnahmen = max(array_keys($punkteProAufnahme));
-
-        $punkte100Plus = 0;
-        $punkte140Plus = 0;
-        $punkte180 = 0;
-
-        foreach ($punkteProAufnahme as $punkte) {
-            if ($punkte >= 100) {
-                $punkte100Plus++;
-            }
-
-            if ($punkte >= 140) {
-                $punkte140Plus++;
-            }
-
-            if ($punkte === 180) {
-                $punkte180++;
-            }
-        }
-
-        echo PHP_EOL;
-        echo "Aufnahmen: " . $aufnahmen . PHP_EOL;
-        echo "Start:\t" . $start->format('Y-m-d H:i:s') . PHP_EOL;
-        echo "Ende:\t" . $ende->format('Y-m-d H:i:s') . PHP_EOL;
-        echo "Dauer:\t" . $dauer->i . ':' . $dauer->s . ' min' . PHP_EOL;
-        echo '3D-Avg: ' . round($points * 3 / $numberOfDarts, 2) . PHP_EOL;
-        echo "T20:\t" . round($tripple20 * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "Gerade:\t" . round($gerade * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "Links:\t" . round($links * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "Rechts:\t" . round($rechts * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "100+:\t" . $punkte100Plus . PHP_EOL;
-        echo "140+:\t" . $punkte140Plus . PHP_EOL;
-        echo "180:\t" . $punkte180 . PHP_EOL;
+        echo $dto->getOutput() . PHP_EOL;
     }
 
     /**

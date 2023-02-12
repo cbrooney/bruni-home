@@ -56,10 +56,7 @@ class DartsStatisticsCommand extends Command
         try {
             $matchType = $this->getTypeArgument($input);
 
-            $this->matchSelector->createStatisticsFile(
-                $input,
-                $matchType
-            );
+            $this->matchSelector->createStatisticsFile($matchType);
         } catch (Throwable $exception) {
             $this->logger->error(sprintf('Error while running Command. Error was: %s', $exception->getMessage()));
 
