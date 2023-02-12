@@ -14,9 +14,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-class DartsMatchCommand extends Command
+class DartsStatisticsCommand extends Command
 {
-    protected static $defaultName = 'darts:match:start';
+    protected static $defaultName = 'darts:match:statistics';
 
     public const ALLOWED_ARGUMENTS_FOR_MATCH_TYPES = [
         MatchSelectionService::MATCH_TRIPPLE_60,
@@ -30,6 +30,7 @@ class DartsMatchCommand extends Command
         LoggerInterface $logger
     ) {
         parent::__construct();
+
         $this->matchSelector = $matchSelector;
         $this->logger = $logger;
     }
@@ -54,12 +55,9 @@ class DartsMatchCommand extends Command
 
         try {
             $matchType = $this->getTypeArgument($input);
-            $helper = $this->getHelper('question');
 
-            $this->matchSelector->startNewMatch(
-                $helper,
+            $this->matchSelector->createStatisticsFile(
                 $input,
-                $output,
                 $matchType
             );
         } catch (Throwable $exception) {

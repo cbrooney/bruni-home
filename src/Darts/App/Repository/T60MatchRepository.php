@@ -36,6 +36,27 @@ class T60MatchRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return array<int>
+     */
+    public function getAllMatchIds(): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('DISTINCT(match.matchId) AS matchId')
+            ->from(T60Match::class, 'match');
+
+        $result = $qb->getQuery()->getResult();
+
+        $matchIds = [];
+
+        foreach ($result as $matchIdEntry) {
+            $matchIds[] = (int)$matchIdEntry['matchId'];
+        }
+
+        return $matchIds;
+    }
+
+    /**
      * @return array<T60Match>
      */
     public function getThrownDartsByMatch(int $matchId): array

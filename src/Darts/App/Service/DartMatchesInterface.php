@@ -21,4 +21,6 @@ interface DartMatchesInterface
         InputInterface $input,
         OutputInterface $output
     ): int;
+
+    public function createStatisticsFile(): string;
 }

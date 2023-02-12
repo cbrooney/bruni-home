@@ -5,6 +5,7 @@ services:
         public: false
         bind:
             $dartMatchesTypes: !tagged darts_matches.types
+            $statisticsDir: '/var/www/bruni-home-private/'
 
     _instanceof:
         App\Darts\App\Service\DartMatchesInterface:
