@@ -15,7 +15,7 @@ use Symfony\Component\Console\Question\Question;
 
 class Tripple60MatchService implements DartMatchesInterface
 {
-    private const MAX_AUFNAHMEN = 5;
+    private const MAX_AUFNAHMEN = 50;
 
     private const POINTS_MAPPING = [
         0 => 0,
