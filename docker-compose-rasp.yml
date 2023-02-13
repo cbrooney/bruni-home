@@ -13,7 +13,8 @@ services:
         image: ghcr.io/cbrooney/bruni-home-app-rasp:latest
         volumes:
             - ./public/bilder/:/var/www/html/public/bilder/
-            - ./docker/php-fpm/.bash_history:/home/www-data/.bash_history
+            - ../bruni-home-private:/var/www/bruni-home-private
+            - ../bruni-home-private/.bash_history:/home/www-data/.bash_history
 #    database:
 #        image: lscr.io/linuxserver/mariadb:10.5.17
 #        container_name: database

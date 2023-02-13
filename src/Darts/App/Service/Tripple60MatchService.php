@@ -6,16 +6,20 @@ namespace App\Darts\App\Service;
 
 use App\Darts\App\Entity\T60Match;
 use App\Darts\App\Repository\T60MatchRepository;
+use App\Darts\App\ValueObject\Tripple60MatchStatisticsDto;
+use DateTime;
 use Exception;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Filesystem\Filesystem;
 
 class Tripple60MatchService implements DartMatchesInterface
 {
-    private const MAX_AUFNAHMEN = 50;
+    private const MAX_AUFNAHMEN = 40;
 
     private const POINTS_MAPPING = [
         0 => 0,
@@ -29,11 +33,22 @@ class Tripple60MatchService implements DartMatchesInterface
         8 => 20,
         9 => 1,
     ];
-    private T60MatchRepository $t60MatchRepository;
 
-    public function __construct(T60MatchRepository $t60MatchRepository)
-    {
+    private T60MatchRepository $t60MatchRepository;
+    private Filesystem $filesystem;
+    private LoggerInterface $logger;
+    private string $statisticsDir;
+
+    public function __construct(
+        T60MatchRepository $t60MatchRepository,
+        Filesystem $filesystem,
+        LoggerInterface $logger,
+        string $statisticsDir
+    ) {
         $this->t60MatchRepository = $t60MatchRepository;
+        $this->filesystem = $filesystem;
+        $this->statisticsDir = $statisticsDir;
+        $this->logger = $logger;
     }
 
     public function supports(string $type): bool
@@ -47,8 +62,8 @@ class Tripple60MatchService implements DartMatchesInterface
 
         $output->writeln(sprintf('Spiel Nummer %d', $nextMatchNumber));
 
-        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN +1; $roundsCounter++) {
-            $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output);
+        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN + 1; $roundsCounter++) {
+            $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output, $roundsCounter);
 
             foreach ($aufnahme as $pfeil) {
                 $t60Match = new T60Match($nextMatchNumber, $roundsCounter, (int)$pfeil);
@@ -61,24 +76,57 @@ class Tripple60MatchService implements DartMatchesInterface
         return $nextMatchNumber;
     }
 
-    public function getNextMatchNumber(): int
+    public function createStatisticsFile(): string
     {
-        return $this->t60MatchRepository->getMatchesPlayedUntilNow() + 1;
+        $allMatchIds = $this->t60MatchRepository->getAllMatchIds();
+
+        $statisticsDtos = [];
+
+        foreach ($allMatchIds as $matchId) {
+            $statisticsDtos[] = $this->createStatisticsDto($matchId);
+        }
+
+        return $this->createFile($statisticsDtos);
     }
 
-    public function wasLastMatchFinished(): bool
+    /**
+     * @param array<Tripple60MatchStatisticsDto> $statisticsDtos
+     */
+    private function createFile(array $statisticsDtos): string
     {
-        return true;
+        $now = new DateTime();
+
+        $this->assertDirectoryExists($this->statisticsDir);
+
+        $filename = $this->statisticsDir . 't60_stats_' . $now->format('Y-m-d_H-i-s') . '.csv';
+
+        if (count($statisticsDtos) === 0) {
+            return $filename;
+        }
+
+        $fileContent = $statisticsDtos[0]->getHeaderLine() . PHP_EOL;
+
+        foreach ($statisticsDtos as $statisticsDto) {
+            $fileContent .= $statisticsDto->getLine() . PHP_EOL;
+        }
+
+        file_put_contents($filename, $fileContent);
+
+        $this->logger->info(sprintf('File %s created', $filename));
+
+        return $filename;
     }
 
-    public function getStatisticsForMatch(int $matchId): void
+    private function createStatisticsDto(int $matchId): Tripple60MatchStatisticsDto
     {
+        $dto = new Tripple60MatchStatisticsDto($matchId);
+
         $dartsForMatch = $this->t60MatchRepository->getThrownDartsByMatch($matchId);
 
         $numberOfDarts = count($dartsForMatch);
 
         if ($numberOfDarts === 0) {
-            return;
+            return $dto;
         }
 
         $points = 0;
@@ -144,19 +192,37 @@ class Tripple60MatchService implements DartMatchesInterface
             }
         }
 
-        echo PHP_EOL;
-        echo "Aufnahmen: " . $aufnahmen . PHP_EOL;
-        echo "Start:\t" . $start->format('Y-m-d H:i:s') . PHP_EOL;
-        echo "Ende:\t" . $ende->format('Y-m-d H:i:s') . PHP_EOL;
-        echo "Dauer:\t" . $dauer->i . ':' . $dauer->s . ' min' . PHP_EOL;
-        echo '3D-Avg: ' . round($points * 3 / $numberOfDarts, 2) . PHP_EOL;
-        echo "T20:\t" . round($tripple20 * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "Gerade:\t" . round($gerade * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "Links:\t" . round($links * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "Rechts:\t" . round($rechts * 100 / $numberOfDarts, 2) . '%' . PHP_EOL;
-        echo "100+:\t" . $punkte100Plus . PHP_EOL;
-        echo "140+:\t" . $punkte140Plus . PHP_EOL;
-        echo "180:\t" . $punkte180 . PHP_EOL;
+        $dto->setAufnahmen($aufnahmen)
+            ->setNumberOfDarts($numberOfDarts)
+            ->setStartTime($start)
+            ->setEndTime($ende)
+            ->setPoints($points)
+            ->setTripple20($tripple20)
+            ->setGerade($gerade)
+            ->setLinks($links)
+            ->setRechts($rechts)
+            ->setPunkte100Plus($punkte100Plus)
+            ->setPunkte140Plus($punkte140Plus)
+            ->setPunkte180($punkte180);
+
+        return $dto;
+    }
+
+    public function getNextMatchNumber(): int
+    {
+        return $this->t60MatchRepository->getMatchesPlayedUntilNow() + 1;
+    }
+
+    public function wasLastMatchFinished(): bool
+    {
+        return true;
+    }
+
+    public function getStatisticsForMatch(int $matchId): void
+    {
+        $dto = $this->createStatisticsDto($matchId);
+
+        echo $dto->getOutput() . PHP_EOL;
     }
 
     /**
@@ -166,9 +232,10 @@ class Tripple60MatchService implements DartMatchesInterface
     private function getAufnahmeByUser(
         QuestionHelper $questionHelper,
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
+        int $roundsCounter
     ): array {
-        $questionString = 'Aufnahme:';
+        $questionString = sprintf('Aufnahme <comment>%d</comment>: ...', $roundsCounter);
         $question = new Question($questionString, false);
 
         $arrayAufnahme = [];
@@ -194,5 +261,12 @@ class Tripple60MatchService implements DartMatchesInterface
         });
 
         return $questionHelper->ask($input, $output, $question);
+    }
+
+    private function assertDirectoryExists(string $directory): void
+    {
+        if (!$this->filesystem->exists($directory)) {
+            $this->filesystem->mkdir($directory);
+        }
     }
 }

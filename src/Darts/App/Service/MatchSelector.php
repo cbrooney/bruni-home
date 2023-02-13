@@ -20,4 +20,6 @@ interface MatchSelector
         OutputInterface $output,
         string $type
     ): void;
+
+    public function createStatisticsFile(string $type): void;
 }

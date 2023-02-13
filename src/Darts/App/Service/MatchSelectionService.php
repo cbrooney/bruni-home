@@ -40,6 +40,18 @@ class MatchSelectionService implements MatchSelector
                     $input,
                     $output
                 );
+
+                return;
+            }
+        }
+    }
+
+    public function createStatisticsFile(string $type): void
+    {
+        foreach ($this->dartMatchesTypes as $dartMatchesType) {
+            if ($dartMatchesType->supports($type)) {
+                $dartMatchesType->createStatisticsFile();
+                return;
             }
         }
     }

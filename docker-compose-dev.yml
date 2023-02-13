@@ -24,4 +24,5 @@ services:
                 PHP_BASE_IMAGE_TAG: latest
         volumes:
             - .:/var/www/html
-            - ./docker/php-fpm/.bash_history:/var/www/.bash_history
+            - ../bruni-home-private:/var/www/bruni-home-private
+            - ../bruni-home-private/.bash_history:/home/www-data/.bash_history

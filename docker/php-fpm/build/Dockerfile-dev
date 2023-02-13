@@ -30,5 +30,7 @@ COPY --chown=www-data:www-data . /var/www/html
 
 USER www-data
 
+# RUN mkdir /var/www/private
+
 RUN cd /var/www/html \
     && composer install

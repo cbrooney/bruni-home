@@ -5,6 +5,7 @@ services:
         public: false
         bind:
             $dartMatchesTypes: !tagged darts_matches.types
+            $statisticsDir: '%env(resolve:PRIVATE_DIR)%statistics/'
 
     _instanceof:
         App\Darts\App\Service\DartMatchesInterface:
