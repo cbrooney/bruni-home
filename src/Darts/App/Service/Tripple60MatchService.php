@@ -15,10 +15,11 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Filesystem\Filesystem;
 
 class Tripple60MatchService implements DartMatchesInterface
 {
-    private const MAX_AUFNAHMEN = 5;
+    private const MAX_AUFNAHMEN = 40;
 
     private const POINTS_MAPPING = [
         0 => 0,
@@ -34,15 +35,18 @@ class Tripple60MatchService implements DartMatchesInterface
     ];
 
     private T60MatchRepository $t60MatchRepository;
+    private Filesystem $filesystem;
     private LoggerInterface $logger;
     private string $statisticsDir;
 
     public function __construct(
         T60MatchRepository $t60MatchRepository,
+        Filesystem $filesystem,
         LoggerInterface $logger,
         string $statisticsDir
     ) {
         $this->t60MatchRepository = $t60MatchRepository;
+        $this->filesystem = $filesystem;
         $this->statisticsDir = $statisticsDir;
         $this->logger = $logger;
     }
@@ -58,8 +62,8 @@ class Tripple60MatchService implements DartMatchesInterface
 
         $output->writeln(sprintf('Spiel Nummer %d', $nextMatchNumber));
 
-        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN +1; $roundsCounter++) {
-            $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output);
+        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN + 1; $roundsCounter++) {
+            $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output, $roundsCounter);
 
             foreach ($aufnahme as $pfeil) {
                 $t60Match = new T60Match($nextMatchNumber, $roundsCounter, (int)$pfeil);
@@ -92,6 +96,8 @@ class Tripple60MatchService implements DartMatchesInterface
     {
         $now = new DateTime();
 
+        $this->assertDirectoryExists($this->statisticsDir);
+
         $filename = $this->statisticsDir . 't60_stats_' . $now->format('Y-m-d_H-i-s') . '.csv';
 
         if (count($statisticsDtos) === 0) {
@@ -105,6 +111,8 @@ class Tripple60MatchService implements DartMatchesInterface
         }
 
         file_put_contents($filename, $fileContent);
+
+        $this->logger->info(sprintf('File %s created', $filename));
 
         return $filename;
     }
@@ -224,9 +232,10 @@ class Tripple60MatchService implements DartMatchesInterface
     private function getAufnahmeByUser(
         QuestionHelper $questionHelper,
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
+        int $roundsCounter
     ): array {
-        $questionString = 'Aufnahme:';
+        $questionString = sprintf('Aufnahme <comment>%d</comment>: ...', $roundsCounter);
         $question = new Question($questionString, false);
 
         $arrayAufnahme = [];
@@ -252,5 +261,12 @@ class Tripple60MatchService implements DartMatchesInterface
         });
 
         return $questionHelper->ask($input, $output, $question);
+    }
+
+    private function assertDirectoryExists(string $directory): void
+    {
+        if (!$this->filesystem->exists($directory)) {
+            $this->filesystem->mkdir($directory);
+        }
     }
 }
