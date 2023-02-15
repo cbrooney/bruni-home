@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Darts\App\Service;
 
+use App\Darts\App\Entity\DoppelRoundTheClockMatch;
 use App\Darts\App\Entity\T60Match;
+use App\Darts\App\Repository\DoppelRoundTheClockMatchRepository;
 use App\Darts\App\Repository\T60MatchRepository;
 use App\Darts\App\ValueObject\Tripple60MatchStatisticsDto;
 use DateTime;
@@ -17,9 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
 
-class Tripple60MatchService implements DartMatchesInterface
+class DoppelRoundTheClockMatchService implements DartMatchesInterface
 {
-    private const MAX_AUFNAHMEN = 4;
+    private const MAX_AUFNAHMEN = 40;
 
     private const POINTS_MAPPING = [
         0 => 0,
@@ -34,18 +36,18 @@ class Tripple60MatchService implements DartMatchesInterface
         9 => 1,
     ];
 
-    private T60MatchRepository $t60MatchRepository;
+    private DoppelRoundTheClockMatchRepository $doppelRoundTheClockMatchRepository;
     private Filesystem $filesystem;
     private LoggerInterface $logger;
     private string $statisticsDir;
 
     public function __construct(
-        T60MatchRepository $t60MatchRepository,
+        DoppelRoundTheClockMatchRepository $doppelRoundTheClockMatchRepository,
         Filesystem $filesystem,
         LoggerInterface $logger,
         string $statisticsDir
     ) {
-        $this->t60MatchRepository = $t60MatchRepository;
+        $this->doppelRoundTheClockMatchRepository = $doppelRoundTheClockMatchRepository;
         $this->filesystem = $filesystem;
         $this->statisticsDir = $statisticsDir;
         $this->logger = $logger;
@@ -53,7 +55,7 @@ class Tripple60MatchService implements DartMatchesInterface
 
     public function supports(string $type): bool
     {
-        return $type === MatchSelectionService::MATCH_TRIPPLE_60;
+        return $type === MatchSelectionService::MATCH_DOPPEL_ROUND_THE_CLOCK;
     }
 
     public function recordNewMatch(
@@ -62,23 +64,54 @@ class Tripple60MatchService implements DartMatchesInterface
         InputInterface $input,
         OutputInterface $output
     ): int {
-        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN + 1; $roundsCounter++) {
-            $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output, $roundsCounter);
+        $doppelFelder = range(1, 5);
 
-            foreach ($aufnahme as $pfeil) {
-                $t60Match = new T60Match($nextMatchNumber, $roundsCounter, (int)$pfeil);
-                $this->t60MatchRepository->store($t60Match);
+        $aufnahmeAufDoppelFeld = 0;
+        $aufnahmeCounter = 0;
+
+        foreach ($doppelFelder as $doppelFeld) {
+//            $output->writeln(sprintf('%d. Wurf auf Doppel <comment>%d</comment>: ...', $aufnahmeAufDoppelFeld + 1, $doppelFeld));
+            while ($aufnahmeAufDoppelFeld < 2) {
+                $anzahlGetroffen = $this->getAufnahmeByUser($questionHelper, $input, $output, $aufnahmeAufDoppelFeld + 1, $doppelFeld);
+                $aufnahmeCounter++;
+
+                $matchEntry = new DoppelRoundTheClockMatch(
+                    $nextMatchNumber,
+                    $aufnahmeCounter,
+                    $doppelFeld,
+                    $anzahlGetroffen
+                );
+
+                $this->doppelRoundTheClockMatchRepository->store($matchEntry);
+
+                $aufnahmeAufDoppelFeld++;
+            }
+
+            if ($aufnahmeAufDoppelFeld > 1) {
+                $aufnahmeAufDoppelFeld = 0;
             }
         }
 
-//        $this->printStatisticsForMatch($nextMatchNumber);
+
+
+//        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN + 1; $roundsCounter++) {
+//            $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output, $roundsCounter);
+//
+//            foreach ($aufnahme as $pfeil) {
+//                $t60Match = new T60Match($nextMatchNumber, $roundsCounter, (int)$pfeil);
+//                $this->t60MatchRepository->store($t60Match);
+//            }
+//        }
+//
+//        $this->getStatisticsForMatch($nextMatchNumber);
 
         return $nextMatchNumber;
     }
 
     public function createStatisticsFile(): string
     {
-        $allMatchIds = $this->t60MatchRepository->getAllMatchIds();
+//        $allMatchIds = $this->t60MatchRepository->getAllMatchIds();
+        $allMatchIds = [];
 
         $statisticsDtos = [];
 
@@ -121,7 +154,8 @@ class Tripple60MatchService implements DartMatchesInterface
     {
         $dto = new Tripple60MatchStatisticsDto($matchId);
 
-        $dartsForMatch = $this->t60MatchRepository->getThrownDartsByMatch($matchId);
+//        $dartsForMatch = $this->t60MatchRepository->getThrownDartsByMatch($matchId);
+        $dartsForMatch = 1;
 
         $numberOfDarts = count($dartsForMatch);
 
@@ -210,7 +244,7 @@ class Tripple60MatchService implements DartMatchesInterface
 
     public function getNextMatchNumber(): int
     {
-        return $this->t60MatchRepository->getMatchesPlayedUntilNow() + 1;
+        return $this->doppelRoundTheClockMatchRepository->getMatchesPlayedUntilNow() + 1;
     }
 
     public function wasLastMatchFinished(): bool
@@ -220,47 +254,36 @@ class Tripple60MatchService implements DartMatchesInterface
 
     public function printStatisticsForMatch(int $matchId): void
     {
-        $dto = $this->createStatisticsDto($matchId);
-
-        echo $dto->getOutput() . PHP_EOL;
+        echo 'Test' . PHP_EOL;
     }
 
     /**
      * @throws Exception
-     * @return array<string>
      */
     private function getAufnahmeByUser(
         QuestionHelper $questionHelper,
         InputInterface $input,
         OutputInterface $output,
-        int $roundsCounter
-    ): array {
-        $questionString = sprintf('Aufnahme <comment>%d</comment>: ...', $roundsCounter);
+        int $roundsCounter,
+        int $doppelFeld
+    ): int {
+        $questionString = sprintf('%d. Wurf auf Doppel <comment>%d</comment>: ...', $roundsCounter, $doppelFeld);
+//        $output->writeln(sprintf('%d. Wurf auf Doppel <comment>%d</comment>: ...', $aufnahmeAufDoppelFeld + 1, $doppelFeld));
         $question = new Question($questionString, false);
 
-        $arrayAufnahme = [];
-
-        $question->setValidator(function ($aufnahmeString) {
-            $arrayAufnahme = str_split($aufnahmeString);
-
-            if (count($arrayAufnahme) !== 3) {
+        $question->setValidator(function ($dartsThrownAnswer) {
+            if (!(is_numeric($dartsThrownAnswer) && (int)$dartsThrownAnswer >= 0 && (int)$dartsThrownAnswer <= 3)) {
                 throw new RuntimeException(
-                    'Falsche Anzahl. Bitte erneut eingeben.'
+                    'Falsche Eingabe. Bitte erneut eingeben.'
                 );
             }
 
-            foreach ($arrayAufnahme as $pfeil) {
-                if (!(is_numeric($pfeil) && (int)$pfeil >= 0 && (int)$pfeil <= 9)) {
-                    throw new RuntimeException(
-                        'Falsche Eingabe. Bitte erneut eingeben.'
-                    );
-                }
-            }
-
-            return $arrayAufnahme;
+            return (int)$dartsThrownAnswer;
         });
 
-        return $questionHelper->ask($input, $output, $question);
+        $points = $questionHelper->ask($input, $output, $question);
+
+        return (int)$points;
     }
 
     private function assertDirectoryExists(string $directory): void

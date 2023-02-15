@@ -11,6 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MatchSelectionService implements MatchSelector
 {
     public const MATCH_TRIPPLE_60 = 't-60';
+    public const MATCH_DOPPEL_ROUND_THE_CLOCK = 'doppel-rtc';
+
+    public const ALLOWED_ARGUMENTS_FOR_MATCH_TYPES = [
+        MatchSelectionService::MATCH_TRIPPLE_60,
+        MatchSelectionService::MATCH_DOPPEL_ROUND_THE_CLOCK,
+    ];
 
     /**
      * @var iterable<DartMatchesInterface>
@@ -35,11 +41,20 @@ class MatchSelectionService implements MatchSelector
             if ($dartMatchesType->supports($type)) {
 //                var_dump($type);
 //                var_dump(get_class($dartMatchesType));
+                $matchNumber = $dartMatchesType->getNextMatchNumber();
+
+                $output->writeln(
+                    sprintf('Starte Spiel Nummer %d', $matchNumber)
+                );
+
                 $dartMatchesType->recordNewMatch(
+                    $matchNumber,
                     $helper,
                     $input,
                     $output
                 );
+
+                $dartMatchesType->printStatisticsForMatch($matchNumber);
 
                 return;
             }
