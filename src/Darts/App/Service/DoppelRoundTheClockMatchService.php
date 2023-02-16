@@ -22,21 +22,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class DoppelRoundTheClockMatchService implements DartMatchesInterface
 {
-    private const MAX_AUFNAHMEN = 40;
-
-    private const POINTS_MAPPING = [
-        0 => 0,
-        1 => 5,
-        2 => 20,
-        3 => 1,
-        4 => 15,
-        5 => 60,
-        6 => 3,
-        7 => 5,
-        8 => 20,
-        9 => 1,
-    ];
-
     private DoppelRoundTheClockMatchRepository $doppelRoundTheClockMatchRepository;
     private Filesystem $filesystem;
     private LoggerInterface $logger;
@@ -65,7 +50,7 @@ class DoppelRoundTheClockMatchService implements DartMatchesInterface
         InputInterface $input,
         OutputInterface $output
     ): int {
-        $doppelFelder = range(1, 5);
+        $doppelFelder = range(1, 20);
 
         $aufnahmeAufDoppelFeld = 0;
         $aufnahmeCounter = 0;
