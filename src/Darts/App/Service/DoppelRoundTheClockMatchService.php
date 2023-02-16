@@ -8,6 +8,7 @@ use App\Darts\App\Entity\DoppelRoundTheClockMatch;
 use App\Darts\App\Entity\T60Match;
 use App\Darts\App\Repository\DoppelRoundTheClockMatchRepository;
 use App\Darts\App\Repository\T60MatchRepository;
+use App\Darts\App\ValueObject\DoppelRoundTheClockMatchStatisticsDto;
 use App\Darts\App\ValueObject\Tripple60MatchStatisticsDto;
 use DateTime;
 use Exception;
@@ -70,7 +71,6 @@ class DoppelRoundTheClockMatchService implements DartMatchesInterface
         $aufnahmeCounter = 0;
 
         foreach ($doppelFelder as $doppelFeld) {
-//            $output->writeln(sprintf('%d. Wurf auf Doppel <comment>%d</comment>: ...', $aufnahmeAufDoppelFeld + 1, $doppelFeld));
             while ($aufnahmeAufDoppelFeld < 2) {
                 $anzahlGetroffen = $this->getAufnahmeByUser($questionHelper, $input, $output, $aufnahmeAufDoppelFeld + 1, $doppelFeld);
                 $aufnahmeCounter++;
@@ -92,26 +92,12 @@ class DoppelRoundTheClockMatchService implements DartMatchesInterface
             }
         }
 
-
-
-//        for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN + 1; $roundsCounter++) {
-//            $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output, $roundsCounter);
-//
-//            foreach ($aufnahme as $pfeil) {
-//                $t60Match = new T60Match($nextMatchNumber, $roundsCounter, (int)$pfeil);
-//                $this->t60MatchRepository->store($t60Match);
-//            }
-//        }
-//
-//        $this->getStatisticsForMatch($nextMatchNumber);
-
         return $nextMatchNumber;
     }
 
     public function createStatisticsFile(): string
     {
-//        $allMatchIds = $this->t60MatchRepository->getAllMatchIds();
-        $allMatchIds = [];
+        $allMatchIds = $this->doppelRoundTheClockMatchRepository->getAllMatchIds();
 
         $statisticsDtos = [];
 
@@ -150,94 +136,32 @@ class DoppelRoundTheClockMatchService implements DartMatchesInterface
         return $filename;
     }
 
-    private function createStatisticsDto(int $matchId): Tripple60MatchStatisticsDto
+    private function createStatisticsDto(int $matchId): DoppelRoundTheClockMatchStatisticsDto
     {
-        $dto = new Tripple60MatchStatisticsDto($matchId);
+        $dto = new DoppelRoundTheClockMatchStatisticsDto($matchId);
 
-//        $dartsForMatch = $this->t60MatchRepository->getThrownDartsByMatch($matchId);
-        $dartsForMatch = 1;
+        $alleAufnahmen = $this->doppelRoundTheClockMatchRepository->getThrownDartsByMatch($matchId);
 
-        $numberOfDarts = count($dartsForMatch);
+        $aufnahmenCounter = count($alleAufnahmen);
 
-        if ($numberOfDarts === 0) {
+        if ($aufnahmenCounter === 0) {
             return $dto;
         }
 
-        $points = 0;
-        $tripple20 = 0;
-        $gerade = 0;
-        $links = 0;
-        $rechts = 0;
+        $doppelTreffer = 0;
 
-        $punkteProAufnahme = [];
+        $start = $alleAufnahmen[0]->getCreatedAt();
+        $ende = $alleAufnahmen[array_key_last($alleAufnahmen)]->getCreatedAt();
 
-        $start = $dartsForMatch[0]->getCreatedAt();
-        $ende = $dartsForMatch[array_key_last($dartsForMatch)]->getCreatedAt();
-
-        $dauer = $start->diff($ende);
-
-        foreach ($dartsForMatch as $dart) {
-            $field = $dart->getFieldHit();
-
-            if ($field === 5) {
-                $tripple20++;
-            }
-
-            if (in_array($field, [2,5,8])) {
-                $gerade++;
-            }
-
-            if (in_array($field, [1,4,7])) {
-                $links++;
-            }
-
-            if (in_array($field, [3,6,9])) {
-                $rechts++;
-            }
-
-            $punkteProPfeil = self::POINTS_MAPPING[$field];
-
-            $points += $punkteProPfeil;
-
-            if (!isset($punkteProAufnahme[$dart->getAufnahme()])) {
-                $punkteProAufnahme[$dart->getAufnahme()] = 0;
-            }
-
-            $punkteProAufnahme[$dart->getAufnahme()] += $punkteProPfeil;
+        foreach ($alleAufnahmen as $aufnahme) {
+            $doppelTreffer += $aufnahme->getAnzahlGetroffen();
         }
 
-        $aufnahmen = max(array_keys($punkteProAufnahme));
-
-        $punkte100Plus = 0;
-        $punkte140Plus = 0;
-        $punkte180 = 0;
-
-        foreach ($punkteProAufnahme as $punkte) {
-            if ($punkte >= 100) {
-                $punkte100Plus++;
-            }
-
-            if ($punkte >= 140) {
-                $punkte140Plus++;
-            }
-
-            if ($punkte === 180) {
-                $punkte180++;
-            }
-        }
-
-        $dto->setAufnahmen($aufnahmen)
-            ->setNumberOfDarts($numberOfDarts)
+        $dto
+            ->setAufnahmenCounter($aufnahmenCounter)
             ->setStartTime($start)
             ->setEndTime($ende)
-            ->setPoints($points)
-            ->setTripple20($tripple20)
-            ->setGerade($gerade)
-            ->setLinks($links)
-            ->setRechts($rechts)
-            ->setPunkte100Plus($punkte100Plus)
-            ->setPunkte140Plus($punkte140Plus)
-            ->setPunkte180($punkte180);
+            ->setDoppelTreffer($doppelTreffer);
 
         return $dto;
     }
@@ -247,14 +171,11 @@ class DoppelRoundTheClockMatchService implements DartMatchesInterface
         return $this->doppelRoundTheClockMatchRepository->getMatchesPlayedUntilNow() + 1;
     }
 
-    public function wasLastMatchFinished(): bool
-    {
-        return true;
-    }
-
     public function printStatisticsForMatch(int $matchId): void
     {
-        echo 'Test' . PHP_EOL;
+        $dto = $this->createStatisticsDto($matchId);
+
+        echo $dto->getOutput() . PHP_EOL;
     }
 
     /**

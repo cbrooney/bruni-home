@@ -34,4 +34,40 @@ class DoppelRoundTheClockMatchRepository extends ServiceEntityRepository
 
         return (int)$qb->getQuery()->getSingleScalarResult();
     }
+
+    /**
+     * @return array<int>
+     */
+    public function getAllMatchIds(): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('DISTINCT(match.matchId) AS matchId')
+            ->from(DoppelRoundTheClockMatch::class, 'match');
+
+        $result = $qb->getQuery()->getResult();
+
+        $matchIds = [];
+
+        foreach ($result as $matchIdEntry) {
+            $matchIds[] = (int)$matchIdEntry['matchId'];
+        }
+
+        return $matchIds;
+    }
+
+    /**
+     * @return array<DoppelRoundTheClockMatch>
+     */
+    public function getThrownDartsByMatch(int $matchId): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('match')
+            ->from(DoppelRoundTheClockMatch::class, 'match')
+            ->where('match.matchId = :matchId')
+            ->setParameter('matchId', $matchId);
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -19,7 +19,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Tripple60MatchService implements DartMatchesInterface
 {
-    private const MAX_AUFNAHMEN = 4;
+    private const MAX_AUFNAHMEN = 40;
 
     private const POINTS_MAPPING = [
         0 => 0,
@@ -70,8 +70,6 @@ class Tripple60MatchService implements DartMatchesInterface
                 $this->t60MatchRepository->store($t60Match);
             }
         }
-
-//        $this->printStatisticsForMatch($nextMatchNumber);
 
         return $nextMatchNumber;
     }
@@ -140,8 +138,6 @@ class Tripple60MatchService implements DartMatchesInterface
         $start = $dartsForMatch[0]->getCreatedAt();
         $ende = $dartsForMatch[array_key_last($dartsForMatch)]->getCreatedAt();
 
-        $dauer = $start->diff($ende);
-
         foreach ($dartsForMatch as $dart) {
             $field = $dart->getFieldHit();
 
@@ -179,16 +175,18 @@ class Tripple60MatchService implements DartMatchesInterface
         $punkte180 = 0;
 
         foreach ($punkteProAufnahme as $punkte) {
-            if ($punkte >= 100) {
-                $punkte100Plus++;
+            if ($punkte === 180) {
+                $punkte180++;
+                continue;
             }
 
             if ($punkte >= 140) {
                 $punkte140Plus++;
+                continue;
             }
 
-            if ($punkte === 180) {
-                $punkte180++;
+            if ($punkte >= 100) {
+                $punkte100Plus++;
             }
         }
 
