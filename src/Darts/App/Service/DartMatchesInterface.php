@@ -17,10 +17,18 @@ interface DartMatchesInterface
      * @throws Exception
      */
     public function recordNewMatch(
+        int $nextMatchNumber,
         QuestionHelper $questionHelper,
         InputInterface $input,
         OutputInterface $output
     ): int;
+
+    /**
+     * @throws Exception
+     */
+    public function getNextMatchNumber(): int;
+
+    public function printStatisticsForMatch(int $matchId): void;
 
     public function createStatisticsFile(): string;
 }

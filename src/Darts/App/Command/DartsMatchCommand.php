@@ -18,10 +18,6 @@ class DartsMatchCommand extends Command
 {
     protected static $defaultName = 'darts:match:start';
 
-    public const ALLOWED_ARGUMENTS_FOR_MATCH_TYPES = [
-        MatchSelectionService::MATCH_TRIPPLE_60,
-    ];
-
     private MatchSelector $matchSelector;
     private LoggerInterface $logger;
 
@@ -40,7 +36,7 @@ class DartsMatchCommand extends Command
             ->addArgument(
                 'match-type',
                 InputOption::VALUE_REQUIRED,
-                sprintf('the match type. Allowed types: %s', implode(',', self::ALLOWED_ARGUMENTS_FOR_MATCH_TYPES))
+                sprintf('the match type. Allowed types: %s', implode(',', MatchSelectionService::ALLOWED_ARGUMENTS_FOR_MATCH_TYPES))
             )
             ->setDescription('start darts match by argument');
     }
@@ -80,7 +76,7 @@ class DartsMatchCommand extends Command
     {
         $inputType = $input->getArgument('match-type');
 
-        if (!in_array($inputType, self::ALLOWED_ARGUMENTS_FOR_MATCH_TYPES)) {
+        if (!in_array($inputType, MatchSelectionService::ALLOWED_ARGUMENTS_FOR_MATCH_TYPES)) {
             throw new Exception(sprintf('Match type %s not allowed', $inputType));
         }
 

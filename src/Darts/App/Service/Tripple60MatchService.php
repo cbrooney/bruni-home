@@ -56,12 +56,12 @@ class Tripple60MatchService implements DartMatchesInterface
         return $type === MatchSelectionService::MATCH_TRIPPLE_60;
     }
 
-    public function recordNewMatch(QuestionHelper $questionHelper, InputInterface $input, OutputInterface $output): int
-    {
-        $nextMatchNumber = $this->getNextMatchNumber();
-
-        $output->writeln(sprintf('Spiel Nummer %d', $nextMatchNumber));
-
+    public function recordNewMatch(
+        int $nextMatchNumber,
+        QuestionHelper $questionHelper,
+        InputInterface $input,
+        OutputInterface $output
+    ): int {
         for ($roundsCounter = 1; $roundsCounter < self::MAX_AUFNAHMEN + 1; $roundsCounter++) {
             $aufnahme = $this->getAufnahmeByUser($questionHelper, $input, $output, $roundsCounter);
 
@@ -70,8 +70,6 @@ class Tripple60MatchService implements DartMatchesInterface
                 $this->t60MatchRepository->store($t60Match);
             }
         }
-
-        $this->getStatisticsForMatch($nextMatchNumber);
 
         return $nextMatchNumber;
     }
@@ -140,8 +138,6 @@ class Tripple60MatchService implements DartMatchesInterface
         $start = $dartsForMatch[0]->getCreatedAt();
         $ende = $dartsForMatch[array_key_last($dartsForMatch)]->getCreatedAt();
 
-        $dauer = $start->diff($ende);
-
         foreach ($dartsForMatch as $dart) {
             $field = $dart->getFieldHit();
 
@@ -179,16 +175,18 @@ class Tripple60MatchService implements DartMatchesInterface
         $punkte180 = 0;
 
         foreach ($punkteProAufnahme as $punkte) {
-            if ($punkte >= 100) {
-                $punkte100Plus++;
+            if ($punkte === 180) {
+                $punkte180++;
+                continue;
             }
 
             if ($punkte >= 140) {
                 $punkte140Plus++;
+                continue;
             }
 
-            if ($punkte === 180) {
-                $punkte180++;
+            if ($punkte >= 100) {
+                $punkte100Plus++;
             }
         }
 
@@ -218,7 +216,7 @@ class Tripple60MatchService implements DartMatchesInterface
         return true;
     }
 
-    public function getStatisticsForMatch(int $matchId): void
+    public function printStatisticsForMatch(int $matchId): void
     {
         $dto = $this->createStatisticsDto($matchId);
 

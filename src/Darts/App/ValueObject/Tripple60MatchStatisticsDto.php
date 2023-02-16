@@ -56,16 +56,6 @@ class Tripple60MatchStatisticsDto
         return $this->aufnahmen;
     }
 
-    public function toString(): string
-    {
-        return sprintf(
-            "Aufnahmen:\t%d\nPunkte:\t\t%d\t\nNormalisiert:\t%f\n",
-            $this->aufnahmen,
-            $this->points,
-            $this->normalizedPoints
-        );
-    }
-
     public function setStartTime(DateTime $startTime): self
     {
         $this->startTime = $startTime;
@@ -175,9 +165,13 @@ class Tripple60MatchStatisticsDto
     {
         $valuesArray = $this->getValuesArray();
 
+        $lengths = array_map('strlen', self::HEADER_VALUES);
+        $maxLength = max($lengths);
+
         $output = '';
         foreach (self::HEADER_VALUES as $index => $headerValue) {
-            $output .= $headerValue . ":\t" . $valuesArray[$index] . PHP_EOL;
+            $newLine = str_pad($headerValue, $maxLength) . " : " . $valuesArray[$index] . PHP_EOL;
+            $output .= $newLine;
         }
 
         return $output;
