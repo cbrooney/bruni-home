@@ -1,13 +1,12 @@
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
 
-    App\FileManager\App\Command\:
-        resource: '../../Command'
-        autoconfigure: true
+  App\FileManager\App\Command\:
+    resource: '../../Command'
 
-    App\FileManager\App\:
-        resource: '../../*'
-        exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'
+  App\FileManager\App\:
+    resource: '../../*'
+    exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'

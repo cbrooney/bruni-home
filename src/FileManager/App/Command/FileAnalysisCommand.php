@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\FileManager\App\Command;
 
+use App\FileManager\App\Service\FileScanningService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -17,11 +18,14 @@ class FileAnalysisCommand extends Command
     protected static $defaultName = 'file:analysis';
 
     private LoggerInterface $logger;
+    private FileScanningService $fileScanningService;
 
     public function __construct(
+        FileScanningService $fileScanningService,
         LoggerInterface $logger
     ) {
         parent::__construct();
+        $this->fileScanningService = $fileScanningService;
         $this->logger = $logger;
     }
 
@@ -44,7 +48,10 @@ class FileAnalysisCommand extends Command
         $this->logger->info('Start');
 
         try {
-            $inputType = $input->getArgument('directory');
+            $directory = $input->getArgument('directory');
+            var_dump($directory);
+
+            $this->fileScanningService->scanDirectory($directory);
         } catch (Throwable $exception) {
             $this->logger->error(sprintf('Error while running Command. Error was: %s', $exception->getMessage()));
 
