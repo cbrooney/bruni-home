@@ -52,6 +52,7 @@ class FileAnalysisCommand extends Command
             var_dump($directory);
 
             $this->fileScanningService->scanDirectory($directory);
+
         } catch (Throwable $exception) {
             $this->logger->error(sprintf('Error while running Command. Error was: %s', $exception->getMessage()));
 
