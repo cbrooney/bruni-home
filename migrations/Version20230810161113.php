@@ -33,7 +33,10 @@ final class Version20230810161113 extends AbstractMigration
               `a_time` datetime DEFAULT NULL,
               `c_time` datetime DEFAULT NULL,
               `created_at` datetime NOT NULL,
-              PRIMARY KEY (`id`)
+              PRIMARY KEY (`id`),
+              KEY `run_index` (`run`),
+              KEY `full_path_index` (`full_path`),
+              KEY `m_time_index` (`m_time`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
         );
     }

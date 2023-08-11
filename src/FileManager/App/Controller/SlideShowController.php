@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\FirstTest\App\Controller;
+namespace App\FileManager\App\Controller;
 
+use App\FileManager\App\Repository\FileListEntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,11 +13,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class SlideShowController extends AbstractController
 {
     private $bilderDir;
+    private FileListEntityRepository $fileListEntityRepository;
 
     public function __construct(
-        string $bilderDir
+        string $bilderDir,
+        FileListEntityRepository $fileListEntityRepository
     ) {
         $this->bilderDir = $bilderDir;
+        $this->fileListEntityRepository = $fileListEntityRepository;
     }
 
     /**
@@ -32,6 +36,9 @@ class SlideShowController extends AbstractController
             $directoryEntries,
             ['..', '.', '.gitkeep']
         );
+
+        //var_dump($directoryEntries);
+        //die();
 
         return $this->render('slideshow/slides.html.twig', [
             'directoryEntries' => $directoryEntries,
@@ -97,6 +104,21 @@ class SlideShowController extends AbstractController
         );
 
         return $this->render('slideshow/slides-full.html.twig', [
+            'directoryEntries' => $directoryEntries,
+        ]);
+    }
+
+    /**
+     * @Route("/slideshow-db", name="slide_show_db", methods={"GET"})
+     */
+    public function slidesFullscreenDb(): Response
+    {
+        $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
+
+        // var_dump($directoryEntries);
+        // die();
+
+        return $this->render('slideshow/slides.html.twig', [
             'directoryEntries' => $directoryEntries,
         ]);
     }

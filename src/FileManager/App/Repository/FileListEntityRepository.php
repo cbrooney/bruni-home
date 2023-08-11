@@ -56,6 +56,31 @@ class FileListEntityRepository extends ServiceEntityRepository
         return (int)$qb->getQuery()->getSingleScalarResult() + 1;
     }
 
+
+    /**
+     * @return array<string>
+     * @throws Exception
+     */
+    public function getFiguresToShow(): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('file.fileName')
+            ->from(FileListEntity::class, 'file')
+            ->where($qb->expr()->in('file.fileType', ':fileTypes'))
+            ->setParameter(
+                'fileTypes',
+                [
+                    'JPG',
+                    'jpg',
+                ]
+            )
+        ;
+
+        // return $qb->getQuery()->getResult();
+        return array_column($qb->getQuery()->getResult(), 'fileName');
+    }
+
     /**
      * @throws Exception
      */
