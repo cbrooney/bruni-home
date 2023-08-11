@@ -18,10 +18,9 @@ class FileAnalysisCommandTest extends DatabaseTestCase
 
     public function testSomething(): void
     {
-        var_dump('Run functional test');
-
-        $commandName = 'entity:save';
+        $commandName = 'file:analysis';
         $arguments = [
+            'directory' => $this->fixturesDir . 'RootDirectory/',
             '--env' => self::$kernel->getEnvironment(),
         ];
         $options = ['verbosity' => OutputInterface::VERBOSITY_DEBUG];
@@ -30,9 +29,9 @@ class FileAnalysisCommandTest extends DatabaseTestCase
         $this->assertEquals(0, $values['exitCode']);
 
         $tableEntries = $this->connection
-            ->executeQuery('SELECT * FROM `test_table`')
+            ->executeQuery('SELECT * FROM `file_list`')
             ->fetchAllAssociative();
 
-        $this->assertCount(3, $tableEntries);
+        $this->assertCount(6, $tableEntries);
     }
 }
