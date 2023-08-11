@@ -60,6 +60,21 @@ class FileListEntity
     private ?string $hash = null;
 
     /**
+     * @ORM\Column(name="m_time", type="datetime", nullable=true)
+     */
+    private DateTimeInterface $mTime;
+
+    /**
+     * @ORM\Column(name="a_time", type="datetime", nullable=true)
+     */
+    private DateTimeInterface $aTime;
+
+    /**
+     * @ORM\Column(name="c_time", type="datetime", nullable=true)
+     */
+    private DateTimeInterface $cTime;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private DateTimeInterface $createdAt;
@@ -140,6 +155,50 @@ class FileListEntity
     public function setHash(?string $hash): FileListEntity
     {
         $this->hash = $hash;
+        return $this;
+    }
+
+    public function getRun(): int
+    {
+        return $this->run;
+    }
+
+    public function setRun(int $run): FileListEntity
+    {
+        $this->run = $run;
+        return $this;
+    }
+
+    public function getMTime(): DateTimeInterface
+    {
+        return $this->mTime;
+    }
+
+    public function setMTime(DateTimeInterface $mTime): FileListEntity
+    {
+        $this->mTime = $mTime;
+        return $this;
+    }
+
+    public function getATime(): DateTimeInterface
+    {
+        return $this->aTime;
+    }
+
+    public function setATime(DateTimeInterface $aTime): FileListEntity
+    {
+        $this->aTime = $aTime;
+        return $this;
+    }
+
+    public function getCTime(): DateTimeInterface
+    {
+        return $this->cTime;
+    }
+
+    public function setCTime(DateTimeInterface $cTime): FileListEntity
+    {
+        $this->cTime = $cTime;
         return $this;
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\FileManager\App\Repository;
 
 use App\FileManager\App\Entity\FileListEntity;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
@@ -17,18 +18,27 @@ class FileListEntityRepository extends ServiceEntityRepository
         parent::__construct($registry, FileListEntity::class);
     }
 
-    public function createFileListEntity(string $fullPath, int $run): FileListEntity
+    public function createFileListEntity(string $fullPath, int $run, string $rootDir): FileListEntity
     {
         $fileListEntity = new FileListEntity($fullPath, $run);
 
         $splFileInfo = new SplFileInfo($fullPath);
+
+        $relativePath = str_replace($rootDir, '', $splFileInfo->getPath());
+
+        $mtime = DateTime::createFromFormat('U', (string)$splFileInfo->getMTime());
+        $ctime = DateTime::createFromFormat('U', (string)$splFileInfo->getCTime());
+        $atime = DateTime::createFromFormat('U', (string)$splFileInfo->getATime());
 
         $fileListEntity
             ->setFileSize($splFileInfo->getSize())
             ->setFileName($splFileInfo->getFilename())
             ->setFileType($splFileInfo->getExtension())
             ->setHash(sha1_file($fullPath))
-            ->setRelativePath('/');
+            ->setRelativePath($relativePath)
+            ->setMTime($mtime)
+            ->setATime($atime)
+            ->setCTime($ctime);
 
         return $fileListEntity;
     }

@@ -29,6 +29,9 @@ final class Version20230810161113 extends AbstractMigration
               `file_type` varchar(20) DEFAULT NULL,
               `file_size` int DEFAULT NULL,
               `hash` varchar(300) DEFAULT NULL,
+              `m_time` datetime DEFAULT NULL,
+              `a_time` datetime DEFAULT NULL,
+              `c_time` datetime DEFAULT NULL,
               `created_at` datetime NOT NULL,
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'

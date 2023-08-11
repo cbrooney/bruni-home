@@ -30,7 +30,7 @@ class FileScanningService
 
         var_dump($allFiles);
 
-        $this->saveFileListFromArray($allFiles);
+        $this->saveFileListFromArray($allFiles, $rootDir);
     }
 
     public function getAllFilesFromFolder(string $folder, array $allFilesInFolder): ?array
@@ -56,13 +56,13 @@ class FileScanningService
     /**
      * @throws Exception
      */
-    public function saveFileListFromArray(array $allFiles): void
+    public function saveFileListFromArray(array $allFiles, string $rootDir): void
     {
         $run = $this->fileListEntityRepository->getNewRunNumber();
 
         foreach ($allFiles as $file) {
             try {
-                $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run);
+                $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run, $rootDir);
                 $this->fileListEntityRepository->persist($fileListEntity);
             } catch (Throwable $exception) {
                 $this->logger->error(sprintf('Error for file: %s with message: %s', $file, $exception->getMessage()));

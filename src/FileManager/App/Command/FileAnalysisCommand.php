@@ -48,11 +48,9 @@ class FileAnalysisCommand extends Command
         $this->logger->info('Start');
 
         try {
-            $directory = $input->getArgument('directory');
-            var_dump($directory);
+            $directory = $this->getRootDirectory($input);
 
             $this->fileScanningService->scanDirectory($directory);
-
         } catch (Throwable $exception) {
             $this->logger->error(sprintf('Error while running Command. Error was: %s', $exception->getMessage()));
 
@@ -62,5 +60,19 @@ class FileAnalysisCommand extends Command
         $this->logger->info('End');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getRootDirectory(InputInterface $input): string
+    {
+        $directory = rtrim($input->getArgument('directory'), '/');
+
+        if (!is_dir($directory)) {
+            throw new Exception(sprintf('%s is not a directory or does not exist', $directory));
+        }
+
+        return $directory;
     }
 }
