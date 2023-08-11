@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\FileManager\App\Entity;
 
-use App\FirstTest\App\Repository\TestEntityRepository;
+use App\FileManager\App\Repository\FileListEntityRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=TestEntityRepository::class)
+ * @ORM\Entity(repositoryClass=FileListEntityRepository::class)
  * @ORM\Table(
  *     name="file_list"
  * )
@@ -23,6 +23,11 @@ class FileListEntity
      * @ORM\Column(type="integer")
      */
     private ?int $id;
+
+    /**
+     * @ORM\Column(name="run", type="integer", nullable=false)
+     */
+    private int $run;
 
     /**
      * @ORM\Column(name="full_path", type="string", nullable=false, length=300)
@@ -59,9 +64,11 @@ class FileListEntity
      */
     private DateTimeInterface $createdAt;
 
-    public function __construct(string $fullPath)
+    public function __construct(string $fullPath, int $run)
     {
         $this->fullPath = $fullPath;
+        $this->run = $run;
+
         $this->createdAt = new DateTime();
     }
 

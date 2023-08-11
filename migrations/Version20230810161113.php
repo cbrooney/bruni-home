@@ -22,6 +22,7 @@ final class Version20230810161113 extends AbstractMigration
         $this->addSql(
             'CREATE TABLE IF NOT EXISTS `file_list` (
               `id` int NOT NULL AUTO_INCREMENT,
+              `run` int NOT NULL,
               `full_path` varchar(300) NOT NULL,
               `file_name` varchar(100) NOT NULL,
               `relative_path` varchar(200) NOT NULL,

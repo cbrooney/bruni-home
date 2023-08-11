@@ -17,9 +17,9 @@ class FileListEntityRepository extends ServiceEntityRepository
         parent::__construct($registry, FileListEntity::class);
     }
 
-    public function createFileListEntity(string $fullPath): FileListEntity
+    public function createFileListEntity(string $fullPath, int $run): FileListEntity
     {
-        $fileListEntity = new FileListEntity($fullPath);
+        $fileListEntity = new FileListEntity($fullPath, $run);
 
         $splFileInfo = new SplFileInfo($fullPath);
 
@@ -31,6 +31,19 @@ class FileListEntityRepository extends ServiceEntityRepository
             ->setRelativePath('/');
 
         return $fileListEntity;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getNewRunNumber(): int
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('MAX(file.run)')
+            ->from(FileListEntity::class, 'file');
+
+        return (int)$qb->getQuery()->getSingleScalarResult() + 1;
     }
 
     /**
