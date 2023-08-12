@@ -119,7 +119,7 @@ class SlideShowController extends AbstractController
         //return new BinaryFileResponse($directoryEntries[10]);
         //die();
 
-        return $this->render('slideshow/slides-db.html.twig', [
+        return $this->render('slideshow/slides-db-2.html.twig', [
             'directoryEntries' => $directoryEntries,
         ]);
     }
@@ -131,7 +131,22 @@ class SlideShowController extends AbstractController
     {
         $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
 
-        return new BinaryFileResponse($directoryEntries[10]->getFullPath());
+        // Get the image and convert into string
+        $img = file_get_contents($directoryEntries[10]->getFullPath());
+
+        return new JsonResponse(
+            [
+                'filenameFromRequest' => $directoryEntries[10]->getFileName(),
+                'base64Picture' => base64_encode($img),
+            ]
+        );
+
+
+
+// Encode the image string data into base64
+        return base64_encode($img);
+
+        // return new BinaryFileResponse($directoryEntries[10]->getFullPath());
     }
 
     /**
