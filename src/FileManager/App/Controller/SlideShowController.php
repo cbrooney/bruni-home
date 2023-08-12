@@ -6,6 +6,7 @@ namespace App\FileManager\App\Controller;
 
 use App\FileManager\App\Repository\FileListEntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -115,12 +116,22 @@ class SlideShowController extends AbstractController
     {
         $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
 
-        // var_dump($directoryEntries);
-        // die();
+        //return new BinaryFileResponse($directoryEntries[10]);
+        //die();
 
-        return $this->render('slideshow/slides.html.twig', [
+        return $this->render('slideshow/slides-db.html.twig', [
             'directoryEntries' => $directoryEntries,
         ]);
+    }
+
+    /**
+     * @Route("/single-picture", name="single_picture", methods={"GET"})
+     */
+    public function getSinglePicture(): Response
+    {
+        $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
+
+        return new BinaryFileResponse($directoryEntries[10]->getFullPath());
     }
 
     /**

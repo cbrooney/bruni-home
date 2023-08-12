@@ -58,14 +58,14 @@ class FileListEntityRepository extends ServiceEntityRepository
 
 
     /**
-     * @return array<string>
+     * @return array<FileListEntity>
      * @throws Exception
      */
     public function getFiguresToShow(): array
     {
         $qb = $this->_em->createQueryBuilder();
 
-        $qb->select('file.fileName')
+        $qb->select('file')
             ->from(FileListEntity::class, 'file')
             ->where($qb->expr()->in('file.fileType', ':fileTypes'))
             ->setParameter(
@@ -77,7 +77,7 @@ class FileListEntityRepository extends ServiceEntityRepository
             )
         ;
 
-        // return $qb->getQuery()->getResult();
+        return $qb->getQuery()->getResult();
         return array_column($qb->getQuery()->getResult(), 'fileName');
     }
 
