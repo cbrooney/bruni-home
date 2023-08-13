@@ -5,25 +5,20 @@
 {% endblock %}
 
 {% block body %}
-    {% for i in 0..10 %}
-        {{ i }}<br>
-    {% endfor %}
+    {% for divCounter in 0..9 %}
+        {{ divCounter }}<br>
 
-    {% set divCounter = 1 %}
-    {% set figureCounter = 0 %}
-
-    {% for directoryEntry in directoryEntries %}
-        {% if figureCounter == 0 %}
+        {% if divCounter == 0 %}
             <div class="rahmen" id="app-rahmen">
-                <div id="filename"><h1> {{ directoryEntry.fileName }} </h1> </div>
-                <img id="app-bild-id" class="einzelnesBild" src="bilder/{{ directoryEntry.fileName }}">
+                <div id="filename"><h1> Loading ...  </h1> </div>
+                <img id="app-bild-id" class="einzelnesBild" src="">
                 <button class="btn btn-primary top-right" onclick="exitFullscreen()">Fullscreen verlassen</button>
             </div>
+        {% else %}
+            <div class="rahmen" id="appin-"{{ divCounter }}>
+                <img id="bild-id-{{ divCounter }}" class="einzelnesBild-hidden" src="">
+            </div>
         {% endif %}
-
-        {% set divCounter = divCounter + 1 %}
-        {% set figureCounter = figureCounter + 1 %}
-
     {% endfor %}
 {% endblock %}
 
@@ -35,9 +30,46 @@
     </script>
 
     <script type="text/javascript">
-        let pictureArray = [];
+        let pictureArray = []
+
+        function setPictureByFullPath(fullpath, filenameHeader, rahmenBild) {
+            let dataObject = {
+                value: 'valueTest'
+            }
+
+            console.log(dataObject)
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ path('single_picture') }}",
+                data: JSON.stringify(dataObject),
+                //url: "/single-picture",
+                //dataType: 'image/jpg',
+                //async: true,
+                success: function (response) {
+                    filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
+                    $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                }
+            })
+        }
+
+        function getPicturesToShow(pictureArray) {
+            $.ajax({
+                type: 'GET',
+                url: "{{ path('figures_to_show') }}",
+                success: function (response) {
+                    pictureArray = response
+                }
+            })
+        }
+
+
 
         $(document).ready(function() {
+            let bildId = 'app-bild-id';
+            let rahmenBild = document.getElementById(bildId);
+            let filenameHeader = document.getElementById('filename');
+
             let rahmenId = 'app-rahmen';
             let rahmen = document.getElementById(rahmenId);
 
@@ -46,6 +78,47 @@
             document.onclick = (event) => {
                 let promise = rahmen.requestFullscreen();
             }
+
+            $.ajax({
+                type: 'GET',
+                url: "{{ path('figures_to_show') }}",
+                async: false,
+                success: function (response) {
+                    pictureArray = response
+                }
+            })
+
+            // console.log(pictureArray)
+
+            for (let i = 0; i < 10; i++) {
+                console.log(pictureArray[i].fullPath);
+            }
+
+
+
+            // pictureArray.forEach((element) => console.log(element.fullPath));
+
+
+            // setPictureByFullPath('', filenameHeader, rahmenBild)
+
+            // let dataObject = {
+            //     value: 'valueTest'
+            // }
+//
+            // $.ajax({
+            //     type: 'POST',
+            //     url: "{{ path('single_picture') }}",
+            //     data: JSON.stringify(dataObject),
+            //     //url: "/single-picture",
+            //     //dataType: 'image/jpg',
+            //     //async: true,
+            //     success: function (response) {
+            //         filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
+            //         // rahmenBild.innerHTML = '<h1>' + response + '</h1>';
+            //         // rahmenBild.src = 'data:image/png;base64,' + response;
+            //         $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+            //     }
+            // })
         });
 
         let bildId = 'app-bild-id';
