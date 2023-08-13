@@ -5,23 +5,29 @@ declare(strict_types=1);
 namespace App\FileManager\App\Controller;
 
 use App\FileManager\App\Repository\FileListEntityRepository;
+use App\FileManager\ValueObject\SinglePicutureRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class SlideShowController extends AbstractController
 {
     private $bilderDir;
     private FileListEntityRepository $fileListEntityRepository;
+    private SerializerInterface $serializer;
 
     public function __construct(
         string $bilderDir,
-        FileListEntityRepository $fileListEntityRepository
+        FileListEntityRepository $fileListEntityRepository,
+        SerializerInterface $serializer
     ) {
         $this->bilderDir = $bilderDir;
         $this->fileListEntityRepository = $fileListEntityRepository;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -125,10 +131,23 @@ class SlideShowController extends AbstractController
     }
 
     /**
-     * @Route("/single-picture", name="single_picture", methods={"GET"})
+     * @Route("/single-picture", name="single_picture", methods={"POST"})
      */
-    public function getSinglePicture(): Response
+    public function getSinglePicture(Request $request): Response
     {
+        try {
+            /** @var SinglePicutureRequest $singlePicutureRequest */
+            $singlePicutureRequest = $this->serializer->deserialize(
+                (string) $request->getContent(),
+                SinglePicutureRequest::class,
+                'json'
+            );
+        } catch (\Throwable $exception) {
+
+        }
+
+        // $object = json_decode((string) $request->getContent(), true);
+
         $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
 
         // Get the image and convert into string
@@ -138,6 +157,7 @@ class SlideShowController extends AbstractController
             [
                 'filenameFromRequest' => $directoryEntries[10]->getFileName(),
                 'base64Picture' => base64_encode($img),
+                'value' => $singlePicutureRequest->getValue(),
             ]
         );
 

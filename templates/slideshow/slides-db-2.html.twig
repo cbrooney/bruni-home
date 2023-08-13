@@ -5,6 +5,10 @@
 {% endblock %}
 
 {% block body %}
+    {% for i in 0..10 %}
+        {{ i }}<br>
+    {% endfor %}
+
     {% set divCounter = 1 %}
     {% set figureCounter = 0 %}
 
@@ -31,6 +35,8 @@
     </script>
 
     <script type="text/javascript">
+        let pictureArray = [];
+
         $(document).ready(function() {
             let rahmenId = 'app-rahmen';
             let rahmen = document.getElementById(rahmenId);
@@ -94,14 +100,21 @@
                 let rahmenBild = document.getElementById(bildId);
                 let filenameHeader = document.getElementById('filename');
 
+                let dataObject = {
+                    value: 'valueTest'
+                }
+
+                console.log(dataObject)
+
                 $.ajax({
-                    type: 'GET',
+                    type: 'POST',
                     url: "{{ path('single_picture') }}",
+                    data: JSON.stringify(dataObject),
                     //url: "/single-picture",
                     //dataType: 'image/jpg',
                     //async: true,
                     success: function (response) {
-                        filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                        filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
                         // rahmenBild.innerHTML = '<h1>' + response + '</h1>';
                         // rahmenBild.src = 'data:image/png;base64,' + response;
                         $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
