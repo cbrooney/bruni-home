@@ -82,6 +82,24 @@ class FileListEntityRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return FileListEntity>
+     * @throws Exception
+     */
+    public function getByFullPath(string $fullPath): ?FileListEntity
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('file')
+            ->from(FileListEntity::class, 'file')
+            ->where($qb->expr()->eq('file.fullPath', ':fullPath'))
+            ->setParameter('fullPath', $fullPath)
+            ->orderBy('file.run', 'DESC')
+            ->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
      * @throws Exception
      */
     public function persist(FileListEntity $fileListEntity): void

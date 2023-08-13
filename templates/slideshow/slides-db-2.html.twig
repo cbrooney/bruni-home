@@ -34,7 +34,7 @@
 
         function setPictureByFullPath(fullpath, filenameHeader, rahmenBild) {
             let dataObject = {
-                value: 'valueTest'
+                fullPath: fullpath
             }
 
             console.log(dataObject)
@@ -43,11 +43,8 @@
                 type: 'POST',
                 url: "{{ path('single_picture') }}",
                 data: JSON.stringify(dataObject),
-                //url: "/single-picture",
-                //dataType: 'image/jpg',
-                //async: true,
                 success: function (response) {
-                    filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
+                    filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
                     $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
                 }
             })
@@ -62,8 +59,6 @@
                 }
             })
         }
-
-
 
         $(document).ready(function() {
             let bildId = 'app-bild-id';
@@ -88,18 +83,58 @@
                 }
             })
 
-            // console.log(pictureArray)
+            console.log(pictureArray[0].fullPath)
 
-            for (let i = 0; i < 10; i++) {
-                console.log(pictureArray[i].fullPath);
+            setPictureByFullPath(pictureArray[0].fullPath, filenameHeader, rahmenBild)
+
+            for (let i = 1; i < 10; i++) {
+                let fullpath = pictureArray[i].fullPath
+                console.log(fullpath);
+
+                console.log('Setze Bild in hidden div: ' + i);
+
+                let hiddenBildId = 'bild-id-' + i;
+                let hiddenBild = document.getElementById(hiddenBildId);
+
+                let dataObject = {
+                    fullPath: fullpath
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ path('single_picture') }}",
+                    data: JSON.stringify(dataObject),
+                    success: function (response) {
+                        // filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                        $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                    }
+                })
+
+                // let filenameHeader = document.getElementById('filename');
+                // filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
+//
+                // console.log('Setze in Rahmen: ' + nextFilename);
+                // rahmenBild.src = nextFilenameSrc;
+                //
+//
+                // $.ajax({
+                //     type: 'POST',
+                //     url: "{{ path('single_picture') }}",
+                //     data: JSON.stringify(dataObject),
+                //     //url: "/single-picture",
+                //     //dataType: 'image/jpg',
+                //     //async: true,
+                //     success: function (response) {
+                //         filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
+                //         // rahmenBild.innerHTML = '<h1>' + response + '</h1>';
+                //         // rahmenBild.src = 'data:image/png;base64,' + response;
+                //         $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                //     }
+                // })
             }
-
-
 
             // pictureArray.forEach((element) => console.log(element.fullPath));
 
-
-            // setPictureByFullPath('', filenameHeader, rahmenBild)
 
             // let dataObject = {
             //     value: 'valueTest'

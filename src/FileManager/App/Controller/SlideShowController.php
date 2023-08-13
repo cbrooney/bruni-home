@@ -149,37 +149,43 @@ class SlideShowController extends AbstractController
     public function getSinglePicture(Request $request): Response
     {
         try {
-            /** @var SinglePicutureRequest $singlePicutureRequest */
-            $singlePicutureRequest = $this->serializer->deserialize(
-                (string) $request->getContent(),
-                SinglePicutureRequest::class,
-                'json'
-            );
         } catch (\Throwable $exception) {
 
         }
 
-        // $object = json_decode((string) $request->getContent(), true);
+        /** @var SinglePicutureRequest $singlePicutureRequest */
+        $singlePicutureRequest = $this->serializer->deserialize(
+            (string) $request->getContent(),
+            SinglePicutureRequest::class,
+            'json'
+        );
 
-        $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
-
-        // Get the image and convert into string
-        $img = file_get_contents($directoryEntries[10]->getFullPath());
+        $fileEntity = $this->fileListEntityRepository->getByFullPath($singlePicutureRequest->getFullPath());
+        $img = file_get_contents($fileEntity->getFullPath());
 
         return new JsonResponse(
             [
-                'filenameFromRequest' => $directoryEntries[10]->getFileName(),
+                'filenameFromRequest' => $fileEntity->getFileName(),
                 'base64Picture' => base64_encode($img),
-                'value' => $singlePicutureRequest->getValue(),
             ]
         );
 
+        // $object = json_decode((string) $request->getContent(), true);
+
+        // $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
+
+        // Get the image and convert into string
+        // $img = file_get_contents($directoryEntries[10]->getFullPath());
+
+        // return new JsonResponse(
+        //     [
+        //         'filenameFromRequest' => $directoryEntries[10]->getFileName(),
+        //         'base64Picture' => base64_encode($img),
+        //         'value' => $singlePicutureRequest->getFullPath(),
+        //     ]
+        // );
 
 
-// Encode the image string data into base64
-        return base64_encode($img);
-
-        // return new BinaryFileResponse($directoryEntries[10]->getFullPath());
     }
 
     /**
@@ -209,7 +215,7 @@ class SlideShowController extends AbstractController
             [
                 'filenameFromRequest' => $directoryEntries[10]->getFileName(),
                 'base64Picture' => base64_encode($img),
-                'value' => $singlePicutureRequest->getValue(),
+                'value' => $singlePicutureRequest->getFullPath(),
             ]
         );
 

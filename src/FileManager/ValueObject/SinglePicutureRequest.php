@@ -9,17 +9,17 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class SinglePicutureRequest
 {
     /**
-     * @SerializedName("value")
+     * @SerializedName("fullPath")
      */
-    private string $value;
+    private string $fullPath;
 
-    public function __construct(string $value)
+    public function __construct(string $fullPath)
     {
-        $this->value = $value;
+        $this->fullPath = $fullPath;
     }
 
-    public function getValue(): string
+    public function getFullPath(): string
     {
-        return $this->value;
+        return $this->fullPath;
     }
 }
