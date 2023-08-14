@@ -100,6 +100,10 @@
                 let hiddenBildId = 'bild-id-' + i;
                 let hiddenBild = document.getElementById(hiddenBildId);
 
+                let filenameId = 'filename-id-' + i;
+                let filenameField = document.getElementById(filenameId);
+
+
                 let dataObject = {
                     fullPath: fullpath
                 }
@@ -110,7 +114,7 @@
                     // async: false,
                     data: JSON.stringify(dataObject),
                     success: function (response) {
-                        // filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                        filenameField.innerHTML = response.filenameFromRequest;
                         $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
                         if (i === 9) {
                             showFilename.innerHTML = '<h1> Bereit! </h1>';
@@ -200,7 +204,7 @@
                         nextFileIndexToLoad = 0;
                     }
 
-                    nextDivNumber = recentDivIndex + 1
+                    // nextDivNumber = recentDivIndex + 1
 
                     // let recentRahmenId = 'rahmen-id-' + recentFileIndex;
                     // let recentRahmen = document.getElementById(recentRahmenId);
@@ -214,8 +218,12 @@
                     let recentBild = document.getElementById(recentBildId);
                     // let nextBildSrc = bild.src;
 
-                    console.log('Setze in Rahmen: ' + pictureArray[nextDivNumber].fileName);
+                    let filenameId = 'filename-id-' + recentDivIndex;
+                    let filenameField = document.getElementById(filenameId);
+
+                    console.log('Setze in Rahmen: ' + pictureArray[recentDivIndex].fileName);
                     showBild.src = recentBild.src;
+                    showFilename.innerHTML = '<h1>' + filenameField.innerHTML + '</h1>';
 
                     console.log('Lade neues Bild in: ' + recentDivIndex + ' - ' + pictureArray[nextFileIndexToLoad].fileName);
 //
@@ -228,7 +236,7 @@
                         url: "{{ path('single_picture') }}",
                         data: JSON.stringify(dataObject),
                         success: function (response) {
-                            // filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                            filenameField.innerHTML = response.filenameFromRequest;
                             $(recentBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
                         }
                     })
