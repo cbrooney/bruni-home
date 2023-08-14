@@ -85,8 +85,10 @@
 
             console.log(pictureArray[0].fullPath)
 
+            // set first pic
             setPictureByFullPath(pictureArray[0].fullPath, filenameHeader, rahmenBild)
 
+            // init hidden pics
             for (let i = 1; i < 10; i++) {
                 let fullpath = pictureArray[i].fullPath
                 console.log(fullpath);
@@ -109,51 +111,9 @@
                         $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
                     }
                 })
-
-                // let filenameHeader = document.getElementById('filename');
-                // filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
-//
-                // console.log('Setze in Rahmen: ' + nextFilename);
-                // rahmenBild.src = nextFilenameSrc;
-                //
-//
-                // $.ajax({
-                //     type: 'POST',
-                //     url: "{{ path('single_picture') }}",
-                //     data: JSON.stringify(dataObject),
-                //     //url: "/single-picture",
-                //     //dataType: 'image/jpg',
-                //     //async: true,
-                //     success: function (response) {
-                //         filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
-                //         // rahmenBild.innerHTML = '<h1>' + response + '</h1>';
-                //         // rahmenBild.src = 'data:image/png;base64,' + response;
-                //         $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
-                //     }
-                // })
             }
 
             // pictureArray.forEach((element) => console.log(element.fullPath));
-
-
-            // let dataObject = {
-            //     value: 'valueTest'
-            // }
-//
-            // $.ajax({
-            //     type: 'POST',
-            //     url: "{{ path('single_picture') }}",
-            //     data: JSON.stringify(dataObject),
-            //     //url: "/single-picture",
-            //     //dataType: 'image/jpg',
-            //     //async: true,
-            //     success: function (response) {
-            //         filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
-            //         // rahmenBild.innerHTML = '<h1>' + response + '</h1>';
-            //         // rahmenBild.src = 'data:image/png;base64,' + response;
-            //         $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
-            //     }
-            // })
         });
 
         let bildId = 'app-bild-id';
@@ -203,31 +163,76 @@
             // is in fullscreen mode if there is one. If not, the value
             // of the property is null.
             if (document.fullscreenElement) {
+                await lockWakeState();
                 // console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
                 let bildId = 'app-bild-id';
                 let rahmenBild = document.getElementById(bildId);
-                let filenameHeader = document.getElementById('filename');
 
-                let dataObject = {
-                    value: 'valueTest'
-                }
+                let rahmenId = 'app-rahmen';
+                let rahmen = document.getElementById(rahmenId);
 
-                console.log(dataObject)
+                let nextDivNumber = 1;
+                let nextFigureToLoadCounter = 11;
 
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ path('single_picture') }}",
-                    data: JSON.stringify(dataObject),
-                    //url: "/single-picture",
-                    //dataType: 'image/jpg',
-                    //async: true,
-                    success: function (response) {
-                        filenameHeader.innerHTML = '<h1>' + response.value + '</h1>';
-                        // rahmenBild.innerHTML = '<h1>' + response + '</h1>';
-                        // rahmenBild.src = 'data:image/png;base64,' + response;
-                        $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                for (let recentFileIndex = 0; recentFileIndex < 9; recentFileIndex++) {
+                    if (!document.fullscreenElement) {
+                        break;
                     }
-                })
+
+                    nextDivNumber = recentFileIndex + 1
+
+                    console.log('Hole bild von div: ' + nextDivNumber);
+
+                    let nextBildId = 'bild-id-' + nextDivNumber;
+                    let nextBild = document.getElementById(nextBildId);
+                    let nextFilenameSrc = nextBild.src;
+
+                    let filenameHeader = document.getElementById('filename');
+                    filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
+
+                    console.log('Setze in Rahmen: ' + nextFilename);
+                    rahmenBild.src = nextFilenameSrc;
+
+                    // add endless loop, restart when reaching end
+                    // if (recentFileIndex === 9) {
+                    //     recentFileIndex = 0;
+                    // }
+
+                    let nextFileIndex = recentFileIndex + 1;
+
+                    // if (nextFileIndex === allFilenames.length) {
+                    //     nextFileIndex = 0;
+                    // }
+
+                    let nextFilename = allFilenames[nextFileIndex].value;
+
+                    let recentFilename = allFilenames[recentFileIndex].value;
+                    console.log('Aktuell: ' + recentFilename);
+
+                    await delay(1000);
+
+                    // counter for already loaded images, this one is going to be shown next
+                    if (nextDivNumber > 10) {
+                        nextDivNumber = 1;
+                    }
+
+                    // figure is loaded in the back
+                    if (nextFigureToLoadCounter === allFilenames.length) {
+                        nextFigureToLoadCounter = 0;
+                    }
+
+                    console.log('Hole bild von div: ' + nextDivNumber);
+
+                    // lade neues Bild in gerade verschobenem div
+                    let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
+                    console.log('Lade: ' + nextFigureToLoad + ' in div: ' + nextDivNumber);
+
+                    nextBild.src = 'bilder/' + nextFigureToLoad;
+
+                    nextDivNumber = nextDivNumber + 1;
+                    nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
+                    console.log('');
+                }
             }
         }
 
