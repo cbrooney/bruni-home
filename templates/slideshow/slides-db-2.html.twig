@@ -1,24 +1,21 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Slideshow-Fullscreen
+    Slideshow-Fullscreen-DB
 {% endblock %}
 
 {% block body %}
-    {% for divCounter in 0..9 %}
-        {{ divCounter }}<br>
+    <div class="rahmen" id="show-rahmen-id">
+        <div class="filename" id="show-filename-id"><h1> Loading ...  </h1> </div>
+        <img class="einzelnesBild" id="show-bild-id" src="">
+        <button class="btn btn-primary top-right" onclick="exitFullscreen()">Fullscreen verlassen</button>
+    </div>
 
-        {% if divCounter == 0 %}
-            <div class="rahmen" id="app-rahmen">
-                <div id="filename"><h1> Loading ...  </h1> </div>
-                <img id="app-bild-id" class="einzelnesBild" src="">
-                <button class="btn btn-primary top-right" onclick="exitFullscreen()">Fullscreen verlassen</button>
-            </div>
-        {% else %}
-            <div class="rahmen" id="appin-"{{ divCounter }}>
-                <img id="bild-id-{{ divCounter }}" class="einzelnesBild-hidden" src="">
-            </div>
-        {% endif %}
+    {% for divCounter in 0..9 %}
+        <div class="rahmen" id="rahmen-id-{{ divCounter }}" hidden="hidden">
+            <div class="filename" id="filename-id-{{ divCounter }}"><h1> Nichts  </h1></div>
+            <img class="einzelnesBild" id="bild-id-{{ divCounter }}" src="">
+        </div>
     {% endfor %}
 {% endblock %}
 
@@ -31,6 +28,8 @@
 
     <script type="text/javascript">
         let pictureArray = []
+
+        let bilderAnzahl = 10;
 
         function setPictureByFullPath(fullpath, filenameHeader, rahmenBild) {
             let dataObject = {
@@ -61,17 +60,17 @@
         }
 
         $(document).ready(function() {
-            let bildId = 'app-bild-id';
-            let rahmenBild = document.getElementById(bildId);
-            let filenameHeader = document.getElementById('filename');
+            // let bildId = 'bild-id-0';
+            // let rahmenBild = document.getElementById(bildId);
+            // let filenameHeader = document.getElementById('filename-id-0');
 
-            let rahmenId = 'app-rahmen';
-            let rahmen = document.getElementById(rahmenId);
+            let showRahmenId = 'show-rahmen-id';
+            let showRahmen = document.getElementById(showRahmenId);
 
-            rahmen.addEventListener('fullscreenchange', fullscreenchanged);
+            showRahmen.addEventListener('fullscreenchange', fullscreenchanged);
 
             document.onclick = (event) => {
-                let promise = rahmen.requestFullscreen();
+                let promise = showRahmen.requestFullscreen();
             }
 
             $.ajax({
@@ -86,14 +85,17 @@
             console.log(pictureArray[0].fullPath)
 
             // set first pic
-            setPictureByFullPath(pictureArray[0].fullPath, filenameHeader, rahmenBild)
+            // setPictureByFullPath(pictureArray[0].fullPath, filenameHeader, rahmenBild)
+
+            let showFilenameId = 'show-filename-id';
+            let showFilename = document.getElementById(showFilenameId);
 
             // init hidden pics
-            for (let i = 1; i < 10; i++) {
+            for (let i = 0; i < 10; i++) {
                 let fullpath = pictureArray[i].fullPath
                 console.log(fullpath);
 
-                console.log('Setze Bild in hidden div: ' + i);
+                console.log('Setze Bild in div: ' + i);
 
                 let hiddenBildId = 'bild-id-' + i;
                 let hiddenBild = document.getElementById(hiddenBildId);
@@ -105,21 +107,28 @@
                 $.ajax({
                     type: 'POST',
                     url: "{{ path('single_picture') }}",
+                    // async: false,
                     data: JSON.stringify(dataObject),
                     success: function (response) {
                         // filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
                         $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                        if (i === 9) {
+                            showFilename.innerHTML = '<h1> Bereit! </h1>';
+                        }
                     }
                 })
             }
 
+            let showBildId = 'show-bild-id';
+            let showBild = document.getElementById(showBildId);
+
             // pictureArray.forEach((element) => console.log(element.fullPath));
         });
 
-        let bildId = 'app-bild-id';
-        let rahmenBild = document.getElementById(bildId);
-        let filenameHeader = document.getElementById('filename');
-
+        // let bildId = 'app-bild-id';
+        // let rahmenBild = document.getElementById(bildId);
+        // let filenameHeader = document.getElementById('filename');
+//
         const canWakeLock = () => 'wakeLock' in navigator;
         console.log(canWakeLock());
         let wakelock;
@@ -165,40 +174,75 @@
             if (document.fullscreenElement) {
                 await lockWakeState();
                 // console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
-                let bildId = 'app-bild-id';
-                let rahmenBild = document.getElementById(bildId);
+                let showRahmenId = 'show-rahmen-id';
+                let showRahmen = document.getElementById(showRahmenId);
 
-                let rahmenId = 'app-rahmen';
-                let rahmen = document.getElementById(rahmenId);
+                let showFilenameId = 'show-filename-id';
+                let showFilename = document.getElementById(showFilenameId);
+
+                let showBildId = 'show-bild-id';
+                let showBild = document.getElementById(showBildId);
 
                 let nextDivNumber = 1;
                 let nextFigureToLoadCounter = 11;
 
-                for (let recentFileIndex = 0; recentFileIndex < 9; recentFileIndex++) {
+                for (let recentDivIndex = 0; recentDivIndex < 10; recentDivIndex++) {
                     if (!document.fullscreenElement) {
                         break;
                     }
 
-                    nextDivNumber = recentFileIndex + 1
+                    nextDivNumber = recentDivIndex + 1
 
-                    console.log('Hole bild von div: ' + nextDivNumber);
+                    // let recentRahmenId = 'rahmen-id-' + recentFileIndex;
+                    // let recentRahmen = document.getElementById(recentRahmenId);
+//
+                    // let nextRahmenId = 'rahmen-id-' + nextDivNumber;
+                    // let nextRahmen = document.getElementById(nextRahmenId);
+//
+                    console.log('Hole bild von div: ' + recentDivIndex);
 
-                    let nextBildId = 'bild-id-' + nextDivNumber;
-                    let nextBild = document.getElementById(nextBildId);
-                    let nextFilenameSrc = nextBild.src;
+                    let bildId = 'bild-id-' + recentDivIndex;
+                    let bild = document.getElementById(bildId);
+                    // let nextBildSrc = bild.src;
+
+                    console.log('Setze in Rahmen: ' + pictureArray[nextDivNumber].fileName);
+                    showBild.src = bild.src;
+
+                    // let nextFileIndexToLoad =
+                    // console.log('Lade neues Bild in: ' + nextDivNumber + ' - ' + pictureArray[nextDivNumber].fileName);
+//
+                    // let dataObject = {
+                    //     fullPath: fullpath
+                    // }
+//
+                    // $.ajax({
+                    //     type: 'POST',
+                    //     url: "{{ path('single_picture') }}",
+                    //     data: JSON.stringify(dataObject),
+                    //     success: function (response) {
+                    //         // filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                    //         $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                    //     }
+                    // })
+                    // bild.src = nextBildSrc;
+
+                    // nextRahmen.removeAttribute('hidden');
+                    // recentRahmen.setAttribute('hidden', 'hidden');
+
+                    await delay(2000);
+
+                    continue
 
                     let filenameHeader = document.getElementById('filename');
                     filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
 
-                    console.log('Setze in Rahmen: ' + nextFilename);
-                    rahmenBild.src = nextFilenameSrc;
 
                     // add endless loop, restart when reaching end
                     // if (recentFileIndex === 9) {
                     //     recentFileIndex = 0;
                     // }
 
-                    let nextFileIndex = recentFileIndex + 1;
+                    let nextFileIndex = recentDivIndex + 1;
 
                     // if (nextFileIndex === allFilenames.length) {
                     //     nextFileIndex = 0;
@@ -206,7 +250,7 @@
 
                     let nextFilename = allFilenames[nextFileIndex].value;
 
-                    let recentFilename = allFilenames[recentFileIndex].value;
+                    let recentFilename = allFilenames[recentDivIndex].value;
                     console.log('Aktuell: ' + recentFilename);
 
                     await delay(1000);
@@ -227,7 +271,7 @@
                     let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
                     console.log('Lade: ' + nextFigureToLoad + ' in div: ' + nextDivNumber);
 
-                    nextBild.src = 'bilder/' + nextFigureToLoad;
+                    bild.src = 'bilder/' + nextFigureToLoad;
 
                     nextDivNumber = nextDivNumber + 1;
                     nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
@@ -319,7 +363,7 @@
             height: inherit !important;
             display: none;
         }
-        #filename {
+        .filename {
             position: absolute;
             top: 8px;
             left: 16px;
