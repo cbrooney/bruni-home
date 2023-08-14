@@ -13,6 +13,7 @@
 
     {% for divCounter in 0..9 %}
         <div class="rahmen" id="rahmen-id-{{ divCounter }}" hidden="hidden">
+            <input class="filenames" type="hidden" id="input-field-id-{{ divCounter }}" value="Nichts">
             <div class="filename" id="filename-id-{{ divCounter }}"><h1> Nichts  </h1></div>
             <img class="einzelnesBild" id="bild-id-{{ divCounter }}" src="">
         </div>
@@ -103,6 +104,7 @@
                 let filenameId = 'filename-id-' + i;
                 let filenameField = document.getElementById(filenameId);
 
+                let inputField = document.getElementById('input-field-id-' + i);
 
                 let dataObject = {
                     fullPath: fullpath
@@ -116,6 +118,8 @@
                     success: function (response) {
                         filenameField.innerHTML = response.filenameFromRequest;
                         $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                        inputField.value = response.entity;
+
                         if (i === 9) {
                             showFilename.innerHTML = '<h1> Bereit! </h1>';
                         }
@@ -221,9 +225,12 @@
                     let filenameId = 'filename-id-' + recentDivIndex;
                     let filenameField = document.getElementById(filenameId);
 
-                    console.log('Setze in Rahmen: ' + pictureArray[recentDivIndex].fileName);
+                    let inputField = document.getElementById('input-field-id-' + recentDivIndex);
+                    console.log(inputField.value)
+
+                    console.log('Zeige in Rahmen: ' + filenameField.innerHTML);
                     showBild.src = recentBild.src;
-                    showFilename.innerHTML = '<h1>' + filenameField.innerHTML + '</h1>';
+                    showFilename.innerHTML = '<h1>' + filenameField.innerHTML + '<br>' +  inputField.value + '</h1>';
 
                     console.log('Lade neues Bild in: ' + recentDivIndex + ' - ' + pictureArray[nextFileIndexToLoad].fileName);
 //
@@ -238,6 +245,7 @@
                         success: function (response) {
                             filenameField.innerHTML = response.filenameFromRequest;
                             $(recentBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                            inputField.value = response.entity;
                         }
                     })
 

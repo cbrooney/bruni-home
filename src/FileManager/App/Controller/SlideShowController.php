@@ -167,6 +167,7 @@ class SlideShowController extends AbstractController
             [
                 'filenameFromRequest' => $fileEntity->getFileName(),
                 'base64Picture' => base64_encode($img),
+                'entity' => $fileEntity->getMTime()->format('Y-m-d'),
             ]
         );
 
