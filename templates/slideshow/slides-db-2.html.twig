@@ -185,10 +185,19 @@
 
                 let nextDivNumber = 1;
                 let nextFigureToLoadCounter = 11;
+                let nextFileIndexToLoad = 10;
 
-                for (let recentDivIndex = 0; recentDivIndex < 10; recentDivIndex++) {
+                for (let recentDivIndex = 0; recentDivIndex < 11; recentDivIndex++) {
                     if (!document.fullscreenElement) {
                         break;
+                    }
+
+                    if (recentDivIndex === 10) {
+                        recentDivIndex = 0;
+                    }
+
+                    if (nextFileIndexToLoad === pictureArray.length) {
+                        nextFileIndexToLoad = 0;
                     }
 
                     nextDivNumber = recentDivIndex + 1
@@ -201,35 +210,37 @@
 //
                     console.log('Hole bild von div: ' + recentDivIndex);
 
-                    let bildId = 'bild-id-' + recentDivIndex;
-                    let bild = document.getElementById(bildId);
+                    let recentBildId = 'bild-id-' + recentDivIndex;
+                    let recentBild = document.getElementById(recentBildId);
                     // let nextBildSrc = bild.src;
 
                     console.log('Setze in Rahmen: ' + pictureArray[nextDivNumber].fileName);
-                    showBild.src = bild.src;
+                    showBild.src = recentBild.src;
 
-                    // let nextFileIndexToLoad =
-                    // console.log('Lade neues Bild in: ' + nextDivNumber + ' - ' + pictureArray[nextDivNumber].fileName);
+                    console.log('Lade neues Bild in: ' + recentDivIndex + ' - ' + pictureArray[nextFileIndexToLoad].fileName);
 //
-                    // let dataObject = {
-                    //     fullPath: fullpath
-                    // }
-//
-                    // $.ajax({
-                    //     type: 'POST',
-                    //     url: "{{ path('single_picture') }}",
-                    //     data: JSON.stringify(dataObject),
-                    //     success: function (response) {
-                    //         // filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
-                    //         $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
-                    //     }
-                    // })
-                    // bild.src = nextBildSrc;
+                    let dataObject = {
+                        fullPath: pictureArray[nextFileIndexToLoad].fullPath
+                    }
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ path('single_picture') }}",
+                        data: JSON.stringify(dataObject),
+                        success: function (response) {
+                            // filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                            $(recentBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                        }
+                    })
+
+                    // recentBild.src = nextBildSrc;
 
                     // nextRahmen.removeAttribute('hidden');
                     // recentRahmen.setAttribute('hidden', 'hidden');
 
                     await delay(2000);
+
+                    nextFileIndexToLoad = nextFileIndexToLoad + 1;
 
                     continue
 
@@ -271,7 +282,7 @@
                     let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
                     console.log('Lade: ' + nextFigureToLoad + ' in div: ' + nextDivNumber);
 
-                    bild.src = 'bilder/' + nextFigureToLoad;
+                    recentBild.src = 'bilder/' + nextFigureToLoad;
 
                     nextDivNumber = nextDivNumber + 1;
                     nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
