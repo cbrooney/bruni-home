@@ -122,7 +122,7 @@ class SlideShowController extends AbstractController
      */
     public function slidesFullscreenDb(): Response
     {
-        return $this->render('slideshow/slides-db-2.html.twig', []);
+        return $this->render('slideshow/slides-db.html.twig', []);
     }
 
     /**

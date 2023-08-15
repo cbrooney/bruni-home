@@ -78,7 +78,6 @@ class FileListEntityRepository extends ServiceEntityRepository
         ;
 
         return $qb->getQuery()->getResult();
-        return array_column($qb->getQuery()->getResult(), 'fileName');
     }
 
     /**

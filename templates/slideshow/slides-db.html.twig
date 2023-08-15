@@ -1,35 +1,22 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Slideshow-Fullscreen
+    Slideshow-Fullscreen-DB
 {% endblock %}
 
 {% block body %}
-    {% set divCounter = 1 %}
-    {% set figureCounter = 0 %}
+    <div class="rahmen" id="show-rahmen-id">
+        <div class="filename" id="show-filename-id"><h1> Loading ...  </h1> </div>
+        <img class="einzelnesBild" id="show-bild-id" src="">
+        <button class="btn btn-primary top-right" onclick="exitFullscreen()">Fullscreen verlassen</button>
+    </div>
 
-    {% for directoryEntry in directoryEntries %}
-        <input class="filenames" type="hidden" name="filenames-{{ directoryEntry.fileName }}" value="{{ directoryEntry.fileName }}">
-
-        {% if figureCounter == 0 %}
-            <div class="rahmen" id="app-rahmen">
-                <div id="filename"><h1> {{ directoryEntry.fileName }} </h1> </div>
-                <img id="app-bild-id" class="einzelnesBild" src="bilder/{{ directoryEntry.fileName }}">
-                <button class="btn btn-primary top-right" onclick="exitFullscreen()">Fullscreen verlassen</button>
-            </div>
-        {% endif %}
-
-        {% if figureCounter > 0 %}
-            {% if divCounter < 11 %}
-                <div class="rahmen" id="appin-"{{ divCounter }}>
-                    <img id="bild-id-{{ divCounter }}" class="einzelnesBild-hidden" src="bilder/{{ directoryEntry.fileName }}">
-                </div>
-            {% endif %}
-
-            {% set divCounter = divCounter + 1 %}
-        {% endif %}
-
-        {% set figureCounter = figureCounter + 1 %}
+    {% for divCounter in 0..9 %}
+        <div class="rahmen" id="rahmen-id-{{ divCounter }}" hidden="hidden">
+            <input class="timestamp" type="hidden" id="timestamp-id-{{ divCounter }}" value="Nichts">
+            <div class="filename" id="filename-id-{{ divCounter }}"><h1> Nichts  </h1></div>
+            <img class="einzelnesBild" id="bild-id-{{ divCounter }}" src="">
+        </div>
     {% endfor %}
 {% endblock %}
 
@@ -41,15 +28,80 @@
     </script>
 
     <script type="text/javascript">
-        $(document).ready(function() {
-            let rahmenId = 'app-rahmen';
-            let rahmen = document.getElementById(rahmenId);
+        let pictureArray = []
 
-            rahmen.addEventListener('fullscreenchange', fullscreenchanged);
+        let bilderAnzahl = 10;
+
+        function getPicturesToShow(pictureArray) {
+            $.ajax({
+                type: 'GET',
+                url: "{{ path('figures_to_show') }}",
+                success: function (response) {
+                    pictureArray = response
+                }
+            })
+        }
+
+        $(document).ready(function() {
+            let showRahmenId = 'show-rahmen-id';
+            let showRahmen = document.getElementById(showRahmenId);
+
+            showRahmen.addEventListener('fullscreenchange', fullscreenchanged);
 
             document.onclick = (event) => {
-                let promise = rahmen.requestFullscreen();
+                let promise = showRahmen.requestFullscreen();
             }
+
+            $.ajax({
+                type: 'GET',
+                url: "{{ path('figures_to_show') }}",
+                async: false,
+                success: function (response) {
+                    pictureArray = response
+                }
+            })
+
+            console.log('Number of pics: ' + pictureArray.length)
+
+            let showFilenameId = 'show-filename-id';
+            let showFilename = document.getElementById(showFilenameId);
+
+            // init hidden pics
+            for (let i = 0; i < 10; i++) {
+                let fullpath = pictureArray[i].fullPath
+                console.log(fullpath);
+                console.log('Setze Bild in div: ' + i);
+
+                let hiddenBildId = 'bild-id-' + i;
+                let hiddenBild = document.getElementById(hiddenBildId);
+
+                let filenameId = 'filename-id-' + i;
+                let filenameField = document.getElementById(filenameId);
+
+                let timestampField = document.getElementById('timestamp-id-' + i);
+
+                let dataObject = {
+                    fullPath: fullpath
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ path('single_picture') }}",
+                    // async: false,
+                    data: JSON.stringify(dataObject),
+                    success: function (response) {
+                        filenameField.innerHTML = response.filenameFromRequest;
+                        $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                        timestampField.value = response.timestamp;
+
+                        if (i === 9) {
+                            showFilename.innerHTML = '<h1> Bereit! <br> Anzahl Bilder: ' + pictureArray.length + '</h1>';
+                        }
+                    }
+                })
+            }
+
+            // pictureArray.forEach((element) => console.log(element.fullPath));
         });
 
         const canWakeLock = () => 'wakeLock' in navigator;
@@ -97,73 +149,90 @@
             if (document.fullscreenElement) {
                 await lockWakeState();
                 // console.log(`Element: ${document.fullscreenElement.id} entered fullscreen mode.`);
-                let bildId = 'app-bild-id';
-                let rahmenBild = document.getElementById(bildId);
+                let showRahmenId = 'show-rahmen-id';
+                let showRahmen = document.getElementById(showRahmenId);
 
-                let rahmenId = 'app-rahmen';
-                let rahmen = document.getElementById(rahmenId);
+                let showFilenameId = 'show-filename-id';
+                let showFilename = document.getElementById(showFilenameId);
 
-                let allFilenames = document.getElementsByClassName('filenames');
+                let showBildId = 'show-bild-id';
+                let showBild = document.getElementById(showBildId);
 
                 let nextDivNumber = 1;
                 let nextFigureToLoadCounter = 11;
+                let nextFileIndexToLoad = 10;
 
-                for (let recentFileIndex = 0; recentFileIndex < allFilenames.length + 1; recentFileIndex++) {
+                for (let recentDivIndex = 0; recentDivIndex < 11; recentDivIndex++) {
                     if (!document.fullscreenElement) {
                         break;
                     }
 
-                    // add endless loop, restart when reaching end
-                    if (recentFileIndex === allFilenames.length) {
-                        recentFileIndex = 0;
+                    if (recentDivIndex === 10) {
+                        recentDivIndex = 0;
                     }
 
-                    let nextFileIndex = recentFileIndex + 1;
-
-                    if (nextFileIndex === allFilenames.length) {
-                        nextFileIndex = 0;
+                    if (nextFileIndexToLoad === pictureArray.length) {
+                        nextFileIndexToLoad = 0;
                     }
 
-                    let nextFilename = allFilenames[nextFileIndex].value;
+                    console.log('Hole bild von div: ' + recentDivIndex);
 
-                    let recentFilename = allFilenames[recentFileIndex].value;
-                    console.log('Aktuell: ' + recentFilename);
+                    let recentBildId = 'bild-id-' + recentDivIndex;
+                    let recentBild = document.getElementById(recentBildId);
 
-                    await delay(5000);
+                    let filenameId = 'filename-id-' + recentDivIndex;
+                    let filenameField = document.getElementById(filenameId);
 
-                    // counter for already loaded images, this one is going to be shown next
-                    if (nextDivNumber > 10) {
-                        nextDivNumber = 1;
+                    let timestampField = document.getElementById('timestamp-id-' + recentDivIndex);
+                    console.log(timestampField.value)
+
+                    console.log('Zeige in Rahmen: ' + filenameField.innerHTML);
+                    showBild.src = recentBild.src;
+                    showFilename.innerHTML = '<h1>' + filenameField.innerHTML + '<br>' +  timestampField.value + '</h1>';
+
+                    console.log('Lade neues Bild: ' + pictureArray[nextFileIndexToLoad].fileName);
+//
+                    let dataObject = {
+                        fullPath: pictureArray[nextFileIndexToLoad].fullPath
                     }
 
-                    // figure is loaded in the back
-                    if (nextFigureToLoadCounter === allFilenames.length) {
-                        nextFigureToLoadCounter = 0;
-                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ path('single_picture') }}",
+                        data: JSON.stringify(dataObject),
+                        success: function (response) {
+                            filenameField.innerHTML = response.filenameFromRequest;
+                            $(recentBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                            timestampField.value = response.timestamp;
+                        }
+                    })
 
-                    console.log('Hole bild von div: ' + nextDivNumber);
+                    // nextRahmen.removeAttribute('hidden');
+                    // recentRahmen.setAttribute('hidden', 'hidden');
 
-                    let nextBildId = 'bild-id-' + nextDivNumber;
-                    let nextBild = document.getElementById(nextBildId);
-                    let nextFilenameSrc = nextBild.src;
+                    await delay(2000);
 
-                    let filenameHeader = document.getElementById('filename');
-                    filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
-
-                    console.log('Setze in Rahmen: ' + nextFilename);
-                    rahmenBild.src = nextFilenameSrc;
-
-                    // lade neues Bild in gerade verschobenem div
-                    let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
-                    console.log('Lade: ' + nextFigureToLoad + ' in div: ' + nextDivNumber);
-
-                    nextBild.src = 'bilder/' + nextFigureToLoad;
-
-                    nextDivNumber = nextDivNumber + 1;
-                    nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
-                    console.log('');
+                    nextFileIndexToLoad = nextFileIndexToLoad + 1;
                 }
             }
+        }
+
+        function setPictureByFullPath(fullpath, filenameHeader, rahmenBild) {
+            let dataObject = {
+                fullPath: fullpath
+            }
+
+            console.log(dataObject)
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ path('single_picture') }}",
+                data: JSON.stringify(dataObject),
+                success: function (response) {
+                    filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                    $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                }
+            })
         }
 
         async function processFigure(allFilenames, rahmenBild){
@@ -249,7 +318,7 @@
             height: inherit !important;
             display: none;
         }
-        #filename {
+        .filename {
             position: absolute;
             top: 8px;
             left: 16px;

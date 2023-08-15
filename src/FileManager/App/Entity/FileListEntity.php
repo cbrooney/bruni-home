@@ -50,6 +50,16 @@ class FileListEntity
     private ?string $fileType = null;
 
     /**
+     * @ORM\Column(name="personen", type="string", nullable=true, length=300)
+     */
+    private ?string $personen = null;
+
+    /**
+     * @ORM\Column(name="comment", type="string", nullable=true, length=300)
+     */
+    private ?string $comment = null;
+
+    /**
      * @ORM\Column(name="file_size", type="integer", nullable=true)
      */
     private ?int $fileSize = null;
@@ -205,5 +215,25 @@ class FileListEntity
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function getPersonen(): ?string
+    {
+        return $this->personen;
+    }
+
+    public function setPersonen(string $personen): void
+    {
+        $this->personen = $personen;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): void
+    {
+        $this->comment = $comment;
     }
 }

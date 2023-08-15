@@ -27,6 +27,8 @@ final class Version20230810161113 extends AbstractMigration
               `file_name` varchar(100) NOT NULL,
               `relative_path` varchar(200) NOT NULL,
               `file_type` varchar(20) DEFAULT NULL,
+              `personen` varchar(300) DEFAULT NULL,
+              `comment` varchar(300) DEFAULT NULL,
               `file_size` int DEFAULT NULL,
               `hash` varchar(300) DEFAULT NULL,
               `m_time` datetime DEFAULT NULL,
