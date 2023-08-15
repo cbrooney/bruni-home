@@ -158,8 +158,6 @@
                 let showBildId = 'show-bild-id';
                 let showBild = document.getElementById(showBildId);
 
-                let nextDivNumber = 1;
-                let nextFigureToLoadCounter = 11;
                 let nextFileIndexToLoad = 10;
 
                 for (let recentDivIndex = 0; recentDivIndex < 11; recentDivIndex++) {
@@ -191,7 +189,7 @@
                     showFilename.innerHTML = '<h1>' + filenameField.innerHTML + '<br>' +  timestampField.value + '</h1>';
 
                     console.log('Lade neues Bild: ' + pictureArray[nextFileIndexToLoad].fileName);
-//
+
                     let dataObject = {
                         fullPath: pictureArray[nextFileIndexToLoad].fullPath
                     }
@@ -210,7 +208,7 @@
                     // nextRahmen.removeAttribute('hidden');
                     // recentRahmen.setAttribute('hidden', 'hidden');
 
-                    await delay(2000);
+                    await delay(5000);
 
                     nextFileIndexToLoad = nextFileIndexToLoad + 1;
                 }
@@ -233,46 +231,6 @@
                     $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
                 }
             })
-        }
-
-        async function processFigure(allFilenames, rahmenBild){
-            let recentDivNumber = 0;
-            let nextFigureToLoadCounter = 0;
-
-            for (let recentFileIndex = 0; recentFileIndex < allFilenames.length + 1; recentFileIndex++) {
-                await delay(300);
-
-                // add endless loop, restart when reaching end
-                if (recentFileIndex === allFilenames.length) {
-                    recentFileIndex = 0;
-                }
-
-                let nextDivNumber = recentDivNumber + 1;
-                let recentFilename = allFilenames[recentFileIndex].value;
-
-                let nextFilename = allFilenames[nextDivNumber].value;
-                console.log(recentFilename);
-
-                // counter for already loaded images, this one is going to be shown now
-                if (nextDivNumber === 10) {
-                    nextDivNumber = 0;
-                }
-
-                // counter for already loaded images, this one is going to be shown now
-                if (recentDivNumber === 10) {
-                    recentDivNumber = 0;
-                }
-
-                // figure is loaded in the back
-                if (nextFigureToLoadCounter === (allFilenames.length - 1)) {
-                    nextFigureToLoadCounter = 0;
-                }
-
-                //
-                let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
-
-                recentDivNumber = recentDivNumber + 1;
-            }
         }
     </script>
 {% endblock %}
