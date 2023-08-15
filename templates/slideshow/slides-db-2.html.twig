@@ -13,7 +13,7 @@
 
     {% for divCounter in 0..9 %}
         <div class="rahmen" id="rahmen-id-{{ divCounter }}" hidden="hidden">
-            <input class="filenames" type="hidden" id="input-field-id-{{ divCounter }}" value="Nichts">
+            <input class="timestamp" type="hidden" id="timestamp-id-{{ divCounter }}" value="Nichts">
             <div class="filename" id="filename-id-{{ divCounter }}"><h1> Nichts  </h1></div>
             <img class="einzelnesBild" id="bild-id-{{ divCounter }}" src="">
         </div>
@@ -32,24 +32,6 @@
 
         let bilderAnzahl = 10;
 
-        function setPictureByFullPath(fullpath, filenameHeader, rahmenBild) {
-            let dataObject = {
-                fullPath: fullpath
-            }
-
-            console.log(dataObject)
-
-            $.ajax({
-                type: 'POST',
-                url: "{{ path('single_picture') }}",
-                data: JSON.stringify(dataObject),
-                success: function (response) {
-                    filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
-                    $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
-                }
-            })
-        }
-
         function getPicturesToShow(pictureArray) {
             $.ajax({
                 type: 'GET',
@@ -61,10 +43,6 @@
         }
 
         $(document).ready(function() {
-            // let bildId = 'bild-id-0';
-            // let rahmenBild = document.getElementById(bildId);
-            // let filenameHeader = document.getElementById('filename-id-0');
-
             let showRahmenId = 'show-rahmen-id';
             let showRahmen = document.getElementById(showRahmenId);
 
@@ -83,10 +61,7 @@
                 }
             })
 
-            console.log(pictureArray[0].fullPath)
-
-            // set first pic
-            // setPictureByFullPath(pictureArray[0].fullPath, filenameHeader, rahmenBild)
+            console.log('Number of pics: ' + pictureArray.length)
 
             let showFilenameId = 'show-filename-id';
             let showFilename = document.getElementById(showFilenameId);
@@ -95,7 +70,6 @@
             for (let i = 0; i < 10; i++) {
                 let fullpath = pictureArray[i].fullPath
                 console.log(fullpath);
-
                 console.log('Setze Bild in div: ' + i);
 
                 let hiddenBildId = 'bild-id-' + i;
@@ -104,7 +78,7 @@
                 let filenameId = 'filename-id-' + i;
                 let filenameField = document.getElementById(filenameId);
 
-                let inputField = document.getElementById('input-field-id-' + i);
+                let timestampField = document.getElementById('timestamp-id-' + i);
 
                 let dataObject = {
                     fullPath: fullpath
@@ -118,7 +92,7 @@
                     success: function (response) {
                         filenameField.innerHTML = response.filenameFromRequest;
                         $(hiddenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
-                        inputField.value = response.entity;
+                        timestampField.value = response.timestamp;
 
                         if (i === 9) {
                             showFilename.innerHTML = '<h1> Bereit! </h1>';
@@ -127,16 +101,9 @@
                 })
             }
 
-            let showBildId = 'show-bild-id';
-            let showBild = document.getElementById(showBildId);
-
             // pictureArray.forEach((element) => console.log(element.fullPath));
         });
 
-        // let bildId = 'app-bild-id';
-        // let rahmenBild = document.getElementById(bildId);
-        // let filenameHeader = document.getElementById('filename');
-//
         const canWakeLock = () => 'wakeLock' in navigator;
         console.log(canWakeLock());
         let wakelock;
@@ -208,31 +175,22 @@
                         nextFileIndexToLoad = 0;
                     }
 
-                    // nextDivNumber = recentDivIndex + 1
-
-                    // let recentRahmenId = 'rahmen-id-' + recentFileIndex;
-                    // let recentRahmen = document.getElementById(recentRahmenId);
-//
-                    // let nextRahmenId = 'rahmen-id-' + nextDivNumber;
-                    // let nextRahmen = document.getElementById(nextRahmenId);
-//
                     console.log('Hole bild von div: ' + recentDivIndex);
 
                     let recentBildId = 'bild-id-' + recentDivIndex;
                     let recentBild = document.getElementById(recentBildId);
-                    // let nextBildSrc = bild.src;
 
                     let filenameId = 'filename-id-' + recentDivIndex;
                     let filenameField = document.getElementById(filenameId);
 
-                    let inputField = document.getElementById('input-field-id-' + recentDivIndex);
-                    console.log(inputField.value)
+                    let timestampField = document.getElementById('timestamp-id-' + recentDivIndex);
+                    console.log(timestampField.value)
 
                     console.log('Zeige in Rahmen: ' + filenameField.innerHTML);
                     showBild.src = recentBild.src;
-                    showFilename.innerHTML = '<h1>' + filenameField.innerHTML + '<br>' +  inputField.value + '</h1>';
+                    showFilename.innerHTML = '<h1>' + filenameField.innerHTML + '<br>' +  timestampField.value + '</h1>';
 
-                    console.log('Lade neues Bild in: ' + recentDivIndex + ' - ' + pictureArray[nextFileIndexToLoad].fileName);
+                    console.log('Lade neues Bild: ' + pictureArray[nextFileIndexToLoad].fileName);
 //
                     let dataObject = {
                         fullPath: pictureArray[nextFileIndexToLoad].fullPath
@@ -245,11 +203,9 @@
                         success: function (response) {
                             filenameField.innerHTML = response.filenameFromRequest;
                             $(recentBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
-                            inputField.value = response.entity;
+                            timestampField.value = response.timestamp;
                         }
                     })
-
-                    // recentBild.src = nextBildSrc;
 
                     // nextRahmen.removeAttribute('hidden');
                     // recentRahmen.setAttribute('hidden', 'hidden');
@@ -257,54 +213,26 @@
                     await delay(2000);
 
                     nextFileIndexToLoad = nextFileIndexToLoad + 1;
-
-                    continue
-
-                    let filenameHeader = document.getElementById('filename');
-                    filenameHeader.innerHTML = '<h1>' + nextFilename + '</h1>';
-
-
-                    // add endless loop, restart when reaching end
-                    // if (recentFileIndex === 9) {
-                    //     recentFileIndex = 0;
-                    // }
-
-                    let nextFileIndex = recentDivIndex + 1;
-
-                    // if (nextFileIndex === allFilenames.length) {
-                    //     nextFileIndex = 0;
-                    // }
-
-                    let nextFilename = allFilenames[nextFileIndex].value;
-
-                    let recentFilename = allFilenames[recentDivIndex].value;
-                    console.log('Aktuell: ' + recentFilename);
-
-                    await delay(1000);
-
-                    // counter for already loaded images, this one is going to be shown next
-                    if (nextDivNumber > 10) {
-                        nextDivNumber = 1;
-                    }
-
-                    // figure is loaded in the back
-                    if (nextFigureToLoadCounter === allFilenames.length) {
-                        nextFigureToLoadCounter = 0;
-                    }
-
-                    console.log('Hole bild von div: ' + nextDivNumber);
-
-                    // lade neues Bild in gerade verschobenem div
-                    let nextFigureToLoad = allFilenames[nextFigureToLoadCounter].value;
-                    console.log('Lade: ' + nextFigureToLoad + ' in div: ' + nextDivNumber);
-
-                    recentBild.src = 'bilder/' + nextFigureToLoad;
-
-                    nextDivNumber = nextDivNumber + 1;
-                    nextFigureToLoadCounter = nextFigureToLoadCounter + 1;
-                    console.log('');
                 }
             }
+        }
+
+        function setPictureByFullPath(fullpath, filenameHeader, rahmenBild) {
+            let dataObject = {
+                fullPath: fullpath
+            }
+
+            console.log(dataObject)
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ path('single_picture') }}",
+                data: JSON.stringify(dataObject),
+                success: function (response) {
+                    filenameHeader.innerHTML = '<h1>' + response.filenameFromRequest + '</h1>';
+                    $(rahmenBild).attr("src", 'data:image/png;base64,' + response.base64Picture);
+                }
+            })
         }
 
         async function processFigure(allFilenames, rahmenBild){

@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 class SlideShowController extends AbstractController
 {
@@ -121,14 +122,7 @@ class SlideShowController extends AbstractController
      */
     public function slidesFullscreenDb(): Response
     {
-        $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
-
-        //return new BinaryFileResponse($directoryEntries[10]);
-        //die();
-
-        return $this->render('slideshow/slides-db-2.html.twig', [
-            'directoryEntries' => $directoryEntries,
-        ]);
+        return $this->render('slideshow/slides-db-2.html.twig', []);
     }
 
     /**
@@ -149,83 +143,26 @@ class SlideShowController extends AbstractController
     public function getSinglePicture(Request $request): Response
     {
         try {
-        } catch (\Throwable $exception) {
-
-        }
-
-        /** @var SinglePicutureRequest $singlePicutureRequest */
-        $singlePicutureRequest = $this->serializer->deserialize(
-            (string) $request->getContent(),
-            SinglePicutureRequest::class,
-            'json'
-        );
-
-        $fileEntity = $this->fileListEntityRepository->getByFullPath($singlePicutureRequest->getFullPath());
-        $img = file_get_contents($fileEntity->getFullPath());
-
-        return new JsonResponse(
-            [
-                'filenameFromRequest' => $fileEntity->getFileName(),
-                'base64Picture' => base64_encode($img),
-                'entity' => $fileEntity->getMTime()->format('Y-m-d'),
-            ]
-        );
-
-        // $object = json_decode((string) $request->getContent(), true);
-
-        // $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
-
-        // Get the image and convert into string
-        // $img = file_get_contents($directoryEntries[10]->getFullPath());
-
-        // return new JsonResponse(
-        //     [
-        //         'filenameFromRequest' => $directoryEntries[10]->getFileName(),
-        //         'base64Picture' => base64_encode($img),
-        //         'value' => $singlePicutureRequest->getFullPath(),
-        //     ]
-        // );
-
-
-    }
-
-    /**
-     * @Route("/pictures-by-fullpath", name="pictures_by_fullpath", methods={"POST"})
-     */
-    public function getPicturesByFullPath(Request $request): Response
-    {
-        try {
             /** @var SinglePicutureRequest $singlePicutureRequest */
             $singlePicutureRequest = $this->serializer->deserialize(
                 (string) $request->getContent(),
                 SinglePicutureRequest::class,
                 'json'
             );
-        } catch (\Throwable $exception) {
 
+            $fileEntity = $this->fileListEntityRepository->getByFullPath($singlePicutureRequest->getFullPath());
+            $img = file_get_contents($fileEntity->getFullPath());
+        } catch (Throwable $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        // $object = json_decode((string) $request->getContent(), true);
-
-        $directoryEntries = $this->fileListEntityRepository->getFiguresToShow();
-
-        // Get the image and convert into string
-        $img = file_get_contents($directoryEntries[10]->getFullPath());
 
         return new JsonResponse(
             [
-                'filenameFromRequest' => $directoryEntries[10]->getFileName(),
+                'filenameFromRequest' => $fileEntity->getFileName(),
                 'base64Picture' => base64_encode($img),
-                'value' => $singlePicutureRequest->getFullPath(),
+                'timestamp' => $fileEntity->getMTime()->format('Y-m-d'),
             ]
         );
-
-
-
-// Encode the image string data into base64
-        return base64_encode($img);
-
-        // return new BinaryFileResponse($directoryEntries[10]->getFullPath());
     }
 
     /**
