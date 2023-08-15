@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+    bind:
+      $bilderDir: '%kernel.project_dir%/public/bilder'
+
+  App\FileManager\App\Command\:
+    resource: '../../Command'
+
+  App\FileManager\App\:
+    resource: '../../*'
+    exclude: '../../{Collection,Event,Exception,Resources,ValueObject,Entity}'

@@ -28,6 +28,11 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Darts/App/Entity'
                 prefix: 'App\Darts\App\Entity'
                 alias: App\Darts\App\Entity
+            FileManager:
+              is_bundle: false
+              dir: '%kernel.project_dir%/src/FileManager/App/Entity'
+              prefix: 'App\FileManager\App\Entity'
+              alias: App\FileManager\App\Entity
 
 when@test:
     doctrine:

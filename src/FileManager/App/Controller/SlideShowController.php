@@ -2,21 +2,34 @@
 
 declare(strict_types=1);
 
-namespace App\FirstTest\App\Controller;
+namespace App\FileManager\App\Controller;
 
+use App\FileManager\App\Repository\FileListEntityRepository;
+use App\FileManager\ValueObject\SinglePicutureRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 class SlideShowController extends AbstractController
 {
     private $bilderDir;
+    private FileListEntityRepository $fileListEntityRepository;
+    private SerializerInterface $serializer;
 
     public function __construct(
-        string $bilderDir
+        string $bilderDir,
+        FileListEntityRepository $fileListEntityRepository,
+        SerializerInterface $serializer
     ) {
         $this->bilderDir = $bilderDir;
+        $this->fileListEntityRepository = $fileListEntityRepository;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -32,6 +45,9 @@ class SlideShowController extends AbstractController
             $directoryEntries,
             ['..', '.', '.gitkeep']
         );
+
+        //var_dump($directoryEntries);
+        //die();
 
         return $this->render('slideshow/slides.html.twig', [
             'directoryEntries' => $directoryEntries,
@@ -99,6 +115,54 @@ class SlideShowController extends AbstractController
         return $this->render('slideshow/slides-full.html.twig', [
             'directoryEntries' => $directoryEntries,
         ]);
+    }
+
+    /**
+     * @Route("/slideshow-db", name="slide_show_db", methods={"GET"})
+     */
+    public function slidesFullscreenDb(): Response
+    {
+        return $this->render('slideshow/slides-db.html.twig', []);
+    }
+
+    /**
+     * @Route("/figures-to-show", name="figures_to_show", methods={"GET"})
+     */
+    public function getFiguresToShow(): Response
+    {
+        $figuresToShow = $this->fileListEntityRepository->getFiguresToShow();
+
+        $jsonResponseContent = $this->serializer->serialize($figuresToShow, JsonEncoder::FORMAT);
+
+        return new JsonResponse($jsonResponseContent, Response::HTTP_OK, [], true);
+    }
+
+    /**
+     * @Route("/single-picture", name="single_picture", methods={"POST"})
+     */
+    public function getSinglePicture(Request $request): Response
+    {
+        try {
+            /** @var SinglePicutureRequest $singlePicutureRequest */
+            $singlePicutureRequest = $this->serializer->deserialize(
+                (string) $request->getContent(),
+                SinglePicutureRequest::class,
+                'json'
+            );
+
+            $fileEntity = $this->fileListEntityRepository->getByFullPath($singlePicutureRequest->getFullPath());
+            $img = file_get_contents($fileEntity->getFullPath());
+        } catch (Throwable $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(
+            [
+                'filenameFromRequest' => $fileEntity->getFileName(),
+                'base64Picture' => base64_encode($img),
+                'timestamp' => $fileEntity->getMTime()->format('Y-m-d'),
+            ]
+        );
     }
 
     /**

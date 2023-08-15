@@ -5,3 +5,7 @@ kernel:
 first_test:
     resource: ../../src/FirstTest/App/Controller/
     type: annotation
+
+file_manager:
+  resource: ../../src/FileManager/App/Controller/
+  type: annotation
