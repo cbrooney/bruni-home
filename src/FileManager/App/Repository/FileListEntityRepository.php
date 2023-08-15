@@ -113,4 +113,9 @@ class FileListEntityRepository extends ServiceEntityRepository
     {
         $this->_em->flush();
     }
+
+    public function clear(): void
+    {
+        $this->_em->clear();
+    }
 }

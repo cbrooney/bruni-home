@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\FileManager\App\Service;
 
 use App\FileManager\App\Repository\FileListEntityRepository;
+use Container5xIgght\getMaker_PhpCompatUtilService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -22,14 +23,16 @@ class FileScanningService
         $this->logger = $logger;
     }
 
+    /**
+     * @throws Exception
+     */
     public function scanDirectory(string $rootDir): void
     {
-
         $allFiles = [];
         $allFiles = $this->getAllFilesFromFolder($rootDir, $allFiles);
 
-        var_dump($allFiles);
-
+        $this->logger->info(sprintf('Found %d files', count($allFiles)));
+        
         $this->saveFileListFromArray($allFiles, $rootDir);
     }
 
@@ -60,16 +63,25 @@ class FileScanningService
     {
         $run = $this->fileListEntityRepository->getNewRunNumber();
 
-        foreach ($allFiles as $file) {
-            try {
-                $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run, $rootDir);
-                $this->fileListEntityRepository->persist($fileListEntity);
-            } catch (Throwable $exception) {
-                $this->logger->error(sprintf('Error for file: %s with message: %s', $file, $exception->getMessage()));
-                continue;
-            }
-        }
+        $batches = array_chunk($allFiles, 500);
+        $counter = 0;
 
-        $this->fileListEntityRepository->flush();
+        foreach ($batches as $batch) {
+            foreach ($batch as $file) {
+                try {
+                    $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run, $rootDir);
+                    $this->fileListEntityRepository->persist($fileListEntity);
+                    $counter = $counter + 1;
+                } catch (Throwable $exception) {
+                    $this->logger->error(sprintf('Error for file: %s with message: %s', $file, $exception->getMessage()));
+                    continue;
+                }
+            }
+
+            $this->fileListEntityRepository->flush();
+            $this->fileListEntityRepository->clear();
+
+            $this->logger->info(sprintf('Saved %d entries', $counter));
+        }
     }
 }
