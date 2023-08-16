@@ -117,5 +117,7 @@ class FileListEntityRepository extends ServiceEntityRepository
     public function clear(): void
     {
         $this->_em->clear();
+        $this->_em->getConnection()->close();
+        $this->_em->getConnection()->connect();
     }
 }
