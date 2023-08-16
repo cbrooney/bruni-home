@@ -63,7 +63,7 @@ class FileScanningService
     {
         $run = $this->fileListEntityRepository->getNewRunNumber();
 
-        $batches = array_chunk($allFiles, 500);
+        $batches = array_chunk($allFiles, 100);
         $counter = 0;
 
         foreach ($batches as $batch) {
