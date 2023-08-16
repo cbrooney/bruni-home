@@ -8,6 +8,7 @@ use App\FileManager\App\Repository\FileListEntityRepository;
 use Container5xIgght\getMaker_PhpCompatUtilService;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 use Throwable;
 
 class FileScanningService
@@ -66,10 +67,12 @@ class FileScanningService
         $batches = array_chunk($allFiles, 100);
         $counter = 0;
 
+        $stopWatch = new Stopwatch();
+
         foreach ($batches as $batch) {
             foreach ($batch as $file) {
                 try {
-                    $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run, $rootDir);
+                    $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run, $rootDir, $stopWatch);
                     // $this->fileListEntityRepository->persist($fileListEntity);
                     $counter = $counter + 1;
                 } catch (Throwable $exception) {
@@ -77,6 +80,9 @@ class FileScanningService
                     continue;
                 }
             }
+
+            $duration = $stopWatch->getEvent('SplFileInfo')->getDuration();
+            echo (int)($duration / 1000) . PHP_EOL;
 
             //$this->fileListEntityRepository->flush();
             // $this->fileListEntityRepository->clear();

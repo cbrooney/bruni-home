@@ -10,6 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use SplFileInfo;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class FileListEntityRepository extends ServiceEntityRepository
 {
@@ -18,11 +19,13 @@ class FileListEntityRepository extends ServiceEntityRepository
         parent::__construct($registry, FileListEntity::class);
     }
 
-    public function createFileListEntity(string $fullPath, int $run, string $rootDir): FileListEntity
+    public function createFileListEntity(string $fullPath, int $run, string $rootDir, Stopwatch $stopwatch): FileListEntity
     {
         $fileListEntity = new FileListEntity($fullPath, $run);
 
+        $stopwatch->start('SplFileInfo');
         $splFileInfo = new SplFileInfo($fullPath);
+        $stopwatch->stop('SplFileInfo');
 
         $relativePath = str_replace($rootDir, '', $splFileInfo->getPath());
 
