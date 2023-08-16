@@ -70,7 +70,7 @@ class FileScanningService
             foreach ($batch as $file) {
                 try {
                     $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run, $rootDir);
-                    $this->fileListEntityRepository->persist($fileListEntity);
+                    // $this->fileListEntityRepository->persist($fileListEntity);
                     $counter = $counter + 1;
                 } catch (Throwable $exception) {
                     $this->logger->error(sprintf('Error for file: %s with message: %s', $file, $exception->getMessage()));
@@ -78,8 +78,8 @@ class FileScanningService
                 }
             }
 
-            $this->fileListEntityRepository->flush();
-            $this->fileListEntityRepository->clear();
+            //$this->fileListEntityRepository->flush();
+            // $this->fileListEntityRepository->clear();
 
             $this->logger->info(sprintf('Saved %d entries', $counter));
         }
