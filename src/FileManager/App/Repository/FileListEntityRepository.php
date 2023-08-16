@@ -25,14 +25,20 @@ class FileListEntityRepository extends ServiceEntityRepository
 
         $stopwatch->start('SplFileInfo');
         $splFileInfo = new SplFileInfo($fullPath);
+        //usleep(100000);
         $stopwatch->stop('SplFileInfo');
 
         $relativePath = str_replace($rootDir, '', $splFileInfo->getPath());
 
+        $stopwatch->start('DateTimeCreation');
+        //usleep(200000);
         $mtime = DateTime::createFromFormat('U', (string)$splFileInfo->getMTime());
         $ctime = DateTime::createFromFormat('U', (string)$splFileInfo->getCTime());
         $atime = DateTime::createFromFormat('U', (string)$splFileInfo->getATime());
+        $stopwatch->stop('DateTimeCreation');
 
+        $stopwatch->start('Entity');
+        //usleep(300000);
         $fileListEntity
             ->setFileSize($splFileInfo->getSize())
             ->setFileName($splFileInfo->getFilename())
@@ -42,6 +48,7 @@ class FileListEntityRepository extends ServiceEntityRepository
             ->setMTime($mtime)
             ->setATime($atime)
             ->setCTime($ctime);
+        $stopwatch->stop('Entity');
 
         return $fileListEntity;
     }

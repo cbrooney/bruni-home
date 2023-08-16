@@ -64,7 +64,7 @@ class FileScanningService
     {
         $run = $this->fileListEntityRepository->getNewRunNumber();
 
-        $batches = array_chunk($allFiles, 100);
+        $batches = array_chunk($allFiles, 10);
         $counter = 0;
 
         $stopWatch = new Stopwatch();
@@ -82,7 +82,14 @@ class FileScanningService
             }
 
             $duration = $stopWatch->getEvent('SplFileInfo')->getDuration();
-            echo (int)($duration / 1000) . PHP_EOL;
+            echo sprintf('SplFileInfo: %d', (int)($duration / 1000)) . PHP_EOL;
+
+
+            $duration = $stopWatch->getEvent('DateTimeCreation')->getDuration();
+            echo sprintf('DateTimeCreation: %d', (int)($duration / 1000)) . PHP_EOL;
+
+            $duration = $stopWatch->getEvent('Entity')->getDuration();
+            echo sprintf('Entity: %d', (int)($duration / 1000)) . PHP_EOL;
 
             //$this->fileListEntityRepository->flush();
             // $this->fileListEntityRepository->clear();
