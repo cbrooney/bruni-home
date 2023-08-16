@@ -43,7 +43,7 @@ class FileListEntityRepository extends ServiceEntityRepository
             ->setFileSize($splFileInfo->getSize())
             ->setFileName($splFileInfo->getFilename())
             ->setFileType($splFileInfo->getExtension())
-            //->setHash(sha1_file($fullPath))
+            ->setHash(hash_file('xxh128', $fullPath))
             ->setRelativePath($relativePath)
             ->setMTime($mtime)
             ->setATime($atime)

@@ -21,7 +21,7 @@ services:
                 CONTAINER_USER_UID: $CONTAINER_USER_UID
                 CONTAINER_USER_GID: $CONTAINER_USER_GID
                 SSH_PRIV_KEY: $SSH_PRIV_KEY
-                PHP_BASE_IMAGE_TAG: latest
+                PHP_BASE_IMAGE_TAG: php8.2
         volumes:
             - .:/var/www/html
             - ../bruni-home-private:/var/www/bruni-home-private
