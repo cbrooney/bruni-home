@@ -64,7 +64,7 @@ class FileScanningService
     {
         $run = $this->fileListEntityRepository->getNewRunNumber();
 
-        $batches = array_chunk($allFiles, 100);
+        $batches = array_chunk($allFiles, 50);
         $counter = 0;
 
         $stopWatch = new Stopwatch();
@@ -72,18 +72,29 @@ class FileScanningService
         foreach ($batches as $batch) {
             foreach ($batch as $file) {
                 try {
-                    $fileListEntity = $this->fileListEntityRepository->createFileListEntity($file, $run, $rootDir, $stopWatch);
-                    // $this->fileListEntityRepository->persist($fileListEntity);
+                    $fileListEntity = $this->fileListEntityRepository->createFileListEntity(
+                        $file,
+                        $run,
+                        $rootDir,
+                        $stopWatch
+                    );
+                    $this->fileListEntityRepository->persist($fileListEntity);
                     $counter = $counter + 1;
                 } catch (Throwable $exception) {
-                    $this->logger->error(sprintf('Error for file: %s with message: %s', $file, $exception->getMessage()));
+                    $this->logger->error(
+                        sprintf('Error for file: %s with message: %s', $file, $exception->getMessage())
+                    );
                     continue;
                 }
             }
 
+            $stopWatch->start('flush');
+            $this->fileListEntityRepository->flush();
+            $this->fileListEntityRepository->clear();
+            $stopWatch->stop('flush');
+
             $duration = $stopWatch->getEvent('SplFileInfo')->getDuration();
             echo sprintf('SplFileInfo: %d', (int)($duration / 1000)) . PHP_EOL;
-
 
             $duration = $stopWatch->getEvent('DateTimeCreation')->getDuration();
             echo sprintf('DateTimeCreation: %d', (int)($duration / 1000)) . PHP_EOL;
@@ -91,8 +102,8 @@ class FileScanningService
             $duration = $stopWatch->getEvent('Entity')->getDuration();
             echo sprintf('Entity: %d', (int)($duration / 1000)) . PHP_EOL;
 
-            //$this->fileListEntityRepository->flush();
-            // $this->fileListEntityRepository->clear();
+            $duration = $stopWatch->getEvent('flush')->getDuration();
+            echo sprintf('flush: %d', (int)($duration / 1000)) . PHP_EOL;
 
             $this->logger->info(sprintf('Saved %d entries', $counter));
         }
