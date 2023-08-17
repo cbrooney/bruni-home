@@ -10,6 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use SplFileInfo;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class FileListEntityRepository extends ServiceEntityRepository
 {
@@ -18,27 +19,38 @@ class FileListEntityRepository extends ServiceEntityRepository
         parent::__construct($registry, FileListEntity::class);
     }
 
-    public function createFileListEntity(string $fullPath, int $run, string $rootDir): FileListEntity
+    public function createFileListEntity(string $fullPath, int $run, string $rootDir, Stopwatch $stopwatch): FileListEntity
     {
         $fileListEntity = new FileListEntity($fullPath, $run);
 
+        $stopwatch->start('SplFileInfo');
         $splFileInfo = new SplFileInfo($fullPath);
+        //usleep(100000);
+        $stopwatch->stop('SplFileInfo');
 
         $relativePath = str_replace($rootDir, '', $splFileInfo->getPath());
 
+        $stopwatch->start('DateTimeCreation');
+        //usleep(200000);
         $mtime = DateTime::createFromFormat('U', (string)$splFileInfo->getMTime());
         $ctime = DateTime::createFromFormat('U', (string)$splFileInfo->getCTime());
         $atime = DateTime::createFromFormat('U', (string)$splFileInfo->getATime());
+        $stopwatch->stop('DateTimeCreation');
 
+        $stopwatch->start('Entity');
+        //usleep(300000);
         $fileListEntity
             ->setFileSize($splFileInfo->getSize())
             ->setFileName($splFileInfo->getFilename())
             ->setFileType($splFileInfo->getExtension())
-            ->setHash(sha1_file($fullPath))
+            ->setHash(hash_file('xxh128', $fullPath))
+            // ->setHash(hash_file('xxh3', $fullPath))
             ->setRelativePath($relativePath)
             ->setMTime($mtime)
             ->setATime($atime)
             ->setCTime($ctime);
+
+        $stopwatch->stop('Entity');
 
         return $fileListEntity;
     }
@@ -61,23 +73,60 @@ class FileListEntityRepository extends ServiceEntityRepository
      * @return array<FileListEntity>
      * @throws Exception
      */
-    public function getFiguresToShow(): array
+    public function getFiguresToShow(string $query): array
     {
-        $qb = $this->_em->createQueryBuilder();
+        $result = $this->_em->getConnection()->executeQuery($query)->fetchAllAssociative();
 
-        $qb->select('file')
-            ->from(FileListEntity::class, 'file')
-            ->where($qb->expr()->in('file.fileType', ':fileTypes'))
-            ->setParameter(
-                'fileTypes',
-                [
-                    'JPG',
-                    'jpg',
-                ]
-            )
-        ;
+        return $this->createEntitiesFromArrays($result);
 
-        return $qb->getQuery()->getResult();
+        // variante 2
+        //$result = array_column($result, 'id');
+
+        //$qb = $this->_em->createQueryBuilder();
+        //$qb->select('file')
+        //    ->from(FileListEntity::class, 'file')
+        //    ->where($qb->expr()->in('file.id', ':fileIds'))
+        //    ->setParameter('fileIds', $result)
+        //;
+
+        //return $qb->getQuery()->getResult();
+
+        // initiale variante
+        // $qb = $this->_em->createQueryBuilder();
+//
+        // $qb->select('file')
+        //     ->from(FileListEntity::class, 'file')
+        //     ->where($qb->expr()->in('file.fileType', ':fileTypes'))
+        //     ->setParameter(
+        //         'fileTypes',
+        //         [
+        //             'JPG',
+        //             'jpg',
+        //         ]
+        //     )
+        // ;
+//
+        // return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $assocArrayResult
+     * @return array<FileListEntity>
+     */
+    private function createEntitiesFromArrays(array $assocArrayResult): array
+    {
+        $entities = [];
+
+        foreach ($assocArrayResult as $item) {
+            $entity = new FileListEntity($item['full_path'], $item['run']);
+            $entity->setFileName($item['file_name'])
+                ->setFileType($item['file_type'])
+                ->setMTime(new DateTime($item['m_time']));
+
+            $entities[] = $entity;
+        }
+
+        return $entities;
     }
 
     /**
@@ -117,5 +166,7 @@ class FileListEntityRepository extends ServiceEntityRepository
     public function clear(): void
     {
         $this->_em->clear();
+        $this->_em->getConnection()->close();
+        $this->_em->getConnection()->connect();
     }
 }
