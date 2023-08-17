@@ -7,7 +7,7 @@ services:
         ports:
             - "8000:8000"
     php-fpm:
-        image: ghcr.io/cbrooney/bruni-home-app-prod:latest
+        image: ghcr.io/cbrooney/bruni-home-app-prod:php8.2
         container_name: php-fpm
         volumes:
             - ./public/bilder/:/var/www/html/public/bilder/

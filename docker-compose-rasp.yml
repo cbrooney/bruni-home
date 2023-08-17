@@ -10,7 +10,7 @@ services:
             - "8000:8000"
     php-fpm:
         container_name: php-fpm
-        image: ghcr.io/cbrooney/bruni-home-app-rasp:latest
+        image: ghcr.io/cbrooney/bruni-home-app-rasp:php8.2
         volumes:
             - ./public/bilder/:/var/www/html/public/bilder/
             - ../bruni-home-private:/var/www/bruni-home-private
