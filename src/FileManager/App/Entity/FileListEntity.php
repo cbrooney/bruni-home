@@ -60,7 +60,7 @@ class FileListEntity
     private ?string $comment = null;
 
     /**
-     * @ORM\Column(name="file_size", type="integer", nullable=true)
+     * @ORM\Column(name="file_size", type="bigint", nullable=true)
      */
     private ?int $fileSize = null;
 
@@ -68,6 +68,11 @@ class FileListEntity
      * @ORM\Column(name="hash", type="string", nullable=true, length=300)
      */
     private ?string $hash = null;
+
+    /**
+     * @ORM\Column(name="hashing_duration_ms", type="integer", nullable=true)
+     */
+    private ?int $hashingDurationMs = null;
 
     /**
      * @ORM\Column(name="m_time", type="datetime", nullable=true)
@@ -235,5 +240,15 @@ class FileListEntity
     public function setComment(?string $comment): void
     {
         $this->comment = $comment;
+    }
+
+    public function getHashingDurationMs(): ?int
+    {
+        return $this->hashingDurationMs;
+    }
+
+    public function setHashingDurationMs(?int $hashingDurationMs): void
+    {
+        $this->hashingDurationMs = $hashingDurationMs;
     }
 }
