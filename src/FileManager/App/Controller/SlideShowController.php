@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\FileManager\App\Controller;
 
+use App\FileManager\App\Entity\QueryCollection;
 use App\FileManager\App\Repository\FileListEntityRepository;
+use App\FileManager\App\Repository\QueryCollectionRepository;
 use App\FileManager\ValueObject\SinglePicutureRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -21,15 +23,18 @@ class SlideShowController extends AbstractController
     private $bilderDir;
     private FileListEntityRepository $fileListEntityRepository;
     private SerializerInterface $serializer;
+    private QueryCollectionRepository $collectionRepository;
 
     public function __construct(
         string $bilderDir,
         FileListEntityRepository $fileListEntityRepository,
+        QueryCollectionRepository $collectionRepository,
         SerializerInterface $serializer
     ) {
         $this->bilderDir = $bilderDir;
         $this->fileListEntityRepository = $fileListEntityRepository;
         $this->serializer = $serializer;
+        $this->collectionRepository = $collectionRepository;
     }
 
     /**
@@ -130,7 +135,9 @@ class SlideShowController extends AbstractController
      */
     public function getFiguresToShow(): Response
     {
-        $figuresToShow = $this->fileListEntityRepository->getFiguresToShow();
+        $queryEntry = $this->collectionRepository->getLatestByType(QueryCollection::TYPE_PICTURE);
+
+        $figuresToShow = $this->fileListEntityRepository->getFiguresToShow($queryEntry->getQuery());
 
         $jsonResponseContent = $this->serializer->serialize($figuresToShow, JsonEncoder::FORMAT);
 

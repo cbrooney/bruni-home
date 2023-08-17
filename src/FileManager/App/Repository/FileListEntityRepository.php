@@ -73,23 +73,60 @@ class FileListEntityRepository extends ServiceEntityRepository
      * @return array<FileListEntity>
      * @throws Exception
      */
-    public function getFiguresToShow(): array
+    public function getFiguresToShow(string $query): array
     {
-        $qb = $this->_em->createQueryBuilder();
+        $result = $this->_em->getConnection()->executeQuery($query)->fetchAllAssociative();
 
-        $qb->select('file')
-            ->from(FileListEntity::class, 'file')
-            ->where($qb->expr()->in('file.fileType', ':fileTypes'))
-            ->setParameter(
-                'fileTypes',
-                [
-                    'JPG',
-                    'jpg',
-                ]
-            )
-        ;
+        return $this->createEntitiesFromArrays($result);
 
-        return $qb->getQuery()->getResult();
+        // variante 2
+        //$result = array_column($result, 'id');
+
+        //$qb = $this->_em->createQueryBuilder();
+        //$qb->select('file')
+        //    ->from(FileListEntity::class, 'file')
+        //    ->where($qb->expr()->in('file.id', ':fileIds'))
+        //    ->setParameter('fileIds', $result)
+        //;
+
+        //return $qb->getQuery()->getResult();
+
+        // initiale variante
+        // $qb = $this->_em->createQueryBuilder();
+//
+        // $qb->select('file')
+        //     ->from(FileListEntity::class, 'file')
+        //     ->where($qb->expr()->in('file.fileType', ':fileTypes'))
+        //     ->setParameter(
+        //         'fileTypes',
+        //         [
+        //             'JPG',
+        //             'jpg',
+        //         ]
+        //     )
+        // ;
+//
+        // return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $assocArrayResult
+     * @return array<FileListEntity>
+     */
+    private function createEntitiesFromArrays(array $assocArrayResult): array
+    {
+        $entities = [];
+
+        foreach ($assocArrayResult as $item) {
+            $entity = new FileListEntity($item['full_path'], $item['run']);
+            $entity->setFileName($item['file_name'])
+                ->setFileType($item['file_type'])
+                ->setMTime(new DateTime($item['m_time']));
+
+            $entities[] = $entity;
+        }
+
+        return $entities;
     }
 
     /**
