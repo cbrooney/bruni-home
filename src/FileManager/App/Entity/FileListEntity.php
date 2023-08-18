@@ -167,9 +167,16 @@ class FileListEntity
         return $this->hash;
     }
 
-    public function setHash(?string $hash): FileListEntity
+    public function setHash(): FileListEntity
     {
-        $this->hash = $hash;
+        $starttime = microtime(true);
+        $this->hash = hash_file('xxh128', $this->fullPath);
+        $endtime = microtime(true);
+
+        $duration = (int)(($endtime - $starttime) * 1000);
+
+        $this->hashingDurationMs = $duration;
+
         return $this;
     }
 

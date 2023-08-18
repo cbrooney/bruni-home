@@ -43,7 +43,7 @@ class FileListEntityRepository extends ServiceEntityRepository
             ->setFileSize($splFileInfo->getSize())
             ->setFileName($splFileInfo->getFilename())
             ->setFileType($splFileInfo->getExtension())
-            ->setHash(hash_file('xxh128', $fullPath))
+            // ->setHash()
             // ->setHash(hash_file('xxh3', $fullPath))
             ->setRelativePath($relativePath)
             ->setMTime($mtime)
@@ -130,7 +130,6 @@ class FileListEntityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return FileListEntity>
      * @throws Exception
      */
     public function getByFullPath(string $fullPath): ?FileListEntity
@@ -145,6 +144,22 @@ class FileListEntityRepository extends ServiceEntityRepository
             ->setMaxResults(1);
 
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @return array<FileListEntity>
+     * @throws Exception
+     */
+    public function getEntriesWithoutHash(int $limit): array
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('file')
+            ->from(FileListEntity::class, 'file')
+            ->where($qb->expr()->isNull('file.hash'))
+            ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -166,7 +181,5 @@ class FileListEntityRepository extends ServiceEntityRepository
     public function clear(): void
     {
         $this->_em->clear();
-        $this->_em->getConnection()->close();
-        $this->_em->getConnection()->connect();
     }
 }
